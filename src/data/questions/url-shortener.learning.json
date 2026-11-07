@@ -1,0 +1,571 @@
+{
+ "followUpQuestions": [
+  {
+   "id": "FU-01",
+   "difficulty": "beginner",
+   "category": "fundamentals",
+   "prompt": "Why does the system need a unique short code?",
+   "expectedAnswerPoints": [
+    "Each code must resolve to one intended mapping.",
+    "Duplicate codes can redirect users to the wrong destination.",
+    "Uniqueness must hold under concurrent creation."
+   ]
+  },
+  {
+   "id": "FU-02",
+   "difficulty": "beginner",
+   "category": "database",
+   "prompt": "Why is an index on shortCode useful?",
+   "expectedAnswerPoints": [
+    "Redirect requests search by short code.",
+    "An appropriate index can avoid scanning every mapping.",
+    "Indexes have storage and write-maintenance costs."
+   ]
+  },
+  {
+   "id": "FU-03",
+   "difficulty": "beginner",
+   "category": "caching",
+   "prompt": "Why might a cache improve redirect performance?",
+   "expectedAnswerPoints": [
+    "Repeated lookups can be served without reading the primary database.",
+    "Database read load may decrease.",
+    "Cache misses still require a lookup.",
+    "Cache behavior depends on access patterns and hit ratio."
+   ]
+  },
+  {
+   "id": "FU-04",
+   "difficulty": "intermediate",
+   "category": "consistency",
+   "prompt": "How would you prevent two concurrent requests from creating conflicting short codes?",
+   "expectedAnswerPoints": [
+    "Use an atomic uniqueness constraint or equivalent allocation mechanism.",
+    "Handle conflicts safely.",
+    "Retry or allocate a different identifier when appropriate.",
+    "Do not rely solely on a prior existence check."
+   ]
+  },
+  {
+   "id": "FU-05",
+   "difficulty": "intermediate",
+   "category": "scalability",
+   "prompt": "What would you change if redirect traffic increased tenfold?",
+   "expectedAnswerPoints": [
+    "Recalculate peak request rate.",
+    "Identify the limiting component.",
+    "Evaluate application scaling and database capacity.",
+    "Consider caching and uneven traffic distribution.",
+    "Avoid scaling components without evidence of a bottleneck."
+   ]
+  },
+  {
+   "id": "FU-06",
+   "difficulty": "advanced",
+   "category": "reliability",
+   "prompt": "What happens if the primary database becomes unavailable?",
+   "expectedAnswerPoints": [
+    "New URL creation may need to fail or be deferred.",
+    "Cache hits may continue to work if the cache remains available and contains valid mappings.",
+    "Cache misses cannot be resolved from an unavailable database.",
+    "Replicas and failover may improve availability, depending on the design.",
+    "Consistency and recovery trade-offs must be considered."
+   ]
+  },
+  {
+   "id": "FU-07",
+   "difficulty": "advanced",
+   "category": "identifier-generation",
+   "prompt": "Compare sequential IDs encoded with Base62, random short codes, and preallocated ID ranges.",
+   "expectedAnswerPoints": [
+    "Sequential IDs can be simple but may expose creation patterns.",
+    "Random codes require collision handling.",
+    "Preallocated ranges can reduce central coordination but require safe allocation.",
+    "Identifier length, predictability, coordination, and collision probability matter."
+   ]
+  },
+  {
+   "id": "FU-08",
+   "difficulty": "advanced",
+   "category": "global-scale",
+   "prompt": "How would you adapt the architecture for users distributed across several continents?",
+   "expectedAnswerPoints": [
+    "Evaluate geographic latency.",
+    "Consider regional deployment and routing.",
+    "Choose an appropriate replication strategy.",
+    "Define consistency expectations.",
+    "Address regional failure and recovery."
+   ]
+  }
+ ],
+ "referenceSolutions": [
+  {
+   "id": "REF-01",
+   "name": "Minimal valid architecture",
+   "difficulty": "beginner",
+   "architecture": {
+    "schemaVersion": 1,
+    "questionId": "hld-url-shortener-001",
+    "questionVersion": 1,
+    "nodes": [
+     {
+      "id": "client",
+      "componentId": "COMP-CLIENT",
+      "componentType": "client",
+      "name": "Client",
+      "position": {
+       "x": 0,
+       "y": 160
+      },
+      "config": {}
+     },
+     {
+      "id": "app",
+      "componentId": "COMP-APP-SERVER",
+      "componentType": "application-server",
+      "name": "Application Server",
+      "position": {
+       "x": 320,
+       "y": 160
+      },
+      "config": {
+       "instances": 4,
+       "capacityPerInstanceRps": 3000,
+       "averageProcessingLatencyMs": 10,
+       "notFoundBehavior": "return-404"
+      }
+     },
+     {
+      "id": "db",
+      "componentId": "COMP-SQL-DATABASE",
+      "componentType": "sql-database",
+      "name": "Relational Database",
+      "position": {
+       "x": 680,
+       "y": 160
+      },
+      "config": {
+       "readCapacityRps": 5000,
+       "writeCapacityRps": 1000,
+       "averageReadLatencyMs": 20,
+       "averageWriteLatencyMs": 30,
+       "durable": true,
+       "uniqueConstraintSupported": true
+      }
+     },
+     {
+      "id": "idgen",
+      "componentId": "COMP-KEY-GENERATOR",
+      "componentType": "key-generator",
+      "name": "ID / Short-Code Generator",
+      "position": {
+       "x": 320,
+       "y": 360
+      },
+      "config": {
+       "strategy": "base62",
+       "collisionHandling": "retry"
+      }
+     }
+    ],
+    "edges": [
+     {
+      "id": "e0",
+      "source": "client",
+      "target": "app",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+     },
+     {
+      "id": "e1",
+      "source": "app",
+      "target": "db",
+      "connectionTypeId": "EDGE-DB-WRITE"
+     },
+     {
+      "id": "e2",
+      "source": "app",
+      "target": "db",
+      "connectionTypeId": "EDGE-DB-READ"
+     },
+     {
+      "id": "e3",
+      "source": "app",
+      "target": "idgen",
+      "connectionTypeId": "EDGE-ID-ALLOC"
+     }
+    ]
+   },
+   "flows": [
+    {
+     "name": "Create URL",
+     "steps": [
+      "Client submits a URL.",
+      "Application validates the URL.",
+      "Application generates or allocates a short code.",
+      "Application persists the mapping with uniqueness enforcement.",
+      "Application returns the short URL."
+     ]
+    },
+    {
+     "name": "Redirect",
+     "steps": [
+      "Client requests a short code.",
+      "Application looks up the mapping.",
+      "Application returns the redirect response."
+     ]
+    }
+   ],
+   "strengths": [
+    "Simple to understand and implement.",
+    "Provides a clear durable source of truth.",
+    "Suitable as a starting point."
+   ],
+   "limitations": [
+    "The database may become a read bottleneck.",
+    "Application capacity must be evaluated against the workload.",
+    "A single database instance may be a reliability limitation."
+   ],
+   "tradeoffs": [
+    "Simple architecture versus limited redundancy.",
+    "Direct database reads versus additional caching complexity."
+   ]
+  },
+  {
+   "id": "REF-02",
+   "name": "Cached redirect architecture",
+   "difficulty": "intermediate",
+   "architecture": {
+    "schemaVersion": 1,
+    "questionId": "hld-url-shortener-001",
+    "questionVersion": 1,
+    "nodes": [
+     {
+      "id": "client",
+      "componentId": "COMP-CLIENT",
+      "componentType": "client",
+      "name": "Client",
+      "position": {
+       "x": 0,
+       "y": 160
+      },
+      "config": {}
+     },
+     {
+      "id": "lb",
+      "componentId": "COMP-LOAD-BALANCER",
+      "componentType": "load-balancer",
+      "name": "Load Balancer",
+      "position": {
+       "x": 280,
+       "y": 160
+      },
+      "config": {
+       "averageLatencyMs": 2
+      }
+     },
+     {
+      "id": "app",
+      "componentId": "COMP-APP-SERVER",
+      "componentType": "application-server",
+      "name": "Application Server",
+      "position": {
+       "x": 560,
+       "y": 160
+      },
+      "config": {
+       "instances": 4,
+       "capacityPerInstanceRps": 3000,
+       "averageProcessingLatencyMs": 10,
+       "notFoundBehavior": "return-404"
+      }
+     },
+     {
+      "id": "cache",
+      "componentId": "COMP-CACHE",
+      "componentType": "cache",
+      "name": "Distributed Cache",
+      "position": {
+       "x": 880,
+       "y": 20
+      },
+      "config": {
+       "hitRatio": 0.9,
+       "averageLatencyMs": 2,
+       "available": true,
+       "ttlSeconds": 3600,
+       "onUnavailable": "bypass-to-database"
+      }
+     },
+     {
+      "id": "db",
+      "componentId": "COMP-SQL-DATABASE",
+      "componentType": "sql-database",
+      "name": "Relational Database",
+      "position": {
+       "x": 880,
+       "y": 300
+      },
+      "config": {
+       "readCapacityRps": 5000,
+       "writeCapacityRps": 1000,
+       "averageReadLatencyMs": 20,
+       "averageWriteLatencyMs": 30,
+       "durable": true,
+       "uniqueConstraintSupported": true
+      }
+     },
+     {
+      "id": "idgen",
+      "componentId": "COMP-KEY-GENERATOR",
+      "componentType": "key-generator",
+      "name": "ID / Short-Code Generator",
+      "position": {
+       "x": 560,
+       "y": 360
+      },
+      "config": {
+       "strategy": "base62",
+       "collisionHandling": "retry"
+      }
+     }
+    ],
+    "edges": [
+     {
+      "id": "e0",
+      "source": "client",
+      "target": "lb",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+     },
+     {
+      "id": "e1",
+      "source": "lb",
+      "target": "app",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+     },
+     {
+      "id": "e2",
+      "source": "app",
+      "target": "cache",
+      "connectionTypeId": "EDGE-CACHE-READ"
+     },
+     {
+      "id": "e3",
+      "source": "app",
+      "target": "db",
+      "connectionTypeId": "EDGE-DB-READ"
+     },
+     {
+      "id": "e4",
+      "source": "app",
+      "target": "db",
+      "connectionTypeId": "EDGE-DB-WRITE"
+     },
+     {
+      "id": "e5",
+      "source": "app",
+      "target": "idgen",
+      "connectionTypeId": "EDGE-ID-ALLOC"
+     }
+    ]
+   },
+   "flows": [
+    {
+     "name": "Create URL",
+     "steps": [
+      "Client submits a URL.",
+      "Application validates the URL.",
+      "Application generates or allocates a short code.",
+      "Application writes the mapping to the durable database.",
+      "Application returns the short URL."
+     ]
+    },
+    {
+     "name": "Redirect",
+     "steps": [
+      "Client requests a short code.",
+      "Load balancer routes the request to an application instance.",
+      "Application checks the cache.",
+      "On a cache hit, the application obtains the destination from the cache.",
+      "On a cache miss, the application reads the database and may populate the cache.",
+      "Application returns the redirect response."
+     ]
+    }
+   ],
+   "strengths": [
+    "Reduces repeated database reads.",
+    "Supports horizontal application scaling.",
+    "Provides a useful architecture for studying read-heavy workloads."
+   ],
+   "limitations": [
+    "Cache misses still reach the database.",
+    "Cache availability and eviction affect performance.",
+    "Cache stampedes and hot keys may require additional handling.",
+    "A cache does not replace durable storage."
+   ],
+   "tradeoffs": [
+    "Lower expected database load versus added operational complexity.",
+    "Cache freshness versus expiration and invalidation complexity."
+   ]
+  },
+  {
+   "id": "REF-03",
+   "name": "Key-value storage architecture",
+   "difficulty": "intermediate",
+   "architecture": {
+    "schemaVersion": 1,
+    "questionId": "hld-url-shortener-001",
+    "questionVersion": 1,
+    "nodes": [
+     {
+      "id": "client",
+      "componentId": "COMP-CLIENT",
+      "componentType": "client",
+      "name": "Client",
+      "position": {
+       "x": 0,
+       "y": 160
+      },
+      "config": {}
+     },
+     {
+      "id": "lb",
+      "componentId": "COMP-LOAD-BALANCER",
+      "componentType": "load-balancer",
+      "name": "Load Balancer",
+      "position": {
+       "x": 280,
+       "y": 160
+      },
+      "config": {
+       "averageLatencyMs": 2
+      }
+     },
+     {
+      "id": "app",
+      "componentId": "COMP-APP-SERVER",
+      "componentType": "application-server",
+      "name": "Application Server",
+      "position": {
+       "x": 560,
+       "y": 160
+      },
+      "config": {
+       "instances": 4,
+       "capacityPerInstanceRps": 3000,
+       "averageProcessingLatencyMs": 10,
+       "notFoundBehavior": "return-404"
+      }
+     },
+     {
+      "id": "kv",
+      "componentId": "COMP-NOSQL-DATABASE",
+      "componentType": "nosql-database",
+      "name": "NoSQL Database",
+      "position": {
+       "x": 880,
+       "y": 160
+      },
+      "config": {
+       "readCapacityRps": 10000,
+       "writeCapacityRps": 3000,
+       "averageReadLatencyMs": 10,
+       "averageWriteLatencyMs": 15,
+       "durable": true,
+       "uniqueConstraintSupported": true
+      }
+     },
+     {
+      "id": "idgen",
+      "componentId": "COMP-KEY-GENERATOR",
+      "componentType": "key-generator",
+      "name": "ID / Short-Code Generator",
+      "position": {
+       "x": 560,
+       "y": 360
+      },
+      "config": {
+       "strategy": "base62",
+       "collisionHandling": "retry"
+      }
+     }
+    ],
+    "edges": [
+     {
+      "id": "e0",
+      "source": "client",
+      "target": "lb",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+     },
+     {
+      "id": "e1",
+      "source": "lb",
+      "target": "app",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+     },
+     {
+      "id": "e2",
+      "source": "app",
+      "target": "kv",
+      "connectionTypeId": "EDGE-DB-READ"
+     },
+     {
+      "id": "e3",
+      "source": "app",
+      "target": "kv",
+      "connectionTypeId": "EDGE-DB-WRITE"
+     },
+     {
+      "id": "e4",
+      "source": "app",
+      "target": "idgen",
+      "connectionTypeId": "EDGE-ID-ALLOC"
+     }
+    ]
+   },
+   "flows": [
+    {
+     "name": "Redirect",
+     "steps": [
+      "Client requests a short code.",
+      "Application performs a key-based lookup.",
+      "Application returns the redirect response."
+     ]
+    }
+   ],
+   "strengths": [
+    "Aligns storage access with lookup by short code.",
+    "Can support horizontal scaling when the selected database provides appropriate capabilities."
+   ],
+   "limitations": [
+    "Actual capacity depends on the database and its configuration.",
+    "Partitioning, replication, and consistency guarantees must be evaluated.",
+    "The design still needs a safe uniqueness strategy."
+   ],
+   "tradeoffs": [
+    "Key-based access efficiency versus data-model and operational constraints."
+   ]
+  }
+ ],
+ "revisionRecommendations": [
+  {
+   "requirementIds": [
+    "FR-02"
+   ],
+   "text": "Review database indexes and key-based lookups."
+  },
+  {
+   "requirementIds": [
+    "FR-05",
+    "NFR-02"
+   ],
+   "text": "Review cache hit ratio, cache misses, and cache failure behavior."
+  },
+  {
+   "requirementIds": [
+    "FR-03",
+    "NFR-03"
+   ],
+   "text": "Review unique constraints, identifier generation, and concurrent writes."
+  }
+ ]
+}

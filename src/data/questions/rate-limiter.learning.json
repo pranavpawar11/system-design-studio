@@ -1,0 +1,223 @@
+{
+ "followUpQuestions": [
+  {
+   "id": "RLF-01",
+   "difficulty": "beginner",
+   "category": "consistency",
+   "prompt": "Why can\u2019t each limiter server just keep its own counts in memory?",
+   "expectedAnswerPoints": [
+    "Each server sees only part of a client\u2019s traffic.",
+    "A client could exceed the limit by spreading requests across servers.",
+    "A shared store, or routing a client to one server, keeps the count consistent."
+   ]
+  },
+  {
+   "id": "RLF-02",
+   "difficulty": "intermediate",
+   "category": "algorithms",
+   "prompt": "Compare a token bucket with a fixed window counter.",
+   "expectedAnswerPoints": [
+    "A fixed window is simple but allows a burst at the boundary between two windows.",
+    "A token bucket permits controlled bursts while enforcing an average rate.",
+    "Sliding windows are more precise but cost more memory or computation."
+   ]
+  },
+  {
+   "id": "RLF-03",
+   "difficulty": "advanced",
+   "category": "reliability",
+   "prompt": "Should the limiter fail open or fail closed when its counter store is down?",
+   "expectedAnswerPoints": [
+    "Fail-open keeps the service available but removes protection.",
+    "Fail-closed protects the service but blocks legitimate users.",
+    "The right choice depends on what the limiter protects and the cost of abuse versus downtime."
+   ]
+  }
+ ],
+ "referenceSolutions": [
+  {
+   "id": "RLREF-01",
+   "name": "Shared-counter limiter in front of the service",
+   "difficulty": "intermediate",
+   "architecture": {
+    "schemaVersion": 1,
+    "questionId": "hld-rate-limiter-001",
+    "questionVersion": 1,
+    "nodes": [
+     {
+      "id": "client",
+      "componentId": "COMP-CLIENT",
+      "componentType": "client",
+      "name": "Client",
+      "position": {
+       "x": 0,
+       "y": 160
+      },
+      "config": {}
+     },
+     {
+      "id": "lb",
+      "componentId": "COMP-LOAD-BALANCER",
+      "componentType": "load-balancer",
+      "name": "Load Balancer",
+      "position": {
+       "x": 280,
+       "y": 160
+      },
+      "config": {
+       "averageLatencyMs": 2
+      }
+     },
+     {
+      "id": "limiter",
+      "componentId": "COMP-RATE-LIMITER",
+      "componentType": "rate-limiter",
+      "name": "Rate Limiter",
+      "position": {
+       "x": 560,
+       "y": 160
+      },
+      "config": {
+       "instances": 2,
+       "capacityPerInstanceRps": 6000,
+       "averageLatencyMs": 1,
+       "algorithm": "token-bucket",
+       "rejectBehavior": "return-429",
+       "onStoreUnavailable": "fail-open"
+      }
+     },
+     {
+      "id": "app",
+      "componentId": "COMP-APP-SERVER",
+      "componentType": "application-server",
+      "name": "Application Server",
+      "position": {
+       "x": 860,
+       "y": 160
+      },
+      "config": {
+       "instances": 4,
+       "capacityPerInstanceRps": 3000,
+       "averageProcessingLatencyMs": 10
+      }
+     },
+     {
+      "id": "store",
+      "componentId": "COMP-COUNTER-STORE",
+      "componentType": "cache",
+      "name": "Counter Store (Redis-style)",
+      "position": {
+       "x": 560,
+       "y": 360
+      },
+      "config": {
+       "opsCapacityRps": 50000,
+       "averageLatencyMs": 1,
+       "available": true
+      }
+     },
+     {
+      "id": "rules",
+      "componentId": "COMP-RULES-DB",
+      "componentType": "sql-database",
+      "name": "Rules Database",
+      "position": {
+       "x": 860,
+       "y": 360
+      },
+      "config": {
+       "readCapacityRps": 5000,
+       "averageReadLatencyMs": 15,
+       "durable": true
+      }
+     }
+    ],
+    "edges": [
+     {
+      "id": "e0",
+      "source": "client",
+      "target": "lb",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+     },
+     {
+      "id": "e1",
+      "source": "lb",
+      "target": "limiter",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+     },
+     {
+      "id": "e2",
+      "source": "limiter",
+      "target": "app",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+     },
+     {
+      "id": "e3",
+      "source": "limiter",
+      "target": "store",
+      "connectionTypeId": "EDGE-COUNTER"
+     },
+     {
+      "id": "e4",
+      "source": "limiter",
+      "target": "rules",
+      "connectionTypeId": "EDGE-DB-READ"
+     }
+    ]
+   },
+   "flows": [
+    {
+     "name": "Check a request",
+     "steps": [
+      "Client sends a request through the load balancer.",
+      "The limiter looks up the client\u2019s limit in the rules database.",
+      "The limiter atomically increments the client\u2019s count in the shared counter store.",
+      "Under the limit: the request is forwarded to the application server.",
+      "Over the limit: the limiter returns 429 Too Many Requests."
+     ]
+    }
+   ],
+   "strengths": [
+    "Every request is checked before reaching the service.",
+    "Counts are shared, so adding limiter servers stays accurate.",
+    "Limits can change without redeploying."
+   ],
+   "limitations": [
+    "The counter store is a dependency whose failure must be handled.",
+    "Each check adds a network round trip.",
+    "Very hot clients can concentrate load on one counter."
+   ],
+   "tradeoffs": [
+    "Accuracy (shared state) versus extra latency per request.",
+    "Fail-open availability versus fail-closed protection."
+   ]
+  }
+ ],
+ "revisionRecommendations": [
+  {
+   "requirementIds": [
+    "RL-FR-01"
+   ],
+   "text": "Review where cross-cutting checks belong in a request path (edge, gateway or service)."
+  },
+  {
+   "requirementIds": [
+    "RL-FR-02"
+   ],
+   "text": "Review shared state, atomic counters and consistency across servers."
+  },
+  {
+   "requirementIds": [
+    "RL-NFR-01",
+    "RL-NFR-02"
+   ],
+   "text": "Review capacity planning and how per-request checks add latency."
+  },
+  {
+   "requirementIds": [
+    "RL-NFR-03"
+   ],
+   "text": "Review failure modes: fail-open versus fail-closed trade-offs."
+  }
+ ]
+}

@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "questionId": "hld-polls-001",
+  "questionVersion": 1,
+  "nodes": [
+    {
+      "id": "client",
+      "componentId": "COMP-CLIENT",
+      "componentType": "client",
+      "name": "Web / Mobile Client",
+      "position": {
+        "x": 0,
+        "y": 300
+      },
+      "config": {}
+    },
+    {
+      "id": "lb",
+      "componentId": "COMP-LOAD-BALANCER",
+      "componentType": "load-balancer",
+      "name": "Load Balancer",
+      "position": {
+        "x": 230,
+        "y": 300
+      },
+      "config": {
+        "averageLatencyMs": 2
+      }
+    },
+    {
+      "id": "api",
+      "componentId": "COMP-APP-SERVER",
+      "componentType": "application-server",
+      "name": "Poll API",
+      "position": {
+        "x": 480,
+        "y": 300
+      },
+      "config": {
+        "instances": 4,
+        "capacityPerInstanceRps": 2000,
+        "publishOnlyAfterVoteCommit": true,
+        "resultReadSource": "counter-store"
+      }
+    },
+    {
+      "id": "db",
+      "componentId": "COMP-SQL-DATABASE",
+      "componentType": "sql-database",
+      "name": "Durable Vote Database",
+      "position": {
+        "x": 780,
+        "y": 500
+      },
+      "config": {
+        "writeCapacityRps": 6000,
+        "readCapacityRps": 5000,
+        "durable": true,
+        "uniqueConstraintSupported": true,
+        "uniqueKey": "poll_id,user_id"
+      }
+    },
+    {
+      "id": "queue",
+      "componentId": "COMP-QUEUE",
+      "componentType": "message-queue",
+      "name": "Vote Event Queue",
+      "position": {
+        "x": 780,
+        "y": 100
+      },
+      "config": {
+        "arrivalRatePerSecond": 5000,
+        "processingCapacityPerSecond": 6000,
+        "deliverySemantics": "at-least-once",
+        "retentionHours": 24
+      }
+    },
+    {
+      "id": "worker",
+      "componentId": "COMP-WORKER",
+      "componentType": "worker",
+      "name": "Vote Aggregation Workers",
+      "position": {
+        "x": 1080,
+        "y": 100
+      },
+      "config": {
+        "instances": 10,
+        "capacityPerInstancePerSecond": 600,
+        "idempotent": true,
+        "deduplicationStrategy": "event-id-marker-in-counter-store"
+      }
+    },
+    {
+      "id": "counter",
+      "componentId": "COMP-COUNTER-STORE",
+      "componentType": "cache",
+      "name": "Poll Option Counters",
+      "position": {
+        "x": 1380,
+        "y": 300
+      },
+      "config": {
+        "opsCapacityRps": 20000,
+        "averageLatencyMs": 2,
+        "available": true,
+        "atomicIncrement": true,
+        "deduplicationSupported": true,
+        "durable": false
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "client",
+      "target": "lb",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+    },
+    {
+      "id": "e2",
+      "source": "lb",
+      "target": "api",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+    },
+    {
+      "id": "e3",
+      "source": "api",
+      "target": "db",
+      "connectionTypeId": "EDGE-DB-WRITE"
+    },
+    {
+      "id": "e4",
+      "source": "api",
+      "target": "queue",
+      "connectionTypeId": "EDGE-ASYNC-PUBLISH"
+    },
+    {
+      "id": "e5",
+      "source": "queue",
+      "target": "worker",
+      "connectionTypeId": "EDGE-ASYNC-CONSUME"
+    },
+    {
+      "id": "e6",
+      "source": "worker",
+      "target": "counter",
+      "connectionTypeId": "EDGE-CACHE-WRITE"
+    },
+    {
+      "id": "e7",
+      "source": "api",
+      "target": "counter",
+      "connectionTypeId": "EDGE-CACHE-READ"
+    },
+    {
+      "id": "e8",
+      "source": "worker",
+      "target": "db",
+      "connectionTypeId": "EDGE-DB-READ"
+    }
+  ]
+}

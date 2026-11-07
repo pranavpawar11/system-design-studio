@@ -1,0 +1,922 @@
+{
+  "schemaVersion": "1.0.0",
+  "question": {
+    "id": "hld-polls-001",
+    "version": 1,
+    "slug": "voting-poll",
+    "title": "Design a Voting / Poll System",
+    "subtitle": "Accept votes reliably and serve fast poll results under heavy write traffic.",
+    "category": "data-processing-and-aggregation",
+    "difficulty": "easy",
+    "status": "draft",
+    "estimatedMinutes": 45,
+    "tags": [
+      "system-design",
+      "polls",
+      "voting",
+      "idempotency",
+      "queues",
+      "counters"
+    ],
+    "prerequisites": [
+      "http-basics",
+      "database-basics",
+      "caching-basics",
+      "message-queues"
+    ],
+    "learningObjectives": [
+      "Enforce one vote per user per poll at the data layer.",
+      "Decouple vote acceptance from result aggregation.",
+      "Design idempotent consumers for at-least-once message delivery.",
+      "Separate durable vote records from derived counters.",
+      "Estimate write, queue and result-read capacity."
+    ],
+    "relatedQuestions": [
+      "hld-page-view-counter-001",
+      "hld-leaderboard-001"
+    ]
+  },
+  "presentation": {
+    "problemStatement": {
+      "short": "Design an online poll service that accepts votes and displays live results.",
+      "full": "Design a polling service used by large online events. A poll can have millions of eligible voters, and each user may vote only once per poll. Vote submissions arrive in bursts, while many viewers repeatedly request current results. The system should acknowledge valid votes reliably, keep result counts fresh, and avoid counting a vote more than once if an event is delivered or processed repeatedly."
+    },
+    "scope": {
+      "inScope": [
+        "Create and retrieve poll definitions (basic metadata only).",
+        "Accept one vote per user per poll.",
+        "Aggregate accepted votes into per-option totals.",
+        "Serve current poll results.",
+        "Recover or reconcile derived counts from durable vote records."
+      ],
+      "outOfScope": [
+        "Authentication provider implementation and identity proofing.",
+        "Fraud detection, bot detection and voter eligibility workflows.",
+        "Complex ranked-choice voting and election certification.",
+        "Cross-region active-active consensus."
+      ],
+      "optionalExtensions": [
+        "Allow users to change their vote with a clearly defined update policy.",
+        "Support poll close times and immutable final results.",
+        "Shard very hot poll counters and merge partial totals."
+      ]
+    }
+  },
+  "requirements": {
+    "functional": [
+      {
+        "id": "FR-01",
+        "title": "Accept at most one vote per user per poll",
+        "description": "Validate a vote and persist it durably while enforcing uniqueness for each (poll_id, user_id).",
+        "priority": "must",
+        "acceptanceCriteria": [
+          "Client vote requests reach the application API.",
+          "The API persists each accepted vote in durable storage.",
+          "The database enforces a unique constraint on poll_id and user_id."
+        ],
+        "evaluationRuleIds": [
+          "RULE-FR-01"
+        ]
+      },
+      {
+        "id": "FR-02",
+        "title": "Aggregate votes asynchronously",
+        "description": "After a vote is committed, publish an event and update the relevant option counter asynchronously.",
+        "priority": "must",
+        "acceptanceCriteria": [
+          "The API publishes an event after the durable vote commit.",
+          "A worker consumes queued vote events.",
+          "The worker updates the counter store."
+        ],
+        "evaluationRuleIds": [
+          "RULE-FR-02"
+        ]
+      },
+      {
+        "id": "FR-03",
+        "title": "Serve poll results efficiently",
+        "description": "Return poll totals from a counter store instead of scanning all individual vote records for every result request.",
+        "priority": "must",
+        "acceptanceCriteria": [
+          "Client can reach the API.",
+          "API reads poll result counters from the counter store."
+        ],
+        "evaluationRuleIds": [
+          "RULE-FR-03"
+        ]
+      },
+      {
+        "id": "FR-04",
+        "title": "Handle duplicate delivery and recover counts",
+        "description": "Ensure at-least-once event delivery does not count a vote more than once, and provide a reconciliation path from durable vote records.",
+        "priority": "must",
+        "acceptanceCriteria": [
+          "Worker declares idempotent processing and an event deduplication strategy.",
+          "Counter store supports deduplication with atomic counter updates.",
+          "Durable vote records can be read for reconciliation."
+        ],
+        "evaluationRuleIds": [
+          "RULE-FR-04"
+        ]
+      }
+    ],
+    "nonFunctional": [
+      {
+        "id": "NFR-01",
+        "title": "Handle peak vote submission traffic",
+        "category": "scalability",
+        "priority": "must",
+        "target": {
+          "votesPerSecond": 5000
+        },
+        "measurementMethod": "database-and-queue-capacity-check",
+        "evaluationRuleIds": [
+          "RULE-NFR-01"
+        ]
+      },
+      {
+        "id": "NFR-02",
+        "title": "Serve peak poll result traffic",
+        "category": "scalability",
+        "priority": "must",
+        "target": {
+          "resultQueriesPerSecond": 10000
+        },
+        "measurementMethod": "counter-store-capacity-check",
+        "evaluationRuleIds": [
+          "RULE-NFR-02"
+        ]
+      },
+      {
+        "id": "NFR-03",
+        "title": "Keep vote counts correct under duplicate event delivery",
+        "category": "consistency",
+        "priority": "must",
+        "target": {
+          "deliverySemantics": "at-least-once",
+          "duplicateCountEffect": 0
+        },
+        "measurementMethod": "idempotency-capability-check",
+        "evaluationRuleIds": [
+          "RULE-NFR-03"
+        ]
+      }
+    ]
+  },
+  "assumptions": [
+    {
+      "id": "ASM-01",
+      "description": "A large active poll may receive up to 10 million votes over its lifetime.",
+      "defaultValue": 10000000,
+      "configurable": false,
+      "affects": [
+        "voteStorage",
+        "counterCardinality"
+      ]
+    },
+    {
+      "id": "ASM-02",
+      "description": "Peak accepted vote submissions reach 5,000 per second during an event.",
+      "defaultValue": 5000,
+      "configurable": false,
+      "affects": [
+        "databaseWriteCapacity",
+        "queueIngestion"
+      ]
+    },
+    {
+      "id": "ASM-03",
+      "description": "Peak result reads reach 10,000 requests per second.",
+      "defaultValue": 10000,
+      "configurable": false,
+      "affects": [
+        "counterReadCapacity"
+      ]
+    },
+    {
+      "id": "ASM-04",
+      "description": "A vote is immutable after acceptance in the baseline design; changing a vote is an optional extension.",
+      "defaultValue": "one-immutable-vote-per-user-per-poll",
+      "configurable": false,
+      "affects": [
+        "voteSemantics"
+      ]
+    },
+    {
+      "id": "ASM-05",
+      "description": "The queue provides at-least-once delivery, so a vote event may be delivered more than once.",
+      "defaultValue": "at-least-once",
+      "configurable": false,
+      "affects": [
+        "idempotency"
+      ]
+    }
+  ],
+  "capacityEstimation": {
+    "defaultInputs": [
+      {
+        "id": "CAP-IN-01",
+        "name": "Lifetime votes for one large poll",
+        "value": 10000000,
+        "unit": "votes",
+        "configurable": false
+      },
+      {
+        "id": "CAP-IN-02",
+        "name": "Peak vote submissions",
+        "value": 5000,
+        "unit": "votes/second",
+        "configurable": false
+      },
+      {
+        "id": "CAP-IN-03",
+        "name": "Peak result queries",
+        "value": 10000,
+        "unit": "queries/second",
+        "configurable": false
+      },
+      {
+        "id": "CAP-IN-04",
+        "name": "Average vote record size",
+        "value": 200,
+        "unit": "bytes",
+        "configurable": false
+      }
+    ],
+    "calculations": [
+      {
+        "id": "CAP-CALC-01",
+        "name": "Minimum raw vote record storage",
+        "formula": "lifetimeVotes * averageVoteRecordBytes",
+        "outputUnit": "bytes",
+        "expectedValue": 2000000000
+      },
+      {
+        "id": "CAP-CALC-02",
+        "name": "Peak combined API request rate",
+        "formula": "peakVoteSubmissionsPerSecond + peakResultQueriesPerSecond",
+        "outputUnit": "requests/second",
+        "expectedValue": 15000
+      }
+    ],
+    "formulaAssumptions": [
+      "Raw record storage excludes indexes, replication, logs and metadata overhead.",
+      "A vote submission is one API request; result reads are measured separately.",
+      "Capacity targets are modeled requirements, not measured benchmarks."
+    ]
+  },
+  "apiDesign": [
+    {
+      "id": "API-01",
+      "name": "Submit a vote",
+      "method": "POST",
+      "path": "/v1/polls/{pollId}/votes",
+      "purpose": "Submit one option selection for the authenticated user.",
+      "relatedRequirements": [
+        "FR-01",
+        "FR-02"
+      ]
+    },
+    {
+      "id": "API-02",
+      "name": "Get poll results",
+      "method": "GET",
+      "path": "/v1/polls/{pollId}/results",
+      "purpose": "Return per-option totals and the total number of accepted votes.",
+      "relatedRequirements": [
+        "FR-03"
+      ]
+    },
+    {
+      "id": "API-03",
+      "name": "Get poll definition",
+      "method": "GET",
+      "path": "/v1/polls/{pollId}",
+      "purpose": "Return poll metadata and available options.",
+      "relatedRequirements": [
+        "FR-01",
+        "FR-03"
+      ]
+    }
+  ],
+  "dataModel": [
+    {
+      "id": "DM-01",
+      "name": "Vote",
+      "purpose": "Durable, immutable vote record.",
+      "fields": [
+        {
+          "name": "poll_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "user_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "option_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "event_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "required": true
+        }
+      ],
+      "constraints": [
+        "UNIQUE(poll_id,user_id)",
+        "UNIQUE(event_id)"
+      ]
+    },
+    {
+      "id": "DM-02",
+      "name": "PollOptionCounter",
+      "purpose": "Derived count for one option in one poll.",
+      "fields": [
+        {
+          "name": "poll_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "option_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "vote_count",
+          "type": "integer",
+          "required": true
+        }
+      ],
+      "constraints": [
+        "Counter is derived and can be reconciled from Vote records."
+      ]
+    }
+  ],
+  "componentCatalogue": {
+    "allowedComponentIds": [
+      "COMP-CLIENT",
+      "COMP-LOAD-BALANCER",
+      "COMP-APP-SERVER",
+      "COMP-SQL-DATABASE",
+      "COMP-QUEUE",
+      "COMP-WORKER",
+      "COMP-COUNTER-STORE"
+    ],
+    "components": [
+      {
+        "id": "COMP-CLIENT",
+        "type": "client",
+        "displayName": "Client",
+        "responsibilities": [
+          "Send URL creation requests",
+          "Request short URLs",
+          "Follow redirects"
+        ],
+        "supportedOperations": [
+          "http-request",
+          "http-response"
+        ],
+        "defaultConfig": {},
+        "category": "Clients"
+      },
+      {
+        "id": "COMP-LOAD-BALANCER",
+        "type": "load-balancer",
+        "displayName": "Load Balancer",
+        "responsibilities": [
+          "Distribute requests among eligible application instances"
+        ],
+        "supportedOperations": [
+          "request-distribution",
+          "health-based-routing"
+        ],
+        "defaultConfig": {
+          "averageLatencyMs": 2
+        },
+        "category": "Networking"
+      },
+      {
+        "id": "COMP-APP-SERVER",
+        "type": "application-server",
+        "displayName": "Application Server",
+        "responsibilities": [
+          "Validate poll and vote requests",
+          "Persist accepted votes and enforce one-vote-per-user rules",
+          "Publish accepted vote events and serve poll result requests"
+        ],
+        "supportedOperations": [
+          "http-request",
+          "durable-write",
+          "durable-read",
+          "publish-message",
+          "cache-read"
+        ],
+        "defaultConfig": {
+          "instances": 4,
+          "capacityPerInstanceRps": 2000,
+          "averageProcessingLatencyMs": 12,
+          "publishOnlyAfterVoteCommit": true,
+          "resultReadSource": "counter-store"
+        },
+        "configSchema": {
+          "instances": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "capacityPerInstanceRps": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "averageProcessingLatencyMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "notFoundBehavior": {
+            "type": "string",
+            "enum": [
+              "undeclared",
+              "return-404"
+            ]
+          }
+        },
+        "category": "Compute"
+      },
+      {
+        "id": "COMP-SQL-DATABASE",
+        "type": "sql-database",
+        "displayName": "Relational Database",
+        "responsibilities": [
+          "Persist poll definitions and individual vote records",
+          "Enforce a unique constraint on (poll_id,user_id)",
+          "Support durable vote lookup for reconciliation"
+        ],
+        "supportedOperations": [
+          "durable-read",
+          "durable-write",
+          "unique-constraint",
+          "indexed-lookup"
+        ],
+        "defaultConfig": {
+          "readCapacityRps": 5000,
+          "writeCapacityRps": 6000,
+          "averageReadLatencyMs": 20,
+          "averageWriteLatencyMs": 30,
+          "durable": true,
+          "uniqueConstraintSupported": true,
+          "uniqueKey": "poll_id,user_id"
+        },
+        "category": "Storage"
+      },
+      {
+        "id": "COMP-QUEUE",
+        "type": "message-queue",
+        "displayName": "Message Queue",
+        "responsibilities": [
+          "Buffer accepted vote events",
+          "Decouple vote submission from asynchronous counter aggregation"
+        ],
+        "supportedOperations": [
+          "publish-message",
+          "consume-message",
+          "buffer-work"
+        ],
+        "defaultConfig": {
+          "arrivalRatePerSecond": 5000,
+          "processingCapacityPerSecond": 6000,
+          "deliverySemantics": "at-least-once",
+          "retentionHours": 24
+        },
+        "category": "Messaging"
+      },
+      {
+        "id": "COMP-WORKER",
+        "type": "worker",
+        "displayName": "Background Worker",
+        "responsibilities": [
+          "Consume accepted vote events",
+          "Deduplicate event processing before applying counter updates",
+          "Support reconciliation from durable vote records"
+        ],
+        "supportedOperations": [
+          "consume-message",
+          "process-job",
+          "cache-write",
+          "durable-read"
+        ],
+        "defaultConfig": {
+          "instances": 10,
+          "capacityPerInstancePerSecond": 600,
+          "idempotent": true,
+          "deduplicationStrategy": "event-id-marker-in-counter-store"
+        },
+        "category": "Compute"
+      },
+      {
+        "id": "COMP-COUNTER-STORE",
+        "type": "cache",
+        "category": "Caching",
+        "displayName": "Counter Store (Redis-style)",
+        "responsibilities": [
+          "Maintain fast per-option vote totals",
+          "Atomically increment counters and deduplicate event IDs",
+          "Serve poll result reads without scanning individual vote records"
+        ],
+        "supportedOperations": [
+          "cache-read",
+          "cache-write",
+          "atomic-increment",
+          "ttl-expiration"
+        ],
+        "defaultConfig": {
+          "opsCapacityRps": 20000,
+          "averageLatencyMs": 2,
+          "available": true,
+          "atomicIncrement": true,
+          "deduplicationSupported": true,
+          "durable": false
+        },
+        "configSchema": {
+          "opsCapacityRps": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "averageLatencyMs": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    ]
+  },
+  "connectionTypes": [
+    {
+      "id": "EDGE-SYNC-HTTP",
+      "name": "Synchronous HTTP",
+      "semantics": "The source sends an HTTP request and expects a response.",
+      "compatibleSourceOperations": [
+        "http-request",
+        "http-routing",
+        "request-distribution"
+      ],
+      "compatibleTargetOperations": [
+        "http-request",
+        "http-routing",
+        "request-distribution"
+      ]
+    },
+    {
+      "id": "EDGE-DB-WRITE",
+      "name": "Database Write",
+      "semantics": "The source persists a new mapping in the target data store.",
+      "compatibleSourceOperations": [
+        "durable-write",
+        "process-job"
+      ],
+      "compatibleTargetOperations": [
+        "durable-write",
+        "append-write"
+      ]
+    },
+    {
+      "id": "EDGE-DB-READ",
+      "name": "Database Read",
+      "semantics": "The source reads persisted data from the target data store.",
+      "compatibleSourceOperations": [
+        "mapping-lookup",
+        "durable-read",
+        "indexed-lookup"
+      ],
+      "compatibleTargetOperations": [
+        "durable-read",
+        "indexed-lookup",
+        "key-lookup"
+      ]
+    },
+    {
+      "id": "EDGE-ASYNC-PUBLISH",
+      "name": "Asynchronous Publish",
+      "semantics": "The source publishes a message to a queue.",
+      "compatibleSourceOperations": [
+        "publish-message"
+      ],
+      "compatibleTargetOperations": [
+        "buffer-work"
+      ]
+    },
+    {
+      "id": "EDGE-ASYNC-CONSUME",
+      "name": "Queue Consume",
+      "semantics": "The target consumes messages buffered by the source queue.",
+      "compatibleSourceOperations": [
+        "buffer-work"
+      ],
+      "compatibleTargetOperations": [
+        "consume-message"
+      ]
+    },
+    {
+      "id": "EDGE-CACHE-WRITE",
+      "name": "Cache Write",
+      "semantics": "The source stores or updates a value in the target cache.",
+      "compatibleSourceOperations": [
+        "cache-write"
+      ],
+      "compatibleTargetOperations": [
+        "cache-write"
+      ]
+    },
+    {
+      "id": "EDGE-CACHE-READ",
+      "name": "Cache Lookup",
+      "semantics": "The source attempts to retrieve a value from the target cache.",
+      "compatibleSourceOperations": [
+        "mapping-lookup",
+        "cache-read"
+      ],
+      "compatibleTargetOperations": [
+        "cache-read"
+      ]
+    }
+  ],
+  "hints": [
+    {
+      "id": "HINT-01",
+      "level": 1,
+      "text": "What must be guaranteed before the service tells a user that their vote was accepted?"
+    },
+    {
+      "id": "HINT-02",
+      "level": 2,
+      "text": "How can the database prevent two concurrent requests from the same user creating two votes?"
+    },
+    {
+      "id": "HINT-03",
+      "level": 3,
+      "text": "Do viewers need to wait for the poll totals to update before the vote request returns?"
+    },
+    {
+      "id": "HINT-04",
+      "level": 4,
+      "text": "Commit the vote first, then publish an event for a background worker to update the result counters."
+    },
+    {
+      "id": "HINT-05",
+      "level": 5,
+      "text": "At-least-once delivery can repeat events. How will the worker atomically deduplicate an event and increment the appropriate counter, and how will counters be reconciled after a failure?"
+    }
+  ],
+  "evaluation": {
+    "version": 1,
+    "rules": [
+      {
+        "id": "RULE-FR-01",
+        "category": "functional",
+        "requirementId": "FR-01",
+        "title": "Votes are durably stored with one-vote uniqueness",
+        "severity": "error",
+        "check": "Reachable API path, durable vote write and database unique constraint.",
+        "passCondition": "Client reaches API; API writes to durable SQL; SQL declares uniqueConstraintSupported and uniqueKey poll_id,user_id."
+      },
+      {
+        "id": "RULE-FR-02",
+        "category": "functional",
+        "requirementId": "FR-02",
+        "title": "Accepted votes are aggregated asynchronously",
+        "severity": "error",
+        "check": "API-to-queue publish, queue-to-worker consume and worker-to-counter update paths.",
+        "passCondition": "API publishes after vote commit; queue buffers work; worker consumes and writes counter updates."
+      },
+      {
+        "id": "RULE-FR-03",
+        "category": "functional",
+        "requirementId": "FR-03",
+        "title": "Poll results are read from the counter store",
+        "severity": "error",
+        "check": "API-to-counter-store cache read edge.",
+        "passCondition": "Client reaches API and API reads result counters from the counter store."
+      },
+      {
+        "id": "RULE-FR-04",
+        "category": "functional",
+        "requirementId": "FR-04",
+        "title": "Duplicate events are idempotent and counts are recoverable",
+        "severity": "error",
+        "check": "Worker idempotency declaration, counter deduplication support and durable vote read path.",
+        "passCondition": "Worker declares idempotent processing and event-id-marker strategy; counter store supports deduplication and atomic increments; API or worker can read durable votes for reconciliation."
+      },
+      {
+        "id": "RULE-NFR-01",
+        "category": "non-functional",
+        "requirementId": "NFR-01",
+        "title": "Vote ingestion capacity meets 5,000 votes/sec",
+        "severity": "error",
+        "check": "SQL write, queue arrival and worker processing capacities.",
+        "passCondition": "SQL write capacity, queue arrival capacity and aggregate worker processing capacity are each at least 5,000/sec."
+      },
+      {
+        "id": "RULE-NFR-02",
+        "category": "non-functional",
+        "requirementId": "NFR-02",
+        "title": "Counter store handles 10,000 result operations/sec",
+        "severity": "error",
+        "check": "Counter store operations capacity.",
+        "passCondition": "Counter store opsCapacityRps is at least 10,000."
+      },
+      {
+        "id": "RULE-NFR-03",
+        "category": "non-functional",
+        "requirementId": "NFR-03",
+        "title": "Counter updates are idempotent under duplicate delivery",
+        "severity": "error",
+        "check": "Worker idempotency and counter store deduplication + atomic increment declarations.",
+        "passCondition": "Worker idempotent is true and counter store deduplicationSupported and atomicIncrement are true."
+      }
+    ],
+    "scoring": {
+      "pass": "All required graph paths and modeled component capabilities meet the rule.",
+      "fail": "A required path is missing or a declared capability/capacity is insufficient.",
+      "notEvaluated": "A required configuration value is absent and cannot be verified."
+    }
+  },
+  "metrics": [
+    {
+      "id": "MET-01",
+      "name": "Vote acceptance throughput",
+      "formula": "accepted_votes / time_window_seconds",
+      "unit": "votes/second",
+      "assumptions": [
+        "Count only durable accepted votes, not rejected duplicates."
+      ]
+    },
+    {
+      "id": "MET-02",
+      "name": "Vote-to-result freshness lag",
+      "formula": "counter_update_timestamp - vote_commit_timestamp",
+      "unit": "milliseconds",
+      "assumptions": [
+        "Measure end-to-end lag for the same event ID."
+      ]
+    },
+    {
+      "id": "MET-03",
+      "name": "Duplicate event suppression rate",
+      "formula": "duplicate_events_suppressed / total_events_consumed * 100",
+      "unit": "percent",
+      "assumptions": [
+        "Use stable event IDs and count duplicate deliveries separately."
+      ]
+    },
+    {
+      "id": "MET-04",
+      "name": "Poll result query latency",
+      "formula": "p95_duration_of_result_query",
+      "unit": "milliseconds",
+      "assumptions": [
+        "Segment by poll popularity and option count."
+      ]
+    },
+    {
+      "id": "MET-05",
+      "name": "Counter reconciliation difference",
+      "formula": "absolute(counter_total - durable_vote_total)",
+      "unit": "votes",
+      "assumptions": [
+        "Compare after accounting for in-flight queue events."
+      ]
+    }
+  ],
+  "failureScenarios": [
+    {
+      "id": "FAIL-01",
+      "name": "Same user submits two votes concurrently",
+      "difficulty": "easy",
+      "expectedBehavior": [
+        "Database unique constraint allows only one durable vote for the (poll_id,user_id) pair.",
+        "API returns a deterministic duplicate-vote response for the losing request."
+      ],
+      "passCriteria": [
+        "No user receives two accepted vote records for the same poll."
+      ]
+    },
+    {
+      "id": "FAIL-02",
+      "name": "Queue redelivers a vote event",
+      "difficulty": "easy",
+      "expectedBehavior": [
+        "Worker uses a stable event ID and deduplication state.",
+        "Counter increment and deduplication are applied atomically by the counter-store operation."
+      ],
+      "passCriteria": [
+        "A duplicate delivery does not increase the poll total again."
+      ]
+    },
+    {
+      "id": "FAIL-03",
+      "name": "Counter store is unavailable",
+      "difficulty": "medium",
+      "expectedBehavior": [
+        "Vote acceptance remains backed by durable vote records and queued events.",
+        "Workers retry safely; result reads may be stale or temporarily unavailable.",
+        "Counters are reconciled or rebuilt from durable votes after recovery."
+      ],
+      "passCriteria": [
+        "Accepted votes are not lost and replay does not double count."
+      ]
+    },
+    {
+      "id": "FAIL-04",
+      "name": "One poll becomes extremely popular",
+      "difficulty": "medium",
+      "expectedBehavior": [
+        "Identify hot-key contention on a single poll's option counters.",
+        "Consider sharded counters and merging partial totals for result reads."
+      ],
+      "passCriteria": [
+        "The design identifies counter contention and proposes a scale-out strategy."
+      ]
+    }
+  ],
+  "evaluatorTestCases": [
+    {
+      "id": "TEST-01",
+      "description": "Solved reference architecture satisfies all requirements.",
+      "expectedResults": {
+        "FR-01": "pass",
+        "FR-02": "pass",
+        "FR-03": "pass",
+        "FR-04": "pass",
+        "NFR-01": "pass",
+        "NFR-02": "pass",
+        "NFR-03": "pass"
+      }
+    },
+    {
+      "id": "TEST-02",
+      "description": "Missing unique constraint fails FR-01.",
+      "expectedResults": {
+        "FR-01": "fail"
+      }
+    },
+    {
+      "id": "TEST-03",
+      "description": "Missing async publish or worker counter path fails FR-02.",
+      "expectedResults": {
+        "FR-02": "fail"
+      }
+    },
+    {
+      "id": "TEST-04",
+      "description": "Missing counter-store result read fails FR-03.",
+      "expectedResults": {
+        "FR-03": "fail"
+      }
+    },
+    {
+      "id": "TEST-05",
+      "description": "Worker without idempotency or counter dedupe fails FR-04.",
+      "expectedResults": {
+        "FR-04": "fail"
+      }
+    },
+    {
+      "id": "TEST-06",
+      "description": "Insufficient database or worker capacity fails NFR-01.",
+      "expectedResults": {
+        "NFR-01": "fail"
+      }
+    },
+    {
+      "id": "TEST-07",
+      "description": "Counter store below 10,000 ops/sec fails NFR-02.",
+      "expectedResults": {
+        "NFR-02": "fail"
+      }
+    },
+    {
+      "id": "TEST-08",
+      "description": "Atomic increment or deduplication disabled fails NFR-03.",
+      "expectedResults": {
+        "NFR-03": "fail"
+      }
+    }
+  ],
+  "progression": {
+    "nextQuestion": "hld-rate-limiter-001",
+    "unlockCriteria": [
+      "Enforce unique vote records at the database level.",
+      "Separate durable vote acceptance from asynchronous aggregation.",
+      "Explain at-least-once delivery and idempotent counter updates.",
+      "Identify hot-poll counter contention and a sharding strategy."
+    ]
+  }
+}

@@ -1,0 +1,270 @@
+{
+ "schemaVersion": 1,
+ "questionId": "hld-url-shortener-001",
+ "questionVersion": 1,
+ "nodes": [
+  {
+   "id": "client",
+   "componentId": "COMP-CLIENT",
+   "componentType": "client",
+   "name": "Client",
+   "position": {
+    "x": 0,
+    "y": 200
+   },
+   "config": {}
+  },
+  {
+   "id": "waf",
+   "componentId": "COMP-WAF",
+   "componentType": "waf",
+   "name": "Web Application Firewall",
+   "position": {
+    "x": 280,
+    "y": 200
+   },
+   "config": {
+    "averageLatencyMs": 2
+   }
+  },
+  {
+   "id": "lb",
+   "componentId": "COMP-LOAD-BALANCER",
+   "componentType": "load-balancer",
+   "name": "Load Balancer",
+   "position": {
+    "x": 560,
+    "y": 200
+   },
+   "config": {
+    "averageLatencyMs": 2
+   }
+  },
+  {
+   "id": "app",
+   "componentId": "COMP-APP-SERVER",
+   "componentType": "application-server",
+   "name": "Application Server",
+   "position": {
+    "x": 840,
+    "y": 200
+   },
+   "config": {
+    "instances": 4,
+    "capacityPerInstanceRps": 3000,
+    "averageProcessingLatencyMs": 10,
+    "notFoundBehavior": "return-404"
+   }
+  },
+  {
+   "id": "cache",
+   "componentId": "COMP-CACHE",
+   "componentType": "cache",
+   "name": "Distributed Cache",
+   "position": {
+    "x": 1160,
+    "y": 0
+   },
+   "config": {
+    "hitRatio": 0.9,
+    "averageLatencyMs": 2,
+    "available": true,
+    "ttlSeconds": 3600,
+    "onUnavailable": "bypass-to-database"
+   }
+  },
+  {
+   "id": "idgen",
+   "componentId": "COMP-KEY-GENERATOR",
+   "componentType": "key-generator",
+   "name": "ID / Short-Code Generator",
+   "position": {
+    "x": 1160,
+    "y": 160
+   },
+   "config": {
+    "strategy": "base62",
+    "collisionHandling": "retry"
+   }
+  },
+  {
+   "id": "replica",
+   "componentId": "COMP-READ-REPLICA",
+   "componentType": "read-replica",
+   "name": "Read Replica",
+   "position": {
+    "x": 1160,
+    "y": 320
+   },
+   "config": {
+    "readCapacityRps": 10000,
+    "averageReadLatencyMs": 20,
+    "durable": true,
+    "replicationLagMs": 100
+   }
+  },
+  {
+   "id": "primary",
+   "componentId": "COMP-SQL-DATABASE",
+   "componentType": "sql-database",
+   "name": "Relational Database",
+   "position": {
+    "x": 1480,
+    "y": 320
+   },
+   "config": {
+    "readCapacityRps": 5000,
+    "writeCapacityRps": 1000,
+    "averageReadLatencyMs": 20,
+    "averageWriteLatencyMs": 30,
+    "durable": true,
+    "uniqueConstraintSupported": true
+   }
+  },
+  {
+   "id": "queue",
+   "componentId": "COMP-QUEUE",
+   "componentType": "message-queue",
+   "name": "Message Queue",
+   "position": {
+    "x": 840,
+    "y": 440
+   },
+   "config": {
+    "arrivalRatePerSecond": 0,
+    "processingCapacityPerSecond": 0
+   }
+  },
+  {
+   "id": "worker",
+   "componentId": "COMP-WORKER",
+   "componentType": "worker",
+   "name": "Background Worker",
+   "position": {
+    "x": 1160,
+    "y": 520
+   },
+   "config": {
+    "instances": 1,
+    "capacityPerInstancePerSecond": 100
+   }
+  },
+  {
+   "id": "analytics",
+   "componentId": "COMP-ANALYTICS-STORE",
+   "componentType": "analytics-store",
+   "name": "Analytics Store",
+   "position": {
+    "x": 1480,
+    "y": 520
+   },
+   "config": {
+    "writeCapacityRps": 5000,
+    "averageWriteLatencyMs": 10,
+    "durable": true
+   }
+  },
+  {
+   "id": "metrics",
+   "componentId": "COMP-METRICS",
+   "componentType": "metrics-collector",
+   "name": "Metrics Collector",
+   "position": {
+    "x": 840,
+    "y": -40
+   },
+   "config": {}
+  },
+  {
+   "id": "logs",
+   "componentId": "COMP-LOGGING",
+   "componentType": "logging",
+   "name": "Logging & Tracing",
+   "position": {
+    "x": 560,
+    "y": -40
+   },
+   "config": {}
+  }
+ ],
+ "edges": [
+  {
+   "id": "edge_0",
+   "source": "client",
+   "target": "waf",
+   "connectionTypeId": "EDGE-SYNC-HTTP"
+  },
+  {
+   "id": "edge_1",
+   "source": "waf",
+   "target": "lb",
+   "connectionTypeId": "EDGE-SYNC-HTTP"
+  },
+  {
+   "id": "edge_2",
+   "source": "lb",
+   "target": "app",
+   "connectionTypeId": "EDGE-SYNC-HTTP"
+  },
+  {
+   "id": "edge_3",
+   "source": "app",
+   "target": "cache",
+   "connectionTypeId": "EDGE-CACHE-READ"
+  },
+  {
+   "id": "edge_4",
+   "source": "app",
+   "target": "replica",
+   "connectionTypeId": "EDGE-DB-READ"
+  },
+  {
+   "id": "edge_5",
+   "source": "app",
+   "target": "primary",
+   "connectionTypeId": "EDGE-DB-WRITE"
+  },
+  {
+   "id": "edge_6",
+   "source": "primary",
+   "target": "replica",
+   "connectionTypeId": "EDGE-REPLICATION"
+  },
+  {
+   "id": "edge_7",
+   "source": "app",
+   "target": "idgen",
+   "connectionTypeId": "EDGE-ID-ALLOC"
+  },
+  {
+   "id": "edge_8",
+   "source": "app",
+   "target": "queue",
+   "connectionTypeId": "EDGE-ASYNC-PUBLISH"
+  },
+  {
+   "id": "edge_9",
+   "source": "queue",
+   "target": "worker",
+   "connectionTypeId": "EDGE-ASYNC-CONSUME"
+  },
+  {
+   "id": "edge_10",
+   "source": "worker",
+   "target": "analytics",
+   "connectionTypeId": "EDGE-DB-WRITE"
+  },
+  {
+   "id": "edge_11",
+   "source": "app",
+   "target": "metrics",
+   "connectionTypeId": "EDGE-TELEMETRY"
+  },
+  {
+   "id": "edge_12",
+   "source": "app",
+   "target": "logs",
+   "connectionTypeId": "EDGE-TELEMETRY"
+  }
+ ]
+}

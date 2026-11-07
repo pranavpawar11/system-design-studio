@@ -1,0 +1,494 @@
+{
+  "followUpQuestions": [
+    {
+      "id": "FU-01",
+      "difficulty": "easy",
+      "category": "data-integrity",
+      "prompt": "Why is checking whether a user has voted in application code not enough to guarantee one vote per poll?",
+      "expectedAnswerPoints": [
+        "Concurrent requests can both pass an application-level check.",
+        "A database unique constraint on (poll_id,user_id) is the final integrity guard.",
+        "The API should handle unique-constraint conflicts as duplicate submissions."
+      ]
+    },
+    {
+      "id": "FU-02",
+      "difficulty": "easy",
+      "category": "asynchronous-processing",
+      "prompt": "Why might the vote API acknowledge a vote before the displayed poll totals have changed?",
+      "expectedAnswerPoints": [
+        "The durable vote record is committed synchronously.",
+        "Counter aggregation can happen asynchronously through a queue and worker.",
+        "This reduces request latency while allowing small, explicit result freshness lag."
+      ]
+    },
+    {
+      "id": "FU-03",
+      "difficulty": "medium",
+      "category": "idempotency",
+      "prompt": "A queue delivers the same vote event three times. How do you prevent the option count from increasing three times?",
+      "expectedAnswerPoints": [
+        "Use a stable event ID as an idempotency key.",
+        "Deduplication and counter increment must be one atomic operation.",
+        "A separate check-then-increment sequence can race or fail between steps."
+      ]
+    },
+    {
+      "id": "FU-04",
+      "difficulty": "medium",
+      "category": "recovery",
+      "prompt": "The counter store is lost but all vote records remain in SQL. How would you restore results?",
+      "expectedAnswerPoints": [
+        "Treat counters as derived state, not the source of truth.",
+        "Rebuild counts by aggregating durable vote records or replaying a retained event log.",
+        "Track rebuild progress and avoid serving incomplete totals as final."
+      ]
+    },
+    {
+      "id": "FU-05",
+      "difficulty": "hard",
+      "category": "hot-keys",
+      "prompt": "A single live poll receives 50,000 votes per second. How would you reduce contention on a single option counter?",
+      "expectedAnswerPoints": [
+        "Shard each option counter across multiple keys or partitions.",
+        "Increment a shard selected by a stable or randomized strategy.",
+        "Merge shard values for result reads, optionally caching the merged result.",
+        "Consider the added read complexity and freshness trade-off."
+      ]
+    }
+  ],
+  "referenceSolutions": [
+    {
+      "id": "REF-01",
+      "name": "Durable vote records with asynchronous counter aggregation",
+      "difficulty": "easy",
+      "architecture": {
+        "schemaVersion": 1,
+        "questionId": "hld-polls-001",
+        "questionVersion": 1,
+        "nodes": [
+          {
+            "id": "client",
+            "componentId": "COMP-CLIENT",
+            "componentType": "client",
+            "name": "Web / Mobile Client",
+            "position": {
+              "x": 0,
+              "y": 300
+            },
+            "config": {}
+          },
+          {
+            "id": "lb",
+            "componentId": "COMP-LOAD-BALANCER",
+            "componentType": "load-balancer",
+            "name": "Load Balancer",
+            "position": {
+              "x": 230,
+              "y": 300
+            },
+            "config": {
+              "averageLatencyMs": 2
+            }
+          },
+          {
+            "id": "api",
+            "componentId": "COMP-APP-SERVER",
+            "componentType": "application-server",
+            "name": "Poll API",
+            "position": {
+              "x": 480,
+              "y": 300
+            },
+            "config": {
+              "instances": 4,
+              "capacityPerInstanceRps": 2000,
+              "publishOnlyAfterVoteCommit": true,
+              "resultReadSource": "counter-store"
+            }
+          },
+          {
+            "id": "db",
+            "componentId": "COMP-SQL-DATABASE",
+            "componentType": "sql-database",
+            "name": "Durable Vote Database",
+            "position": {
+              "x": 780,
+              "y": 500
+            },
+            "config": {
+              "writeCapacityRps": 6000,
+              "readCapacityRps": 5000,
+              "durable": true,
+              "uniqueConstraintSupported": true,
+              "uniqueKey": "poll_id,user_id"
+            }
+          },
+          {
+            "id": "queue",
+            "componentId": "COMP-QUEUE",
+            "componentType": "message-queue",
+            "name": "Vote Event Queue",
+            "position": {
+              "x": 780,
+              "y": 100
+            },
+            "config": {
+              "arrivalRatePerSecond": 5000,
+              "processingCapacityPerSecond": 6000,
+              "deliverySemantics": "at-least-once",
+              "retentionHours": 24
+            }
+          },
+          {
+            "id": "worker",
+            "componentId": "COMP-WORKER",
+            "componentType": "worker",
+            "name": "Vote Aggregation Workers",
+            "position": {
+              "x": 1080,
+              "y": 100
+            },
+            "config": {
+              "instances": 10,
+              "capacityPerInstancePerSecond": 600,
+              "idempotent": true,
+              "deduplicationStrategy": "event-id-marker-in-counter-store"
+            }
+          },
+          {
+            "id": "counter",
+            "componentId": "COMP-COUNTER-STORE",
+            "componentType": "cache",
+            "name": "Poll Option Counters",
+            "position": {
+              "x": 1380,
+              "y": 300
+            },
+            "config": {
+              "opsCapacityRps": 20000,
+              "averageLatencyMs": 2,
+              "available": true,
+              "atomicIncrement": true,
+              "deduplicationSupported": true,
+              "durable": false
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": "client",
+            "target": "lb",
+            "connectionTypeId": "EDGE-SYNC-HTTP"
+          },
+          {
+            "id": "e2",
+            "source": "lb",
+            "target": "api",
+            "connectionTypeId": "EDGE-SYNC-HTTP"
+          },
+          {
+            "id": "e3",
+            "source": "api",
+            "target": "db",
+            "connectionTypeId": "EDGE-DB-WRITE"
+          },
+          {
+            "id": "e4",
+            "source": "api",
+            "target": "queue",
+            "connectionTypeId": "EDGE-ASYNC-PUBLISH"
+          },
+          {
+            "id": "e5",
+            "source": "queue",
+            "target": "worker",
+            "connectionTypeId": "EDGE-ASYNC-CONSUME"
+          },
+          {
+            "id": "e6",
+            "source": "worker",
+            "target": "counter",
+            "connectionTypeId": "EDGE-CACHE-WRITE"
+          },
+          {
+            "id": "e7",
+            "source": "api",
+            "target": "counter",
+            "connectionTypeId": "EDGE-CACHE-READ"
+          },
+          {
+            "id": "e8",
+            "source": "worker",
+            "target": "db",
+            "connectionTypeId": "EDGE-DB-READ"
+          }
+        ]
+      },
+      "flows": [
+        {
+          "name": "Accept a vote",
+          "steps": [
+            "Client submits a vote to the API.",
+            "API attempts to insert a durable vote record with a unique (poll_id,user_id) constraint.",
+            "Only after the database commit succeeds does the API publish a vote event to the queue.",
+            "The API acknowledges the accepted vote; a duplicate unique-key conflict is returned as already voted."
+          ]
+        },
+        {
+          "name": "Aggregate and read results",
+          "steps": [
+            "Worker consumes the vote event from the queue.",
+            "Worker atomically deduplicates the event ID and increments the option counter.",
+            "Client requests results; API reads the per-option totals from the counter store."
+          ]
+        },
+        {
+          "name": "Recover counters",
+          "steps": [
+            "If the counter store is lost, rebuild option totals from durable vote records or replay retained events.",
+            "Use the same event-id deduplication strategy during replay.",
+            "Expose rebuild status and reconcile totals before declaring results fully current."
+          ]
+        }
+      ],
+      "strengths": [
+        "Database uniqueness protects the one-vote rule under concurrency.",
+        "Queue decouples vote acceptance from aggregation work.",
+        "Derived counters make result reads inexpensive."
+      ],
+      "limitations": [
+        "The API-to-database and API-to-queue dual write can fail between commit and publish; a transactional outbox is a production-grade improvement.",
+        "The simplified model treats deduplication plus increment as one atomic counter-store operation."
+      ],
+      "tradeoffs": [
+        "Results are eventually consistent by a bounded queue-processing lag rather than updated synchronously on every vote.",
+        "Durable vote rows cost more storage than keeping only counters, but enable audit and rebuild."
+      ]
+    },
+    {
+      "id": "REF-02",
+      "name": "Direct API entry with independently scalable aggregation",
+      "difficulty": "easy",
+      "architecture": {
+        "schemaVersion": 1,
+        "questionId": "hld-polls-001",
+        "questionVersion": 1,
+        "nodes": [
+          {
+            "id": "client",
+            "componentId": "COMP-CLIENT",
+            "componentType": "client",
+            "name": "Web / Mobile Client",
+            "position": {
+              "x": 0,
+              "y": 300
+            },
+            "config": {}
+          },
+          {
+            "id": "api",
+            "componentId": "COMP-APP-SERVER",
+            "componentType": "application-server",
+            "name": "Poll API",
+            "position": {
+              "x": 260,
+              "y": 300
+            },
+            "config": {
+              "instances": 6,
+              "capacityPerInstanceRps": 2000,
+              "publishOnlyAfterVoteCommit": true,
+              "resultReadSource": "counter-store"
+            }
+          },
+          {
+            "id": "db",
+            "componentId": "COMP-SQL-DATABASE",
+            "componentType": "sql-database",
+            "name": "Durable Vote Database",
+            "position": {
+              "x": 780,
+              "y": 500
+            },
+            "config": {
+              "writeCapacityRps": 6000,
+              "readCapacityRps": 5000,
+              "durable": true,
+              "uniqueConstraintSupported": true,
+              "uniqueKey": "poll_id,user_id"
+            }
+          },
+          {
+            "id": "queue",
+            "componentId": "COMP-QUEUE",
+            "componentType": "message-queue",
+            "name": "Vote Event Queue",
+            "position": {
+              "x": 780,
+              "y": 100
+            },
+            "config": {
+              "arrivalRatePerSecond": 5000,
+              "processingCapacityPerSecond": 7000,
+              "deliverySemantics": "at-least-once",
+              "retentionHours": 24
+            }
+          },
+          {
+            "id": "worker",
+            "componentId": "COMP-WORKER",
+            "componentType": "worker",
+            "name": "Vote Aggregation Workers",
+            "position": {
+              "x": 1080,
+              "y": 100
+            },
+            "config": {
+              "instances": 12,
+              "capacityPerInstancePerSecond": 600,
+              "idempotent": true,
+              "deduplicationStrategy": "event-id-marker-in-counter-store"
+            }
+          },
+          {
+            "id": "counter",
+            "componentId": "COMP-COUNTER-STORE",
+            "componentType": "cache",
+            "name": "Poll Option Counters",
+            "position": {
+              "x": 1380,
+              "y": 300
+            },
+            "config": {
+              "opsCapacityRps": 25000,
+              "averageLatencyMs": 2,
+              "available": true,
+              "atomicIncrement": true,
+              "deduplicationSupported": true,
+              "durable": false
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": "client",
+            "target": "api",
+            "connectionTypeId": "EDGE-SYNC-HTTP"
+          },
+          {
+            "id": "e3",
+            "source": "api",
+            "target": "db",
+            "connectionTypeId": "EDGE-DB-WRITE"
+          },
+          {
+            "id": "e4",
+            "source": "api",
+            "target": "queue",
+            "connectionTypeId": "EDGE-ASYNC-PUBLISH"
+          },
+          {
+            "id": "e5",
+            "source": "queue",
+            "target": "worker",
+            "connectionTypeId": "EDGE-ASYNC-CONSUME"
+          },
+          {
+            "id": "e6",
+            "source": "worker",
+            "target": "counter",
+            "connectionTypeId": "EDGE-CACHE-WRITE"
+          },
+          {
+            "id": "e7",
+            "source": "api",
+            "target": "counter",
+            "connectionTypeId": "EDGE-CACHE-READ"
+          },
+          {
+            "id": "e8",
+            "source": "worker",
+            "target": "db",
+            "connectionTypeId": "EDGE-DB-READ"
+          }
+        ]
+      },
+      "flows": [
+        {
+          "name": "Vote submission",
+          "steps": [
+            "Client calls the stateless Poll API directly; multiple API instances can sit behind the platform's ingress.",
+            "API persists a vote with the unique poll_id,user_id constraint.",
+            "After commit, API publishes a vote event for background aggregation."
+          ]
+        },
+        {
+          "name": "Results and recovery",
+          "steps": [
+            "API reads cached counters for result requests.",
+            "Workers consume events and use atomic event deduplication before incrementing counters.",
+            "Workers can read durable votes to support reconciliation after counter loss."
+          ]
+        }
+      ],
+      "strengths": [
+        "API and worker capacity can be scaled independently.",
+        "The design keeps the same durable source of truth and asynchronous result path."
+      ],
+      "limitations": [
+        "The diagram omits an explicit load balancer or ingress component, which must be provided by deployment infrastructure.",
+        "The outbox gap between database commit and queue publish still needs a transactional outbox or reliable publisher in production."
+      ],
+      "tradeoffs": [
+        "A smaller logical diagram keeps the core vote path visible but leaves ingress and operational reliability details implicit."
+      ]
+    }
+  ],
+  "revisionRecommendations": [
+    {
+      "requirementIds": [
+        "FR-01"
+      ],
+      "text": "Connect the API to durable SQL storage and configure a unique constraint on poll_id,user_id; application-level checks alone are insufficient."
+    },
+    {
+      "requirementIds": [
+        "FR-02"
+      ],
+      "text": "Publish a vote event only after the vote record commits, then connect the queue to a worker and the worker to the counter store."
+    },
+    {
+      "requirementIds": [
+        "FR-03"
+      ],
+      "text": "Serve poll results from the counter store instead of scanning all individual vote records on every request."
+    },
+    {
+      "requirementIds": [
+        "FR-04"
+      ],
+      "text": "Use stable event IDs and an atomic deduplicate-plus-increment operation; retain durable votes for reconciliation."
+    },
+    {
+      "requirementIds": [
+        "NFR-01"
+      ],
+      "text": "Set SQL write capacity, queue ingestion capacity and aggregate worker throughput to at least 5,000 votes/sec."
+    },
+    {
+      "requirementIds": [
+        "NFR-02"
+      ],
+      "text": "Set counter-store operations capacity to at least 10,000 operations/sec."
+    },
+    {
+      "requirementIds": [
+        "NFR-03"
+      ],
+      "text": "Enable worker idempotency and counter-store event deduplication plus atomic increment."
+    }
+  ]
+}

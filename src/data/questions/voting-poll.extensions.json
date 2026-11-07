@@ -1,0 +1,11 @@
+{
+  "description": "No additional catalogue extensions are required for this question. All question-specific components, operations, categories and connection types are defined in the base question JSON.",
+  "components": [],
+  "connectionTypes": [],
+  "categories": {},
+  "addOperations": {},
+  "renames": {},
+  "connectionPatches": {},
+  "configDefaults": {},
+  "configSchemaPatch": {}
+}

@@ -1,0 +1,387 @@
+{
+ "schemaVersion": "1.0.0",
+ "question": {
+  "id": "hld-rate-limiter-001",
+  "version": 1,
+  "slug": "design-rate-limiter",
+  "title": "Design a Rate Limiter",
+  "difficulty": "intermediate",
+  "estimatedMinutes": 40
+ },
+ "requirements": {
+  "functional": [
+   {
+    "id": "RL-FR-01",
+    "title": "Check every request before it reaches the service",
+    "priority": "must"
+   },
+   {
+    "id": "RL-FR-02",
+    "title": "Count requests consistently across limiter servers",
+    "priority": "must"
+   },
+   {
+    "id": "RL-FR-03",
+    "title": "Reject excess requests with a clear response",
+    "priority": "must"
+   },
+   {
+    "id": "RL-FR-04",
+    "title": "Choose a limiting algorithm",
+    "priority": "must"
+   }
+  ],
+  "nonFunctional": [
+   {
+    "id": "RL-NFR-01",
+    "title": "Handle peak traffic",
+    "priority": "must",
+    "target": {
+     "requestsPerSecond": 10000
+    }
+   },
+   {
+    "id": "RL-NFR-02",
+    "title": "Add very little delay",
+    "priority": "must",
+    "target": {
+     "operator": "less_than",
+     "value": 10,
+     "unit": "ms"
+    }
+   },
+   {
+    "id": "RL-NFR-03",
+    "title": "Stay safe when the counter store fails",
+    "priority": "should"
+   }
+  ]
+ },
+ "capacityEstimation": {
+  "defaultInputs": [
+   {
+    "id": "RL-IN-01",
+    "name": "Peak requests",
+    "value": 10000,
+    "unit": "requests/second",
+    "configurable": false
+   },
+   {
+    "id": "RL-IN-02",
+    "name": "Allowed rate per client",
+    "value": 100,
+    "unit": "requests/minute",
+    "configurable": false
+   },
+   {
+    "id": "RL-IN-03",
+    "name": "Active clients",
+    "value": 50000,
+    "unit": "clients",
+    "configurable": false
+   },
+   {
+    "id": "RL-IN-04",
+    "name": "Counter record size",
+    "value": 64,
+    "unit": "bytes",
+    "configurable": false
+   }
+  ]
+ },
+ "componentCatalogue": {
+  "allowedComponentIds": [
+   "COMP-CLIENT",
+   "COMP-LOAD-BALANCER",
+   "COMP-API-GATEWAY",
+   "COMP-RATE-LIMITER",
+   "COMP-APP-SERVER",
+   "COMP-COUNTER-STORE",
+   "COMP-RULES-DB",
+   "COMP-METRICS"
+  ],
+  "components": [
+   {
+    "id": "COMP-CLIENT",
+    "type": "client",
+    "category": "Clients",
+    "displayName": "Client",
+    "responsibilities": [
+     "Send requests to the service"
+    ],
+    "supportedOperations": [
+     "http-request",
+     "http-response"
+    ],
+    "defaultConfig": {}
+   },
+   {
+    "id": "COMP-LOAD-BALANCER",
+    "type": "load-balancer",
+    "category": "Networking",
+    "displayName": "Load Balancer",
+    "responsibilities": [
+     "Spread requests across servers"
+    ],
+    "supportedOperations": [
+     "request-distribution",
+     "health-based-routing"
+    ],
+    "defaultConfig": {
+     "averageLatencyMs": 2
+    }
+   },
+   {
+    "id": "COMP-API-GATEWAY",
+    "type": "api-gateway",
+    "category": "Networking",
+    "displayName": "API Gateway",
+    "responsibilities": [
+     "Route API requests",
+     "Authenticate callers"
+    ],
+    "supportedOperations": [
+     "http-routing",
+     "authentication"
+    ],
+    "defaultConfig": {
+     "averageLatencyMs": 3
+    }
+   },
+   {
+    "id": "COMP-RATE-LIMITER",
+    "type": "rate-limiter",
+    "category": "Security",
+    "displayName": "Rate Limiter",
+    "responsibilities": [
+     "Count requests per client",
+     "Reject requests over the limit"
+    ],
+    "supportedOperations": [
+     "request-rate-check",
+     "reject-excess-requests"
+    ],
+    "defaultConfig": {
+     "instances": 2,
+     "capacityPerInstanceRps": 6000,
+     "averageLatencyMs": 1,
+     "algorithm": "token-bucket",
+     "rejectBehavior": "undeclared",
+     "onStoreUnavailable": "undeclared"
+    },
+    "configSchema": {
+     "instances": {
+      "type": "integer",
+      "minimum": 1
+     },
+     "capacityPerInstanceRps": {
+      "type": "number",
+      "exclusiveMinimum": 0
+     },
+     "averageLatencyMs": {
+      "type": "number",
+      "minimum": 0
+     },
+     "algorithm": {
+      "type": "string",
+      "enum": [
+       "token-bucket",
+       "sliding-window",
+       "fixed-window",
+       "leaky-bucket"
+      ]
+     },
+     "rejectBehavior": {
+      "type": "string",
+      "enum": [
+       "undeclared",
+       "return-429"
+      ]
+     },
+     "onStoreUnavailable": {
+      "type": "string",
+      "enum": [
+       "undeclared",
+       "fail-open",
+       "fail-closed"
+      ]
+     }
+    }
+   },
+   {
+    "id": "COMP-APP-SERVER",
+    "type": "application-server",
+    "category": "Compute",
+    "displayName": "Application Server",
+    "responsibilities": [
+     "Serve the protected API"
+    ],
+    "supportedOperations": [
+     "http-request",
+     "http-response-handler"
+    ],
+    "defaultConfig": {
+     "instances": 4,
+     "capacityPerInstanceRps": 3000,
+     "averageProcessingLatencyMs": 10
+    },
+    "configSchema": {
+     "instances": {
+      "type": "integer",
+      "minimum": 1
+     },
+     "capacityPerInstanceRps": {
+      "type": "number",
+      "exclusiveMinimum": 0
+     }
+    }
+   },
+   {
+    "id": "COMP-COUNTER-STORE",
+    "type": "cache",
+    "category": "Caching",
+    "displayName": "Counter Store (Redis-style)",
+    "responsibilities": [
+     "Hold request counts shared by all limiter servers",
+     "Expire old counts automatically"
+    ],
+    "supportedOperations": [
+     "cache-read",
+     "cache-write",
+     "atomic-increment",
+     "ttl-expiration"
+    ],
+    "defaultConfig": {
+     "opsCapacityRps": 50000,
+     "averageLatencyMs": 1,
+     "available": true
+    },
+    "configSchema": {
+     "opsCapacityRps": {
+      "type": "number",
+      "exclusiveMinimum": 0
+     },
+     "averageLatencyMs": {
+      "type": "number",
+      "minimum": 0
+     }
+    }
+   },
+   {
+    "id": "COMP-RULES-DB",
+    "type": "sql-database",
+    "category": "Storage",
+    "displayName": "Rules Database",
+    "responsibilities": [
+     "Store per-client limits and plans"
+    ],
+    "supportedOperations": [
+     "durable-read",
+     "durable-write",
+     "indexed-lookup"
+    ],
+    "defaultConfig": {
+     "readCapacityRps": 5000,
+     "averageReadLatencyMs": 15,
+     "durable": true
+    }
+   },
+   {
+    "id": "COMP-METRICS",
+    "type": "metrics-collector",
+    "category": "Observability",
+    "displayName": "Metrics Collector",
+    "responsibilities": [
+     "Count allowed and rejected requests"
+    ],
+    "supportedOperations": [
+     "collect-metrics",
+     "collect-health"
+    ],
+    "defaultConfig": {}
+   }
+  ]
+ },
+ "connectionTypes": [
+  {
+   "id": "EDGE-SYNC-HTTP",
+   "name": "Synchronous HTTP",
+   "semantics": "The source sends a request and waits for the response.",
+   "compatibleSourceOperations": [
+    "http-request",
+    "http-routing",
+    "request-distribution",
+    "request-rate-check"
+   ],
+   "compatibleTargetOperations": [
+    "http-request",
+    "http-routing",
+    "request-distribution",
+    "request-rate-check"
+   ]
+  },
+  {
+   "id": "EDGE-COUNTER",
+   "name": "Counter Update",
+   "semantics": "The limiter reads and atomically increments a client's count in the store.",
+   "compatibleSourceOperations": [
+    "request-rate-check"
+   ],
+   "compatibleTargetOperations": [
+    "atomic-increment"
+   ]
+  },
+  {
+   "id": "EDGE-DB-READ",
+   "name": "Rules Lookup",
+   "semantics": "The limiter reads a client's limit from the rules database.",
+   "compatibleSourceOperations": [
+    "request-rate-check"
+   ],
+   "compatibleTargetOperations": [
+    "durable-read",
+    "indexed-lookup"
+   ]
+  },
+  {
+   "id": "EDGE-TELEMETRY",
+   "name": "Telemetry",
+   "semantics": "The source reports allowed and rejected counts.",
+   "compatibleSourceOperations": [
+    "request-rate-check",
+    "http-request"
+   ],
+   "compatibleTargetOperations": [
+    "collect-metrics",
+    "collect-health"
+   ]
+  }
+ ],
+ "hints": [
+  {
+   "id": "HINT-RL-01",
+   "level": 1,
+   "text": "Where in the request path should the check happen so that no request can skip it?"
+  },
+  {
+   "id": "HINT-RL-02",
+   "level": 2,
+   "text": "If you run several limiter servers, where do their counts live so they all agree on how many requests a client has made?"
+  },
+  {
+   "id": "HINT-RL-03",
+   "level": 3,
+   "text": "What should the limiter do with a request that is over the limit, and what does the caller see?"
+  },
+  {
+   "id": "HINT-RL-04",
+   "level": 4,
+   "text": "Pick an algorithm and say why. How does it treat a short burst of traffic compared with steady traffic?"
+  },
+  {
+   "id": "HINT-RL-05",
+   "level": 5,
+   "text": "What should happen if the counter store is down: let every request through (fail-open) or block every request (fail-closed)? What does each choice risk?"
+  }
+ ]
+}

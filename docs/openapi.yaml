@@ -1,0 +1,68 @@
+openapi: 3.0.3
+info: { title: HLD Studio API, version: 1.0.0, description: Contract the HLD Studio front end expects. See docs/API.md. }
+servers: [{ url: /api/v1 }]
+security: [{ bearer: [] }]
+paths:
+  /questions:
+    get: { operationId: listQuestions, responses: { '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/QuestionSummary' } } } } } } }
+  /questions/{id}:
+    parameters: [{ $ref: '#/components/parameters/id' }]
+    get: { operationId: getQuestion, responses: { '200': { description: Question spec, content: { application/json: { schema: { type: object } } } }, '404': { $ref: '#/components/responses/Problem' } } }
+  /questions/{id}/learning:
+    parameters: [{ $ref: '#/components/parameters/id' }]
+    get: { operationId: getLearning, responses: { '200': { description: Learning content, content: { application/json: { schema: { type: object } } } }, '404': { $ref: '#/components/responses/Problem' } } }
+  /questions/{id}/draft:
+    parameters: [{ $ref: '#/components/parameters/id' }]
+    get: { operationId: getDraft, responses: { '200': { description: Draft, content: { application/json: { schema: { $ref: '#/components/schemas/Draft' } } } }, '404': { $ref: '#/components/responses/Problem' }, '422': { $ref: '#/components/responses/Problem' } } }
+    put: { operationId: saveDraft, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Draft' } } } }, responses: { '204': { description: Saved }, '422': { $ref: '#/components/responses/Problem' } } }
+    delete: { operationId: deleteDraft, responses: { '204': { description: Deleted } } }
+  /questions/{id}/snapshots:
+    parameters: [{ $ref: '#/components/parameters/id' }]
+    get: { operationId: listSnapshots, responses: { '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Snapshot' } } } } } } }
+    post:
+      operationId: createSnapshot
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [name, doc], properties: { name: { type: string }, doc: { $ref: '#/components/schemas/ArchitectureDocument' } } } } } }
+      responses: { '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Snapshot' } } } }, '409': { $ref: '#/components/responses/Problem' }, '422': { $ref: '#/components/responses/Problem' } }
+  /questions/{id}/snapshots/{snapshotId}:
+    parameters: [{ $ref: '#/components/parameters/id' }, { name: snapshotId, in: path, required: true, schema: { type: string } }]
+    delete: { operationId: deleteSnapshot, responses: { '204': { description: Deleted } } }
+  /questions/{id}/interview:
+    parameters: [{ $ref: '#/components/parameters/id' }]
+    get: { operationId: getInterview, responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Interview' } } } }, '404': { $ref: '#/components/responses/Problem' } } }
+    put: { operationId: saveInterview, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Interview' } } } }, responses: { '204': { description: Saved } } }
+    delete: { operationId: deleteInterview, responses: { '204': { description: Deleted } } }
+  /questions/{id}/evaluations:
+    parameters: [{ $ref: '#/components/parameters/id' }]
+    post:
+      operationId: evaluate
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [doc], properties: { doc: { $ref: '#/components/schemas/ArchitectureDocument' }, workload: { type: object, properties: { peakRedirectRps: { type: number }, cacheHitRatio: { type: number } } } } } } } }
+      responses: { '200': { description: Report, content: { application/json: { schema: { $ref: '#/components/schemas/EvaluationReport' } } } }, '422': { $ref: '#/components/responses/Problem' } }
+  /questions/{id}/shares:
+    parameters: [{ $ref: '#/components/parameters/id' }]
+    post:
+      operationId: createShare
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [doc], properties: { doc: { $ref: '#/components/schemas/ArchitectureDocument' } } } } } }
+      responses: { '201': { description: Created, content: { application/json: { schema: { type: object, required: [id, path], properties: { id: { type: string }, path: { type: string, example: /s/k3j9x2 } } } } } }, '413': { $ref: '#/components/responses/Problem' } }
+  /shares/{shareId}:
+    parameters: [{ name: shareId, in: path, required: true, schema: { type: string } }]
+    get: { operationId: getShare, security: [], responses: { '200': { description: OK, content: { application/json: { schema: { type: object, required: [questionId, doc], properties: { questionId: { type: string }, doc: { $ref: '#/components/schemas/ArchitectureDocument' } } } } } }, '404': { $ref: '#/components/responses/Problem' } } }
+components:
+  securitySchemes: { bearer: { type: http, scheme: bearer } }
+  parameters: { id: { name: id, in: path, required: true, schema: { type: string }, description: Question ID } }
+  responses: { Problem: { description: Error, content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } } }
+  schemas:
+    Problem: { type: object, required: [status, code, message], properties: { status: { type: integer }, code: { type: string, enum: [NOT_FOUND, VALIDATION_FAILED, UNAUTHORIZED, RATE_LIMITED, SERVER_ERROR] }, message: { type: string }, details: { type: array, items: { type: string } } } }
+    QuestionSummary: { type: object, required: [id, title, difficulty], properties: { id: { type: string }, title: { type: string }, difficulty: { type: string }, estimatedMinutes: { type: integer } } }
+    ArchNode: { type: object, required: [id, componentId, componentType, name, position, config], properties: { id: { type: string }, componentId: { type: string }, componentType: { type: string }, name: { type: string }, position: { type: object, properties: { x: { type: number }, y: { type: number } } }, config: { type: object, additionalProperties: { oneOf: [{ type: number }, { type: string }, { type: boolean }] } } } }
+    ArchEdge: { type: object, required: [id, source, target, connectionTypeId], properties: { id: { type: string }, source: { type: string }, target: { type: string }, connectionTypeId: { type: string }, label: { type: string } } }
+    ArchitectureDocument: { type: object, required: [schemaVersion, questionId, questionVersion, nodes, edges], properties: { schemaVersion: { type: integer, enum: [1] }, questionId: { type: string }, questionVersion: { type: integer }, nodes: { type: array, items: { $ref: '#/components/schemas/ArchNode' } }, edges: { type: array, items: { $ref: '#/components/schemas/ArchEdge' } } } }
+    Draft: { type: object, required: [doc, hints, answers], properties: { doc: { $ref: '#/components/schemas/ArchitectureDocument' }, hints: { type: array, items: { type: string } }, answers: { type: object, additionalProperties: { type: object, properties: { text: { type: string }, covered: { type: array, items: { type: integer } }, revealed: { type: boolean } } } }, savedAt: { type: string, format: date-time } } }
+    Snapshot: { type: object, required: [id, name, createdAt, doc], properties: { id: { type: string }, name: { type: string }, createdAt: { type: string, format: date-time }, doc: { $ref: '#/components/schemas/ArchitectureDocument' } } }
+    Interview: { type: object, required: [startedAt, durationMs, validations], properties: { startedAt: { type: integer, description: Epoch milliseconds }, durationMs: { type: integer }, endedAt: { type: integer }, validations: { type: integer } } }
+    EvaluationReport:
+      type: object
+      required: [findings, requirements, limitations]
+      properties:
+        findings: { type: array, items: { type: object, required: [id, ruleId, severity, title, explanation, nodeIds, edgeIds], properties: { id: { type: string }, ruleId: { type: string }, severity: { type: string, enum: [error, warning, info, not-evaluated] }, title: { type: string }, explanation: { type: string }, requirementId: { type: string }, nodeIds: { type: array, items: { type: string } }, edgeIds: { type: array, items: { type: string } }, suggestion: { type: string } } } }
+        requirements: { type: array, items: { type: object, required: [requirementId, status, findingIds, evidenceNodeIds], properties: { requirementId: { type: string }, status: { type: string, enum: [pass, fail, not-evaluated] }, findingIds: { type: array, items: { type: string } }, evidenceNodeIds: { type: array, items: { type: string } } } } }
+        limitations: { type: array, items: { type: string } }

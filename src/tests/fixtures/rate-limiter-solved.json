@@ -1,0 +1,126 @@
+{
+ "schemaVersion": 1,
+ "questionId": "hld-rate-limiter-001",
+ "questionVersion": 1,
+ "nodes": [
+  {
+   "id": "client",
+   "componentId": "COMP-CLIENT",
+   "componentType": "client",
+   "name": "Client",
+   "position": {
+    "x": 0,
+    "y": 160
+   },
+   "config": {}
+  },
+  {
+   "id": "lb",
+   "componentId": "COMP-LOAD-BALANCER",
+   "componentType": "load-balancer",
+   "name": "Load Balancer",
+   "position": {
+    "x": 280,
+    "y": 160
+   },
+   "config": {
+    "averageLatencyMs": 2
+   }
+  },
+  {
+   "id": "limiter",
+   "componentId": "COMP-RATE-LIMITER",
+   "componentType": "rate-limiter",
+   "name": "Rate Limiter",
+   "position": {
+    "x": 560,
+    "y": 160
+   },
+   "config": {
+    "instances": 2,
+    "capacityPerInstanceRps": 6000,
+    "averageLatencyMs": 1,
+    "algorithm": "token-bucket",
+    "rejectBehavior": "return-429",
+    "onStoreUnavailable": "fail-open"
+   }
+  },
+  {
+   "id": "app",
+   "componentId": "COMP-APP-SERVER",
+   "componentType": "application-server",
+   "name": "Application Server",
+   "position": {
+    "x": 860,
+    "y": 160
+   },
+   "config": {
+    "instances": 4,
+    "capacityPerInstanceRps": 3000,
+    "averageProcessingLatencyMs": 10
+   }
+  },
+  {
+   "id": "store",
+   "componentId": "COMP-COUNTER-STORE",
+   "componentType": "cache",
+   "name": "Counter Store (Redis-style)",
+   "position": {
+    "x": 560,
+    "y": 360
+   },
+   "config": {
+    "opsCapacityRps": 50000,
+    "averageLatencyMs": 1,
+    "available": true
+   }
+  },
+  {
+   "id": "rules",
+   "componentId": "COMP-RULES-DB",
+   "componentType": "sql-database",
+   "name": "Rules Database",
+   "position": {
+    "x": 860,
+    "y": 360
+   },
+   "config": {
+    "readCapacityRps": 5000,
+    "averageReadLatencyMs": 15,
+    "durable": true
+   }
+  }
+ ],
+ "edges": [
+  {
+   "id": "e0",
+   "source": "client",
+   "target": "lb",
+   "connectionTypeId": "EDGE-SYNC-HTTP"
+  },
+  {
+   "id": "e1",
+   "source": "lb",
+   "target": "limiter",
+   "connectionTypeId": "EDGE-SYNC-HTTP"
+  },
+  {
+   "id": "e2",
+   "source": "limiter",
+   "target": "app",
+   "connectionTypeId": "EDGE-SYNC-HTTP"
+  },
+  {
+   "id": "e3",
+   "source": "limiter",
+   "target": "store",
+   "connectionTypeId": "EDGE-COUNTER"
+  },
+  {
+   "id": "e4",
+   "source": "limiter",
+   "target": "rules",
+   "connectionTypeId": "EDGE-DB-READ"
+  }
+ ]
+}
