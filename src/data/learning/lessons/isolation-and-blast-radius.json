@@ -1,0 +1,35 @@
+{
+  "id": "isolation-and-blast-radius",
+  "title": "Isolation and blast radius",
+  "summary": "TODO: Write a concise explanation of isolation and blast radius and its role in internet-scale compute.",
+  "minutes": 8,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "TODO: Core concept"
+    },
+    {
+      "type": "paragraph",
+      "text": "TODO: Explain the concept, its purpose, and the problem it solves. Replace this placeholder before publishing."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "TODO: Architecture decisions"
+    },
+    {
+      "type": "list",
+      "items": [
+        "TODO: Add the important design considerations.",
+        "TODO: Explain relevant trade-offs and failure modes."
+      ]
+    },
+    {
+      "type": "callout",
+      "tone": "info",
+      "title": "Authoring note",
+      "text": "This is a starter template only. Replace every TODO with reviewed lesson content before changing the roadmap status to ready."
+    }
+  ]
+}

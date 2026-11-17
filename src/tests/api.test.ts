@@ -68,6 +68,29 @@ describe.each(makers)('ApiClient contract: %s', (_name, make) => {
     const back = await api.resolveShare({ hash: u.hash, pathname: u.pathname });
     expect(back?.questionId).toBe(URL_ID); expect(back?.doc).toEqual(doc());
   });
+  it('serves the roadmap and a lesson, and reports a missing lesson as NOT_FOUND', async () => {
+    const r = await api.getRoadmap(); expect(r.nodes.length).toBeGreaterThanOrEqual(10);
+    const l = await api.getLesson('cache-hit-ratio'); expect(l.lab?.inputs.length).toBeGreaterThan(2); expect(l.quiz?.questions).toHaveLength(3);
+    await expect(api.getLesson('dns')).rejects.toMatchObject({ code: 'NOT_FOUND' });
+  });
+  it('records progress as events in order, and resets it', async () => {
+    expect(await api.getProgress()).toEqual([]);
+    const a = await api.recordProgress({ nodeId: 'cache-basics', type: 'quiz_passed', score: 1 });
+    await api.recordProgress({ nodeId: 'cache-hit-ratio', type: 'lab_completed' });
+    expect(a.at).toMatch(/^\d{4}-/);
+    expect((await api.getProgress()).map((e) => `${e.nodeId}:${e.type}`)).toEqual(['cache-basics:quiz_passed', 'cache-hit-ratio:lab_completed']);
+    await api.resetProgress(); expect(await api.getProgress()).toEqual([]);
+  });
+  it('records only the first view of a lesson', async () => {
+    await api.recordProgress({ nodeId: 'cache-basics', type: 'lesson_viewed' }); await api.recordProgress({ nodeId: 'cache-basics', type: 'lesson_viewed' });
+    expect(await api.getProgress()).toHaveLength(1);
+  });
+  it('rejects progress for unknown lessons, unknown types and bad scores', async () => {
+    await expect(api.recordProgress({ nodeId: 'ghost', type: 'quiz_passed' })).rejects.toMatchObject({ code: 'NOT_FOUND' });
+    await expect(api.recordProgress({ nodeId: 'cache-basics', type: 'cheated' as never })).rejects.toMatchObject({ code: 'VALIDATION_FAILED' });
+    await expect(api.recordProgress({ nodeId: 'cache-basics', type: 'quiz_passed', score: 2 })).rejects.toMatchObject({ code: 'VALIDATION_FAILED' });
+    expect(await api.getProgress()).toEqual([]);
+  });
   it('returns null when a location holds no share link', async () => {
     expect(await api.resolveShare({ hash: '', pathname: '/' })).toBeNull();
   });

@@ -20,6 +20,13 @@ describe('Rate Limiter question in the real UI', () => {
     expect(screen.getByText('Check every request before it reaches the service')).toBeInTheDocument();
   });
 
+  it('shows the problem statement it ships with', async () => {
+    render(<App />);
+    await userEvent.click(screen.getByRole('tab', { name: 'Question' }));
+    expect(screen.getByText(/Design a rate limiter for a public API/)).toBeInTheDocument();
+    expect(screen.getByText('What you will practise')).toBeInTheDocument();
+  });
+
   it('validates the reference design, shows the metrics tab and a clean summary', async () => {
     useStudio.getState().replaceDoc(solved as unknown as ArchitectureDocument);
     render(<App />);

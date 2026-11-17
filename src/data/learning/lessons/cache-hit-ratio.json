@@ -1,0 +1,321 @@
+{
+ "id": "cache-hit-ratio",
+ "title": "Cache hit ratio",
+ "minutes": 15,
+ "summary": "The share of requests a cache answers. It decides how much traffic still reaches your database.",
+ "blocks": [
+  {
+   "type": "paragraph",
+   "text": "The **cache hit ratio** is the fraction of requests that the cache answers by itself. It is the single most useful number for judging whether a cache is working."
+  },
+  {
+   "type": "formula",
+   "expression": "hit ratio = hits \u00f7 (hits + misses)",
+   "caption": "A ratio of 0.9 means 90 out of every 100 requests are hits.",
+   "variables": [
+    {
+     "name": "hits",
+     "meaning": "requests the cache answered"
+    },
+    {
+     "name": "misses",
+     "meaning": "requests that had to go to the database"
+    }
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "What reaches the database"
+  },
+  {
+   "type": "paragraph",
+   "text": "Only misses reach the database. So the load on the database is the request rate multiplied by the miss ratio, which is one minus the hit ratio."
+  },
+  {
+   "type": "formula",
+   "expression": "database reads per second = requests per second \u00d7 (1 \u2212 hit ratio)",
+   "variables": [
+    {
+     "name": "requests per second",
+     "meaning": "all traffic arriving"
+    },
+    {
+     "name": "hit ratio",
+     "meaning": "a number from 0 to 1"
+    }
+   ]
+  },
+  {
+   "type": "example",
+   "title": "Ten thousand requests a second",
+   "text": "At 10,000 requests per second: a 50% hit ratio sends 5,000 reads to the database. A 90% ratio sends 1,000. A 99% ratio sends only 100. Going from 90% to 99% looks small, but it cuts the database load by ten times."
+  },
+  {
+   "type": "callout",
+   "tone": "tip",
+   "title": "Think in misses",
+   "text": "Because the database only sees misses, a small improvement near the top of the scale has a large effect. 99% is not a bit better than 90%. It is ten times less database work."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "What decides the hit ratio"
+  },
+  {
+   "type": "list",
+   "items": [
+    "**How popular the data is.** If a few items get most of the traffic, a small cache catches most requests.",
+    "**Cache size.** If the cache cannot hold the data people want, items are pushed out before they are reused.",
+    "**Expiry time.** Entries that expire quickly are thrown away before they can be hit again.",
+    "**Warm-up.** A newly started cache is empty, so the hit ratio starts near zero."
+   ]
+  },
+  {
+   "type": "callout",
+   "tone": "warning",
+   "title": "The cache can make an outage worse",
+   "text": "If a cache protects a database that could not handle full traffic on its own, losing the cache sends everything to the database at once. The hit ratio drops to zero and the database is overwhelmed. Try this in the lab below."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Try it"
+  },
+  {
+   "type": "paragraph",
+   "text": "Change the sliders in the lab and watch the database. Complete the three tasks to finish this lesson's practice."
+  }
+ ],
+ "lab": {
+  "title": "Cache and database load",
+  "intro": "Traffic comes in, the cache answers some of it, and the rest goes to the database. Change the numbers and see what happens.",
+  "inputs": [
+   {
+    "id": "rps",
+    "label": "Requests per second",
+    "unit": "req/s",
+    "min": 1000,
+    "max": 100000,
+    "step": 1000,
+    "default": 10000,
+    "format": "integer"
+   },
+   {
+    "id": "hitRatio",
+    "label": "Cache hit ratio",
+    "min": 0,
+    "max": 1,
+    "step": 0.01,
+    "default": 0.9,
+    "format": "percent",
+    "help": "Share of requests the cache answers."
+   },
+   {
+    "id": "dbCapacity",
+    "label": "Database read capacity",
+    "unit": "reads/s",
+    "min": 1000,
+    "max": 20000,
+    "step": 500,
+    "default": 5000,
+    "format": "integer",
+    "help": "The most reads per second the database can serve."
+   },
+   {
+    "id": "cacheUp",
+    "label": "Cache is running",
+    "type": "toggle",
+    "default": 1
+   }
+  ],
+  "derived": [
+   {
+    "id": "effectiveHit",
+    "formula": "cacheUp * hitRatio"
+   },
+   {
+    "id": "dbLoad",
+    "label": "Reads reaching the database",
+    "unit": "reads/s",
+    "formula": "rps * (1 - effectiveHit)",
+    "format": "integer",
+    "output": true
+   },
+   {
+    "id": "utilization",
+    "label": "Database load",
+    "formula": "round(dbLoad / dbCapacity * 1000) / 1000",
+    "format": "percent",
+    "output": true
+   },
+   {
+    "id": "latency",
+    "label": "Average read time",
+    "unit": "ms",
+    "formula": "cacheUp * (2 + (1 - hitRatio) * 20) + (1 - cacheUp) * 20",
+    "format": "decimal1",
+    "output": true
+   }
+  ],
+  "narrative": [
+   {
+    "when": "cacheUp == 0 && utilization > 1",
+    "tone": "bad",
+    "text": "The cache is down, so all {rps} arrive at the database. It can serve {dbCapacity}, so it is overloaded and requests will queue and time out."
+   },
+   {
+    "when": "utilization > 1",
+    "tone": "bad",
+    "text": "The database receives {dbLoad} but can only serve {dbCapacity}. It is overloaded. Raise the hit ratio or add database capacity."
+   },
+   {
+    "when": "utilization > 0.7",
+    "tone": "warn",
+    "text": "The database is at {utilization} of its capacity. It works, but a traffic spike or a cache restart could push it over."
+   },
+   {
+    "when": "cacheUp == 0",
+    "tone": "info",
+    "text": "The cache is down, but the database can still cope with {dbLoad}. This design survives the failure, with slower reads."
+   },
+   {
+    "when": "true",
+    "tone": "ok",
+    "text": "Healthy. The cache answers {hitRatio} of requests and the database only sees {dbLoad}, which is {utilization} of its capacity."
+   }
+  ],
+  "notes": [
+   {
+    "when": "cacheUp == 1 && hitRatio < 0.5",
+    "tone": "info",
+    "text": "A hit ratio below 50% means the cache is doing less than half the work. Check cache size, expiry time and whether the data is reused."
+   },
+   {
+    "when": "cacheUp == 1 && rps / dbCapacity > 1 && utilization <= 1",
+    "tone": "warn",
+    "text": "The database could not cope without this cache. If the cache fails, the database will be overwhelmed."
+   }
+  ],
+  "sweep": {
+   "input": "hitRatio",
+   "output": "dbLoad",
+   "title": "Database reads as the hit ratio changes",
+   "reference": {
+    "label": "Database capacity",
+    "value": "dbCapacity"
+   }
+  },
+  "scenarios": [
+   {
+    "label": "Cache fails",
+    "set": {
+     "cacheUp": 0
+    }
+   },
+   {
+    "label": "Traffic grows 5 times",
+    "set": {
+     "rps": 50000
+    }
+   },
+   {
+    "label": "Back to normal",
+    "set": {
+     "rps": 10000,
+     "hitRatio": 0.9,
+     "dbCapacity": 5000,
+     "cacheUp": 1
+    }
+   }
+  ],
+  "tasks": [
+   {
+    "id": "t1",
+    "text": "Turn the cache off and see what happens to the database.",
+    "check": "cacheUp == 0 && utilization > 1"
+   },
+   {
+    "id": "t2",
+    "text": "Turn the cache back on and keep the database under its capacity at 10,000 requests per second or more.",
+    "check": "cacheUp == 1 && rps >= 10000 && utilization <= 1"
+   },
+   {
+    "id": "t3",
+    "text": "Raise traffic to at least 50,000 requests per second and still keep the database within its capacity.",
+    "check": "cacheUp == 1 && rps >= 50000 && utilization <= 1"
+   }
+  ]
+ },
+ "quiz": {
+  "passScore": 0.66,
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "A system gets 20,000 requests per second with a 95% cache hit ratio. How many reads reach the database?",
+    "options": [
+     {
+      "id": "a",
+      "text": "1,000 per second"
+     },
+     {
+      "id": "b",
+      "text": "19,000 per second"
+     },
+     {
+      "id": "c",
+      "text": "5,000 per second"
+     }
+    ],
+    "correct": "a",
+    "explanation": "Only misses reach the database: 20,000 \u00d7 (1 \u2212 0.95) = 1,000 reads per second."
+   },
+   {
+    "id": "q2",
+    "prompt": "Going from a 90% to a 99% hit ratio reduces the database's load by about:",
+    "options": [
+     {
+      "id": "a",
+      "text": "10%"
+     },
+     {
+      "id": "b",
+      "text": "Half"
+     },
+     {
+      "id": "c",
+      "text": "Ten times"
+     }
+    ],
+    "correct": "c",
+    "explanation": "The miss ratio falls from 10% to 1%, so the database sees one tenth of the traffic."
+   },
+   {
+    "id": "q3",
+    "prompt": "Why can losing the cache cause an outage even though the database still has all the data?",
+    "options": [
+     {
+      "id": "a",
+      "text": "All traffic suddenly reaches a database that may not be able to handle it"
+     },
+     {
+      "id": "b",
+      "text": "The database deletes its data when the cache stops"
+     },
+     {
+      "id": "c",
+      "text": "Caches are always the only copy of the data"
+     }
+    ],
+    "correct": "a",
+    "explanation": "With the cache gone the hit ratio is effectively zero, so every request reaches the database. If it was sized assuming the cache, it is overloaded."
+   }
+  ]
+ },
+ "practice": [
+  {
+   "questionId": "hld-url-shortener-001",
+   "label": "Design a URL Shortener"
+  }
+ ]
+}

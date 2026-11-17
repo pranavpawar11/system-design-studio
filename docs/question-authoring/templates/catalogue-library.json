@@ -1,0 +1,770 @@
+{
+  "_readme": "Reusable components and connection types taken from the two real questions. Copy what you need into your question file. An id ending in --rate-limiter-variant is the Rate Limiter question's different definition of a shared id; if you use it, delete the suffix. Operations are the vocabulary that connection rules match on: see OPERATIONS-AND-CONFIG.md.",
+  "components": [
+    {
+      "id": "COMP-CLIENT",
+      "type": "client",
+      "displayName": "Client",
+      "responsibilities": [
+        "Send URL creation requests",
+        "Request short URLs",
+        "Follow redirects"
+      ],
+      "supportedOperations": [
+        "http-request",
+        "http-response"
+      ],
+      "defaultConfig": {},
+      "category": "Clients"
+    },
+    {
+      "id": "COMP-DNS",
+      "type": "dns",
+      "displayName": "DNS",
+      "responsibilities": [
+        "Resolve the service hostname"
+      ],
+      "supportedOperations": [
+        "hostname-resolution"
+      ],
+      "defaultConfig": {},
+      "category": "Networking"
+    },
+    {
+      "id": "COMP-CDN",
+      "type": "cdn",
+      "displayName": "CDN",
+      "responsibilities": [
+        "Optionally cache eligible redirect responses near clients"
+      ],
+      "supportedOperations": [
+        "http-cache",
+        "http-forward"
+      ],
+      "defaultConfig": {
+        "enabled": false,
+        "hitRatio": 0.5,
+        "averageLatencyMs": 20
+      },
+      "configSchema": {
+        "hitRatio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "averageLatencyMs": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "category": "Networking"
+    },
+    {
+      "id": "COMP-LOAD-BALANCER",
+      "type": "load-balancer",
+      "displayName": "Load Balancer",
+      "responsibilities": [
+        "Distribute requests among eligible application instances"
+      ],
+      "supportedOperations": [
+        "request-distribution",
+        "health-based-routing"
+      ],
+      "defaultConfig": {
+        "averageLatencyMs": 2
+      },
+      "category": "Networking"
+    },
+    {
+      "id": "COMP-API-GATEWAY",
+      "type": "api-gateway",
+      "displayName": "API Gateway",
+      "responsibilities": [
+        "Route API requests",
+        "Optionally enforce authentication and request policies"
+      ],
+      "supportedOperations": [
+        "http-routing",
+        "authentication",
+        "rate-limiting"
+      ],
+      "defaultConfig": {
+        "averageLatencyMs": 3
+      },
+      "category": "Networking"
+    },
+    {
+      "id": "COMP-APP-SERVER",
+      "type": "application-server",
+      "displayName": "Application Server",
+      "responsibilities": [
+        "Validate URL input",
+        "Generate or request short codes",
+        "Resolve mappings",
+        "Produce redirect responses"
+      ],
+      "supportedOperations": [
+        "http-request",
+        "url-validation",
+        "short-code-generation",
+        "mapping-lookup",
+        "redirect-response",
+        "durable-write",
+        "publish-message"
+      ],
+      "defaultConfig": {
+        "notFoundBehavior": "undeclared",
+        "instances": 2,
+        "capacityPerInstanceRps": 3000,
+        "averageProcessingLatencyMs": 10
+      },
+      "configSchema": {
+        "instances": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "capacityPerInstanceRps": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "averageProcessingLatencyMs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "notFoundBehavior": {
+          "type": "string",
+          "enum": [
+            "undeclared",
+            "return-404"
+          ]
+        }
+      },
+      "category": "Compute"
+    },
+    {
+      "id": "COMP-CACHE",
+      "type": "cache",
+      "displayName": "Distributed Cache",
+      "responsibilities": [
+        "Store frequently accessed URL mappings",
+        "Reduce repeated database reads"
+      ],
+      "supportedOperations": [
+        "cache-read",
+        "cache-write",
+        "ttl-expiration"
+      ],
+      "defaultConfig": {
+        "onUnavailable": "undeclared",
+        "hitRatio": 0.9,
+        "averageLatencyMs": 2,
+        "available": true,
+        "ttlSeconds": 3600
+      },
+      "configSchema": {
+        "hitRatio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "averageLatencyMs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "ttlSeconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "onUnavailable": {
+          "type": "string",
+          "enum": [
+            "undeclared",
+            "bypass-to-database",
+            "fail-request"
+          ]
+        }
+      },
+      "category": "Caching"
+    },
+    {
+      "id": "COMP-SQL-DATABASE",
+      "type": "sql-database",
+      "displayName": "Relational Database",
+      "responsibilities": [
+        "Persist URL mappings",
+        "Enforce unique constraints",
+        "Support indexed lookup by short code"
+      ],
+      "supportedOperations": [
+        "durable-read",
+        "durable-write",
+        "unique-constraint",
+        "indexed-lookup"
+      ],
+      "defaultConfig": {
+        "readCapacityRps": 5000,
+        "writeCapacityRps": 1000,
+        "averageReadLatencyMs": 20,
+        "averageWriteLatencyMs": 30,
+        "durable": true,
+        "uniqueConstraintSupported": true
+      },
+      "category": "Storage"
+    },
+    {
+      "id": "COMP-NOSQL-DATABASE",
+      "type": "nosql-database",
+      "displayName": "NoSQL Database",
+      "responsibilities": [
+        "Persist mappings with a key-oriented access pattern"
+      ],
+      "supportedOperations": [
+        "durable-read",
+        "durable-write",
+        "key-lookup",
+        "conditional-write"
+      ],
+      "defaultConfig": {
+        "readCapacityRps": 10000,
+        "writeCapacityRps": 3000,
+        "averageReadLatencyMs": 10,
+        "averageWriteLatencyMs": 15,
+        "durable": true,
+        "uniqueConstraintSupported": true
+      },
+      "category": "Storage"
+    },
+    {
+      "id": "COMP-KEY-GENERATOR",
+      "type": "key-generator",
+      "displayName": "ID / Short-Code Generator",
+      "responsibilities": [
+        "Generate candidate short codes",
+        "Provide an identifier allocation strategy"
+      ],
+      "supportedOperations": [
+        "generate-identifier",
+        "allocate-identifier"
+      ],
+      "defaultConfig": {
+        "strategy": "base62",
+        "collisionHandling": "retry"
+      },
+      "category": "Compute"
+    },
+    {
+      "id": "COMP-RATE-LIMITER",
+      "type": "rate-limiter",
+      "displayName": "Rate Limiter",
+      "responsibilities": [
+        "Limit excessive request rates"
+      ],
+      "supportedOperations": [
+        "request-rate-check",
+        "reject-excess-requests"
+      ],
+      "defaultConfig": {
+        "algorithm": "token-bucket",
+        "requestsPerSecond": 100
+      },
+      "category": "Security"
+    },
+    {
+      "id": "COMP-QUEUE",
+      "type": "message-queue",
+      "displayName": "Message Queue",
+      "responsibilities": [
+        "Buffer asynchronous work",
+        "Decouple producers from consumers"
+      ],
+      "supportedOperations": [
+        "publish-message",
+        "consume-message",
+        "buffer-work"
+      ],
+      "defaultConfig": {
+        "arrivalRatePerSecond": 0,
+        "processingCapacityPerSecond": 0
+      },
+      "category": "Messaging"
+    },
+    {
+      "id": "COMP-WORKER",
+      "type": "worker",
+      "displayName": "Background Worker",
+      "responsibilities": [
+        "Process asynchronous jobs"
+      ],
+      "supportedOperations": [
+        "consume-message",
+        "process-job"
+      ],
+      "defaultConfig": {
+        "instances": 1,
+        "capacityPerInstancePerSecond": 100
+      },
+      "category": "Compute"
+    },
+    {
+      "id": "COMP-METRICS",
+      "type": "metrics-collector",
+      "displayName": "Metrics Collector",
+      "responsibilities": [
+        "Collect service health and performance measurements"
+      ],
+      "supportedOperations": [
+        "collect-metrics",
+        "collect-health"
+      ],
+      "defaultConfig": {},
+      "category": "Observability"
+    },
+    {
+      "id": "COMP-WAF",
+      "type": "waf",
+      "category": "Security",
+      "displayName": "Web Application Firewall",
+      "responsibilities": [
+        "Block malicious and abusive traffic before it reaches the application",
+        "Filter known bad URL patterns"
+      ],
+      "supportedOperations": [
+        "http-routing",
+        "request-rate-check"
+      ],
+      "defaultConfig": {
+        "averageLatencyMs": 2
+      }
+    },
+    {
+      "id": "COMP-AUTH",
+      "type": "auth-service",
+      "category": "Security",
+      "displayName": "Auth Service",
+      "responsibilities": [
+        "Authenticate API callers",
+        "Issue and validate tokens"
+      ],
+      "supportedOperations": [
+        "http-request",
+        "authentication"
+      ],
+      "defaultConfig": {
+        "averageLatencyMs": 5
+      }
+    },
+    {
+      "id": "COMP-READ-REPLICA",
+      "type": "read-replica",
+      "category": "Storage",
+      "displayName": "Read Replica",
+      "responsibilities": [
+        "Serve read traffic replicated from the primary database",
+        "Absorb cache misses"
+      ],
+      "supportedOperations": [
+        "durable-read",
+        "indexed-lookup",
+        "key-lookup",
+        "replication-target"
+      ],
+      "defaultConfig": {
+        "readCapacityRps": 5000,
+        "averageReadLatencyMs": 20,
+        "durable": true,
+        "replicationLagMs": 100
+      },
+      "configSchema": {
+        "readCapacityRps": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "averageReadLatencyMs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "replicationLagMs": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    {
+      "id": "COMP-ANALYTICS-STORE",
+      "type": "analytics-store",
+      "category": "Storage",
+      "displayName": "Analytics Store",
+      "responsibilities": [
+        "Store click events (append-only)",
+        "Serve aggregate queries"
+      ],
+      "supportedOperations": [
+        "append-write",
+        "aggregate-query"
+      ],
+      "defaultConfig": {
+        "writeCapacityRps": 5000,
+        "averageWriteLatencyMs": 10,
+        "durable": true
+      }
+    },
+    {
+      "id": "COMP-LOGGING",
+      "type": "logging",
+      "category": "Observability",
+      "displayName": "Logging & Tracing",
+      "responsibilities": [
+        "Collect structured logs",
+        "Trace requests across services"
+      ],
+      "supportedOperations": [
+        "collect-logs",
+        "collect-traces"
+      ],
+      "defaultConfig": {}
+    },
+    {
+      "id": "COMP-API-GATEWAY--rate-limiter-variant",
+      "type": "api-gateway",
+      "category": "Networking",
+      "displayName": "API Gateway",
+      "responsibilities": [
+        "Route API requests",
+        "Authenticate callers"
+      ],
+      "supportedOperations": [
+        "http-routing",
+        "authentication"
+      ],
+      "defaultConfig": {
+        "averageLatencyMs": 3
+      }
+    },
+    {
+      "id": "COMP-RATE-LIMITER--rate-limiter-variant",
+      "type": "rate-limiter",
+      "category": "Security",
+      "displayName": "Rate Limiter",
+      "responsibilities": [
+        "Count requests per client",
+        "Reject requests over the limit"
+      ],
+      "supportedOperations": [
+        "request-rate-check",
+        "reject-excess-requests"
+      ],
+      "defaultConfig": {
+        "instances": 2,
+        "capacityPerInstanceRps": 6000,
+        "averageLatencyMs": 1,
+        "algorithm": "token-bucket",
+        "rejectBehavior": "undeclared",
+        "onStoreUnavailable": "undeclared"
+      },
+      "configSchema": {
+        "instances": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "capacityPerInstanceRps": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "averageLatencyMs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "token-bucket",
+            "sliding-window",
+            "fixed-window",
+            "leaky-bucket"
+          ]
+        },
+        "rejectBehavior": {
+          "type": "string",
+          "enum": [
+            "undeclared",
+            "return-429"
+          ]
+        },
+        "onStoreUnavailable": {
+          "type": "string",
+          "enum": [
+            "undeclared",
+            "fail-open",
+            "fail-closed"
+          ]
+        }
+      }
+    },
+    {
+      "id": "COMP-APP-SERVER--rate-limiter-variant",
+      "type": "application-server",
+      "category": "Compute",
+      "displayName": "Application Server",
+      "responsibilities": [
+        "Serve the protected API"
+      ],
+      "supportedOperations": [
+        "http-request",
+        "http-response-handler"
+      ],
+      "defaultConfig": {
+        "instances": 4,
+        "capacityPerInstanceRps": 3000,
+        "averageProcessingLatencyMs": 10
+      },
+      "configSchema": {
+        "instances": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "capacityPerInstanceRps": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    {
+      "id": "COMP-COUNTER-STORE",
+      "type": "cache",
+      "category": "Caching",
+      "displayName": "Counter Store (Redis-style)",
+      "responsibilities": [
+        "Hold request counts shared by all limiter servers",
+        "Expire old counts automatically"
+      ],
+      "supportedOperations": [
+        "cache-read",
+        "cache-write",
+        "atomic-increment",
+        "ttl-expiration"
+      ],
+      "defaultConfig": {
+        "opsCapacityRps": 50000,
+        "averageLatencyMs": 1,
+        "available": true
+      },
+      "configSchema": {
+        "opsCapacityRps": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "averageLatencyMs": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    {
+      "id": "COMP-RULES-DB",
+      "type": "sql-database",
+      "category": "Storage",
+      "displayName": "Rules Database",
+      "responsibilities": [
+        "Store per-client limits and plans"
+      ],
+      "supportedOperations": [
+        "durable-read",
+        "durable-write",
+        "indexed-lookup"
+      ],
+      "defaultConfig": {
+        "readCapacityRps": 5000,
+        "averageReadLatencyMs": 15,
+        "durable": true
+      }
+    }
+  ],
+  "connectionTypes": [
+    {
+      "id": "EDGE-SYNC-HTTP",
+      "name": "Synchronous HTTP",
+      "semantics": "The source sends an HTTP request and expects a response.",
+      "compatibleSourceOperations": [
+        "http-request",
+        "http-routing",
+        "request-distribution"
+      ],
+      "compatibleTargetOperations": [
+        "http-request",
+        "http-routing",
+        "request-distribution"
+      ]
+    },
+    {
+      "id": "EDGE-CACHE-READ",
+      "name": "Cache Lookup",
+      "semantics": "The source attempts to retrieve a value from the target cache.",
+      "compatibleSourceOperations": [
+        "mapping-lookup",
+        "cache-read"
+      ],
+      "compatibleTargetOperations": [
+        "cache-read"
+      ]
+    },
+    {
+      "id": "EDGE-DB-READ",
+      "name": "Database Read",
+      "semantics": "The source reads persisted data from the target data store.",
+      "compatibleSourceOperations": [
+        "mapping-lookup",
+        "durable-read",
+        "indexed-lookup"
+      ],
+      "compatibleTargetOperations": [
+        "durable-read",
+        "indexed-lookup",
+        "key-lookup"
+      ]
+    },
+    {
+      "id": "EDGE-DB-WRITE",
+      "name": "Database Write",
+      "semantics": "The source persists a new mapping in the target data store.",
+      "compatibleSourceOperations": [
+        "durable-write",
+        "process-job"
+      ],
+      "compatibleTargetOperations": [
+        "durable-write",
+        "append-write"
+      ]
+    },
+    {
+      "id": "EDGE-CACHE-WRITE",
+      "name": "Cache Write",
+      "semantics": "The source stores or updates a value in the target cache.",
+      "compatibleSourceOperations": [
+        "cache-write"
+      ],
+      "compatibleTargetOperations": [
+        "cache-write"
+      ]
+    },
+    {
+      "id": "EDGE-ASYNC-PUBLISH",
+      "name": "Asynchronous Publish",
+      "semantics": "The source publishes a message to a queue.",
+      "compatibleSourceOperations": [
+        "publish-message"
+      ],
+      "compatibleTargetOperations": [
+        "buffer-work"
+      ]
+    },
+    {
+      "id": "EDGE-ASYNC-CONSUME",
+      "name": "Queue Consume",
+      "semantics": "The target consumes messages buffered by the source queue.",
+      "compatibleSourceOperations": [
+        "buffer-work"
+      ],
+      "compatibleTargetOperations": [
+        "consume-message"
+      ]
+    },
+    {
+      "id": "EDGE-ID-ALLOC",
+      "name": "ID Allocation",
+      "semantics": "The source requests an identifier or short code from the target generator.",
+      "compatibleSourceOperations": [
+        "short-code-generation"
+      ],
+      "compatibleTargetOperations": [
+        "generate-identifier",
+        "allocate-identifier"
+      ]
+    },
+    {
+      "id": "EDGE-REPLICATION",
+      "name": "Replication",
+      "semantics": "The source primary store replicates data to the target replica.",
+      "compatibleSourceOperations": [
+        "unique-constraint",
+        "conditional-write"
+      ],
+      "compatibleTargetOperations": [
+        "replication-target"
+      ]
+    },
+    {
+      "id": "EDGE-TELEMETRY",
+      "name": "Telemetry",
+      "semantics": "The source emits metrics, logs or health signals to the target collector.",
+      "compatibleSourceOperations": [
+        "http-request",
+        "request-distribution",
+        "durable-read",
+        "cache-read",
+        "consume-message"
+      ],
+      "compatibleTargetOperations": [
+        "collect-metrics",
+        "collect-health",
+        "collect-logs",
+        "collect-traces"
+      ]
+    },
+    {
+      "id": "EDGE-SYNC-HTTP--rate-limiter-variant",
+      "name": "Synchronous HTTP",
+      "semantics": "The source sends a request and waits for the response.",
+      "compatibleSourceOperations": [
+        "http-request",
+        "http-routing",
+        "request-distribution",
+        "request-rate-check"
+      ],
+      "compatibleTargetOperations": [
+        "http-request",
+        "http-routing",
+        "request-distribution",
+        "request-rate-check"
+      ]
+    },
+    {
+      "id": "EDGE-COUNTER",
+      "name": "Counter Update",
+      "semantics": "The limiter reads and atomically increments a client's count in the store.",
+      "compatibleSourceOperations": [
+        "request-rate-check"
+      ],
+      "compatibleTargetOperations": [
+        "atomic-increment"
+      ]
+    },
+    {
+      "id": "EDGE-DB-READ--rate-limiter-variant",
+      "name": "Rules Lookup",
+      "semantics": "The limiter reads a client's limit from the rules database.",
+      "compatibleSourceOperations": [
+        "request-rate-check"
+      ],
+      "compatibleTargetOperations": [
+        "durable-read",
+        "indexed-lookup"
+      ]
+    },
+    {
+      "id": "EDGE-TELEMETRY--rate-limiter-variant",
+      "name": "Telemetry",
+      "semantics": "The source reports allowed and rejected counts.",
+      "compatibleSourceOperations": [
+        "request-rate-check",
+        "http-request"
+      ],
+      "compatibleTargetOperations": [
+        "collect-metrics",
+        "collect-health"
+      ]
+    }
+  ]
+}

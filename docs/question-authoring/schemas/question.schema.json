@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://hld-studio.local/schemas/question.schema.json",
+  "title": "HLD Studio question file",
+  "description": "The main file for one question. Sections marked REQUIRED TO RUN break the app if missing; the rest improve the learning experience and are checked by the publish checklist.",
+  "type": "object",
+  "required": ["schemaVersion", "question", "requirements", "capacityEstimation", "componentCatalogue", "connectionTypes", "hints"],
+  "properties": {
+    "schemaVersion": { "type": "string", "pattern": "^1\\.\\d+\\.\\d+$", "description": "Format version of this file. Currently 1.0.0." },
+    "question": {
+      "type": "object",
+      "required": ["id", "version", "slug", "title", "difficulty"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^hld-[a-z0-9]+(-[a-z0-9]+)*-\\d{3}$", "description": "Permanent. Used as the storage key and the evaluator registry key. Example: hld-url-shortener-001" },
+        "version": { "type": "integer", "minimum": 1, "description": "Increase when requirements or the component catalogue change in a way that invalidates saved designs." },
+        "slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "description": "URL-friendly name. Also the file name: <slug>.json" },
+        "title": { "type": "string", "minLength": 5, "maxLength": 80 },
+        "subtitle": { "type": "string", "maxLength": 200 },
+        "category": { "type": "string", "description": "Topic area, for example storage-and-retrieval, messaging, real-time, payments." },
+        "difficulty": { "enum": ["easy", "medium", "hard", "beginner", "intermediate", "advanced"], "description": "Use easy, medium or hard. The older words are accepted and converted." },
+        "status": { "enum": ["draft", "review", "published"] },
+        "estimatedMinutes": { "type": "integer", "minimum": 15, "maximum": 120 },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "prerequisites": { "type": "array", "items": { "type": "string" } },
+        "learningObjectives": { "type": "array", "items": { "type": "string" } },
+        "relatedQuestions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "presentation": {
+      "type": "object",
+      "properties": {
+        "problemStatement": { "type": "object", "required": ["short", "full"], "properties": { "short": { "type": "string" }, "full": { "type": "string" }, "learnerTask": { "type": "array", "items": { "type": "string" } } } },
+        "scope": { "type": "object", "properties": { "inScope": { "type": "array", "items": { "type": "string" } }, "outOfScope": { "type": "array", "items": { "type": "string" } }, "optionalExtensions": { "type": "array", "items": { "type": "string" } } } }
+      }
+    },
+    "requirements": {
+      "type": "object",
+      "required": ["functional", "nonFunctional"],
+      "properties": {
+        "functional": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/requirement" } },
+        "nonFunctional": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/requirement" } }
+      }
+    },
+    "assumptions": { "type": "array", "items": { "type": "object", "required": ["id", "description"], "properties": { "id": { "type": "string" }, "description": { "type": "string" }, "defaultValue": {}, "configurable": { "type": "boolean" }, "affects": { "type": "array", "items": { "type": "string" } } } } },
+    "capacityEstimation": {
+      "type": "object",
+      "required": ["defaultInputs"],
+      "properties": {
+        "defaultInputs": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "name", "value", "unit"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "value": { "type": "number" }, "unit": { "type": "string" }, "configurable": { "type": "boolean", "description": "Informational. The sidebar shows these values read-only." } } } },
+        "calculations": { "type": "array", "items": { "type": "object", "required": ["id", "name", "formula", "outputUnit"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "formula": { "type": "string" }, "outputUnit": { "type": "string" }, "expectedValue": { "type": "number" }, "notes": { "type": "array", "items": { "type": "string" } } } } },
+        "formulaAssumptions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "apiDesign": { "type": "array", "items": { "type": "object", "required": ["id", "name", "method", "path"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "method": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] }, "path": { "type": "string" }, "purpose": { "type": "string" }, "optional": { "type": "boolean" }, "relatedRequirements": { "type": "array", "items": { "type": "string" } } } } },
+    "dataModel": { "type": "array", "items": { "type": "object", "required": ["id", "name", "fields"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "purpose": { "type": "string" }, "optional": { "type": "boolean" }, "fields": { "type": "array", "items": { "type": "object", "required": ["name", "type"], "properties": { "name": { "type": "string" }, "type": { "type": "string" }, "required": { "type": "boolean" }, "constraints": { "type": "array", "items": { "type": "string" } } } } } } } },
+    "componentCatalogue": {
+      "type": "object",
+      "required": ["allowedComponentIds", "components"],
+      "properties": {
+        "allowedComponentIds": { "type": "array", "minItems": 2, "items": { "type": "string", "pattern": "^COMP-[A-Z0-9]+(-[A-Z0-9]+)*$" } },
+        "components": { "type": "array", "minItems": 2, "items": { "$ref": "#/definitions/component" } }
+      }
+    },
+    "connectionTypes": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/connectionType" } },
+    "hints": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "level", "text"], "properties": { "id": { "type": "string" }, "level": { "type": "integer", "minimum": 1, "maximum": 10 }, "text": { "type": "string", "minLength": 10 }, "type": { "type": "string" }, "relatedConcepts": { "type": "array", "items": { "type": "string" } } } } },
+    "evaluation": { "type": "object", "properties": { "version": { "type": "integer" }, "evaluationPrinciples": { "type": "array", "items": { "type": "string" } }, "rules": { "type": "array", "items": { "type": "object", "required": ["id", "title", "severity"], "properties": { "id": { "type": "string" }, "category": { "type": "string" }, "requirementId": { "type": "string" }, "title": { "type": "string" }, "severity": { "enum": ["error", "warning", "info"] }, "check": { "type": "string" }, "passCondition": { "type": "string" } } } }, "scoring": { "type": "object" } } },
+    "metrics": { "type": "array", "items": { "type": "object", "required": ["id", "name", "formula", "unit"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "formula": { "type": "string" }, "unit": { "type": "string" }, "assumptions": { "type": "array", "items": { "type": "string" } } } } },
+    "failureScenarios": { "type": "array", "items": { "type": "object", "required": ["id", "name"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "difficulty": { "enum": ["easy", "medium", "hard", "beginner", "intermediate", "advanced"] }, "expectedBehavior": { "type": "array", "items": { "type": "string" } }, "passCriteria": { "type": "array", "items": { "type": "string" } } } } },
+    "referenceSolutions": { "type": "array", "description": "Descriptive only. The app loads reference DESIGNS from the learning file." },
+    "followUpQuestions": { "type": "array", "description": "Descriptive only. The app loads follow-ups from the learning file." },
+    "solutionExplanation": { "type": "object" },
+    "evaluatorTestCases": { "type": "array" },
+    "progression": { "type": "object" }
+  },
+  "definitions": {
+    "requirement": {
+      "type": "object",
+      "required": ["id", "title", "priority"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^([A-Z]{2,4}-)?(FR|NFR)-\\d{2}$", "description": "FR-01 for functional, NFR-01 for non-functional. Add a prefix when ids could clash: RL-FR-01." },
+        "title": { "type": "string", "minLength": 4, "maxLength": 90, "description": "Shown to learners. Plain language, no FR/NFR jargon." },
+        "description": { "type": "string" },
+        "priority": { "enum": ["must", "should", "could"] },
+        "category": { "type": "string" },
+        "target": { "type": "object", "description": "For numeric goals, e.g. {operator:'less_than', value:200, unit:'ms'} or {requestsPerSecond:10000}." },
+        "acceptanceCriteria": { "type": "array", "items": { "type": "string" } },
+        "requiredCapabilities": { "type": "array", "items": { "type": "string" } },
+        "evaluationRuleIds": { "type": "array", "items": { "type": "string" } },
+        "measurementMethod": { "type": "string" },
+        "limitations": { "type": "array", "items": { "type": "string" } },
+        "relatedApiIds": { "type": "array", "items": { "type": "string" } },
+        "relatedMetricIds": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "component": {
+      "type": "object",
+      "required": ["id", "type", "displayName", "responsibilities", "supportedOperations", "defaultConfig"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^COMP-[A-Z0-9]+(-[A-Z0-9]+)*$" },
+        "type": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "description": "Kind of component. Reused across questions: client, load-balancer, cache ..." },
+        "category": { "enum": ["Clients", "Networking", "Compute", "Caching", "Storage", "Messaging", "Security", "Observability"], "description": "Library group, node colour and icon. Required for any type not already known to the app." },
+        "displayName": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "responsibilities": { "type": "array", "minItems": 1, "items": { "type": "string" }, "description": "The first line is shown under the name in the library." },
+        "supportedOperations": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" } },
+        "defaultConfig": { "type": "object", "additionalProperties": { "type": ["number", "string", "boolean"] } },
+        "configSchema": { "type": "object", "additionalProperties": { "type": "object", "required": ["type"], "properties": { "type": { "enum": ["number", "integer", "string", "boolean"] }, "minimum": { "type": "number" }, "maximum": { "type": "number" }, "exclusiveMinimum": { "type": "number" }, "enum": { "type": "array", "items": { "type": "string" } } } } }
+      }
+    },
+    "connectionType": {
+      "type": "object",
+      "required": ["id", "name", "semantics", "compatibleSourceOperations", "compatibleTargetOperations"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^EDGE-[A-Z0-9]+(-[A-Z0-9]+)*$" },
+        "name": { "type": "string", "description": "Shown on the canvas edge label." },
+        "semantics": { "type": "string", "description": "Shown in the inspector. One sentence." },
+        "compatibleSourceOperations": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "compatibleTargetOperations": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    }
+  }
+}

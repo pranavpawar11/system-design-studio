@@ -1,741 +1,1926 @@
+
 {
- "schemaVersion": "1.0.0",
- "question": {
-  "id": "hld-url-shortener-001",
-  "version": 1,
-  "slug": "design-url-shortener",
-  "title": "Design a URL Shortener",
-  "difficulty": "beginner",
-  "estimatedMinutes": 45
- },
- "requirements": {
-  "functional": [
-   {
-    "id": "FR-01",
-    "title": "Create a short URL",
-    "priority": "must",
-    "evaluationRuleIds": [
-     "RULE-FR-01"
+  "schemaVersion": "1.0.0",
+  "question": {
+    "id": "hld-url-shortener-001",
+    "version": 1,
+    "slug": "design-url-shortener",
+    "title": "Design a URL Shortener",
+    "subtitle": "Design a scalable service that converts long URLs into short links and redirects users to their original destinations.",
+    "category": "storage-and-retrieval",
+    "difficulty": "beginner",
+    "status": "draft",
+    "estimatedMinutes": 45,
+    "tags": [
+      "system-design",
+      "url-shortener",
+      "api-design",
+      "database",
+      "caching",
+      "scalability",
+      "reliability"
+    ],
+    "prerequisites": [
+      "http-basics",
+      "database-basics",
+      "rest-api-basics"
+    ],
+    "learningObjectives": [
+      "Identify functional and non-functional requirements.",
+      "Estimate request rates and storage requirements.",
+      "Design APIs for URL creation and redirection.",
+      "Select a suitable persistent data store.",
+      "Explain short-code generation and uniqueness.",
+      "Understand caching in read-heavy systems.",
+      "Identify application and database bottlenecks.",
+      "Evaluate basic availability and failure scenarios."
+    ],
+    "relatedQuestions": [
+      "hld-pastebin-001",
+      "hld-key-value-store-001",
+      "hld-rate-limiter-001"
     ]
-   },
-   {
-    "id": "FR-02",
-    "title": "Redirect to the original URL",
-    "priority": "must",
-    "evaluationRuleIds": [
-     "RULE-FR-02"
+  },
+  "presentation": {
+    "problemStatement": {
+      "short": "Design a service that converts long URLs into short URLs and redirects visitors to the original destinations.",
+      "full": "Design a URL-shortening service similar to Bitly. Users should be able to submit a long URL and receive a short URL. When another user visits the short URL, the system should redirect them to the original destination. The service should support high redirect traffic, generate unique short codes, and remain reliable as traffic grows. Design the high-level architecture, APIs, data model, and request flows. Explain your key decisions and identify potential bottlenecks.",
+      "learnerTask": [
+        "Analyze the requirements.",
+        "Estimate the expected workload.",
+        "Design the high-level architecture using the component canvas.",
+        "Define how URLs are created and resolved.",
+        "Choose suitable storage and caching strategies.",
+        "Validate the architecture.",
+        "Review the evaluation report and improve the design.",
+        "Answer follow-up questions about trade-offs."
+      ],
+      "initiallyVisibleInformation": [
+        "problemStatement",
+        "learningObjectives",
+        "difficulty",
+        "estimatedMinutes"
+      ],
+      "progressiveDisclosure": true
+    },
+    "scope": {
+      "inScope": [
+        "Create a short URL from a valid long URL.",
+        "Generate and persist a unique short code.",
+        "Resolve a short code to its original URL.",
+        "Redirect the client to the destination.",
+        "Handle unknown short codes.",
+        "Support increasing read traffic."
+      ],
+      "outOfScope": [
+        "Payments and billing.",
+        "Enterprise account management.",
+        "Custom domains.",
+        "Advanced analytics dashboards.",
+        "Marketing campaigns.",
+        "Machine-learning-based abuse detection.",
+        "Multi-region deployment in the initial design."
+      ],
+      "optionalExtensions": [
+        "Custom short codes.",
+        "Link expiration.",
+        "Click analytics.",
+        "User accounts.",
+        "Abuse prevention.",
+        "Multi-region deployment."
+      ]
+    }
+  },
+  "requirements": {
+    "functional": [
+      {
+        "id": "FR-01",
+        "title": "Create a short URL",
+        "description": "A client can submit a valid long URL and receive a short URL.",
+        "priority": "must",
+        "acceptanceCriteria": [
+          "A creation request can reach a component that validates the input.",
+          "The system generates or allocates a short code.",
+          "The short code is associated with the original URL.",
+          "The system returns the generated short URL to the client."
+        ],
+        "requiredCapabilities": [
+          "request-handling",
+          "url-validation",
+          "short-code-generation",
+          "durable-write",
+          "response-generation"
+        ],
+        "evaluationRuleIds": [
+          "RULE-FR-01"
+        ],
+        "relatedApiIds": [
+          "API-01"
+        ],
+        "relatedMetricIds": [
+          "METRIC-CREATE-RATE"
+        ]
+      },
+      {
+        "id": "FR-02",
+        "title": "Redirect to the original URL",
+        "description": "A request containing a valid short code redirects to the corresponding original URL.",
+        "priority": "must",
+        "acceptanceCriteria": [
+          "The redirect request reaches a resolver.",
+          "The resolver can retrieve the URL mapping.",
+          "The system returns an HTTP redirect to the client.",
+          "The design provides a valid lookup path through its selected storage strategy."
+        ],
+        "requiredCapabilities": [
+          "request-handling",
+          "short-code-resolution",
+          "mapping-lookup",
+          "redirect-response"
+        ],
+        "evaluationRuleIds": [
+          "RULE-FR-02"
+        ],
+        "relatedApiIds": [
+          "API-02"
+        ],
+        "relatedMetricIds": [
+          "METRIC-REDIRECT-RATE",
+          "METRIC-DB-READ-RATE",
+          "METRIC-REDIRECT-LATENCY"
+        ]
+      },
+      {
+        "id": "FR-03",
+        "title": "Maintain short-code uniqueness",
+        "description": "Two different URL mappings must not unintentionally share the same short code.",
+        "priority": "must",
+        "acceptanceCriteria": [
+          "The design includes a uniqueness strategy.",
+          "Concurrent creation requests are considered.",
+          "A collision does not silently overwrite an unrelated mapping."
+        ],
+        "requiredCapabilities": [
+          "unique-key-generation-or-allocation",
+          "atomic-uniqueness-enforcement",
+          "collision-handling"
+        ],
+        "evaluationRuleIds": [
+          "RULE-FR-03"
+        ],
+        "relatedDataEntityIds": [
+          "ENTITY-URL-MAPPING"
+        ]
+      },
+      {
+        "id": "FR-04",
+        "title": "Handle unknown short codes",
+        "description": "The service returns an appropriate not-found response when a short code does not exist.",
+        "priority": "must",
+        "acceptanceCriteria": [
+          "The resolver handles missing mappings.",
+          "The client receives a defined error response.",
+          "A missing mapping does not produce an invalid redirect."
+        ],
+        "requiredCapabilities": [
+          "missing-record-handling",
+          "error-response"
+        ],
+        "evaluationRuleIds": [
+          "RULE-FR-04"
+        ]
+      },
+      {
+        "id": "FR-05",
+        "title": "Support high-volume redirects",
+        "description": "The design supports a substantially higher redirect rate than URL creation rate.",
+        "priority": "must",
+        "acceptanceCriteria": [
+          "The redirect path can be scaled horizontally or through another justified capacity strategy.",
+          "The design accounts for read traffic.",
+          "The learner identifies potential storage or application bottlenecks."
+        ],
+        "requiredCapabilities": [
+          "read-path-scaling",
+          "capacity-planning"
+        ],
+        "evaluationRuleIds": [
+          "RULE-FR-05"
+        ]
+      },
+      {
+        "id": "FR-06",
+        "title": "Validate submitted destinations",
+        "description": "The service validates URLs before storing them.",
+        "priority": "must",
+        "acceptanceCriteria": [
+          "The system validates URL syntax and permitted schemes.",
+          "The system does not blindly redirect to malformed input.",
+          "Security risks associated with open redirects and abuse are considered."
+        ],
+        "requiredCapabilities": [
+          "url-validation",
+          "security-control"
+        ],
+        "evaluationRuleIds": [
+          "RULE-FR-06"
+        ]
+      }
+    ],
+    "nonFunctional": [
+      {
+        "id": "NFR-01",
+        "title": "Redirect latency",
+        "category": "performance",
+        "priority": "must",
+        "target": {
+          "operator": "less_than",
+          "value": 200,
+          "unit": "ms",
+          "statistic": "p95"
+        },
+        "measurementMethod": "estimated-request-path-latency",
+        "evaluationRuleIds": [
+          "RULE-NFR-01"
+        ],
+        "limitations": [
+          "The MVP simulator does not predict real production p95 latency.",
+          "Any displayed estimate must state its latency-model assumptions.",
+          "A deterministic path estimate must not be presented as a measured percentile."
+        ]
+      },
+      {
+        "id": "NFR-02",
+        "title": "Read scalability",
+        "category": "scalability",
+        "priority": "must",
+        "target": {
+          "requestsPerSecond": 10000,
+          "trafficType": "redirect"
+        },
+        "measurementMethod": "component-capacity-check",
+        "evaluationRuleIds": [
+          "RULE-NFR-02"
+        ]
+      },
+      {
+        "id": "NFR-03",
+        "title": "Data integrity",
+        "category": "consistency",
+        "priority": "must",
+        "target": {
+          "description": "A short code must resolve to at most one active URL mapping."
+        },
+        "measurementMethod": "data-integrity-rule-check",
+        "evaluationRuleIds": [
+          "RULE-NFR-03"
+        ]
+      },
+      {
+        "id": "NFR-04",
+        "title": "Application availability",
+        "category": "reliability",
+        "priority": "should",
+        "target": {
+          "availabilityPercent": 99.9,
+          "period": "monthly"
+        },
+        "measurementMethod": "failure-scenario-analysis",
+        "evaluationRuleIds": [
+          "RULE-NFR-04"
+        ],
+        "limitations": [
+          "A diagram alone cannot prove a real availability percentage.",
+          "The MVP evaluates modeled redundancy and failure behavior."
+        ]
+      },
+      {
+        "id": "NFR-05",
+        "title": "Durable URL mappings",
+        "category": "durability",
+        "priority": "must",
+        "target": {
+          "description": "Successfully created URL mappings must survive ordinary application instance failure."
+        },
+        "measurementMethod": "storage-and-failure-rule-check",
+        "evaluationRuleIds": [
+          "RULE-NFR-05"
+        ]
+      }
     ]
-   },
-   {
-    "id": "FR-03",
-    "title": "Maintain short-code uniqueness",
-    "priority": "must",
-    "evaluationRuleIds": [
-     "RULE-FR-03"
-    ]
-   },
-   {
-    "id": "FR-04",
-    "title": "Handle unknown short codes",
-    "priority": "must",
-    "evaluationRuleIds": [
-     "RULE-FR-04"
-    ]
-   },
-   {
-    "id": "FR-05",
-    "title": "Support high-volume redirects",
-    "priority": "must",
-    "evaluationRuleIds": [
-     "RULE-FR-05"
-    ]
-   },
-   {
-    "id": "FR-06",
-    "title": "Validate submitted destinations",
-    "priority": "must",
-    "evaluationRuleIds": [
-     "RULE-FR-06"
-    ]
-   }
+  },
+  "assumptions": [
+    {
+      "id": "ASM-01",
+      "description": "The service receives significantly more redirects than URL creation requests.",
+      "defaultValue": {
+        "redirectsPerCreation": 10
+      },
+      "configurable": true,
+      "affects": [
+        "capacityEstimation",
+        "caching",
+        "storageLoad"
+      ]
+    },
+    {
+      "id": "ASM-02",
+      "description": "The initial deployment operates in one geographic region.",
+      "defaultValue": true,
+      "configurable": false,
+      "affects": [
+        "latencyModel",
+        "architectureScope"
+      ]
+    },
+    {
+      "id": "ASM-03",
+      "description": "URL mappings are immutable after creation in the initial version.",
+      "defaultValue": true,
+      "configurable": false,
+      "affects": [
+        "dataModel",
+        "cacheInvalidation"
+      ]
+    },
+    {
+      "id": "ASM-04",
+      "description": "Short codes are case-sensitive.",
+      "defaultValue": true,
+      "configurable": true,
+      "affects": [
+        "shortCodeGeneration",
+        "dataIntegrity"
+      ]
+    },
+    {
+      "id": "ASM-05",
+      "description": "Traffic can be unevenly distributed across short codes.",
+      "defaultValue": true,
+      "configurable": true,
+      "affects": [
+        "caching",
+        "hotKeyScenarios"
+      ]
+    },
+    {
+      "id": "ASM-06",
+      "description": "Average record size excludes database indexes, replication, and operational overhead.",
+      "defaultValue": true,
+      "configurable": false,
+      "affects": [
+        "storageEstimation"
+      ]
+    }
   ],
-  "nonFunctional": [
-   {
-    "id": "NFR-01",
-    "title": "Redirect latency",
-    "priority": "must",
-    "target": {
-     "operator": "less_than",
-     "value": 200,
-     "unit": "ms",
-     "statistic": "p95"
+  "capacityEstimation": {
+    "defaultInputs": [
+      {
+        "id": "CAP-IN-01",
+        "name": "New URLs per day",
+        "value": 10000000,
+        "unit": "urls/day",
+        "configurable": true
+      },
+      {
+        "id": "CAP-IN-02",
+        "name": "Redirects per day",
+        "value": 100000000,
+        "unit": "requests/day",
+        "configurable": true
+      },
+      {
+        "id": "CAP-IN-03",
+        "name": "Average stored mapping size",
+        "value": 500,
+        "unit": "bytes",
+        "configurable": true
+      },
+      {
+        "id": "CAP-IN-04",
+        "name": "Retention duration",
+        "value": 3,
+        "unit": "years",
+        "configurable": true
+      },
+      {
+        "id": "CAP-IN-05",
+        "name": "Peak traffic multiplier",
+        "value": 3,
+        "unit": "multiplier",
+        "configurable": true
+      },
+      {
+        "id": "CAP-IN-06",
+        "name": "Cache hit ratio",
+        "value": 0.9,
+        "unit": "ratio",
+        "configurable": true
+      }
+    ],
+    "calculations": [
+      {
+        "id": "CAP-CALC-01",
+        "name": "Average creation rate",
+        "formula": "newUrlsPerDay / 86400",
+        "outputUnit": "requests/second",
+        "expectedValue": 115.7407407
+      },
+      {
+        "id": "CAP-CALC-02",
+        "name": "Average redirect rate",
+        "formula": "redirectsPerDay / 86400",
+        "outputUnit": "requests/second",
+        "expectedValue": 1157.407407
+      },
+      {
+        "id": "CAP-CALC-03",
+        "name": "Peak redirect rate",
+        "formula": "averageRedirectRate * peakTrafficMultiplier",
+        "outputUnit": "requests/second",
+        "expectedValue": 3472.222222
+      },
+      {
+        "id": "CAP-CALC-04",
+        "name": "Read-to-write ratio",
+        "formula": "redirectsPerDay / newUrlsPerDay",
+        "outputUnit": "ratio",
+        "expectedValue": 10
+      },
+      {
+        "id": "CAP-CALC-05",
+        "name": "Raw storage requirement",
+        "formula": "newUrlsPerDay * retentionDays * averageRecordBytes",
+        "outputUnit": "bytes",
+        "expectedValue": 5475000000000,
+        "notes": [
+          "Assumes 365 days per year.",
+          "Excludes indexes, replicas, backups, and database overhead."
+        ]
+      },
+      {
+        "id": "CAP-CALC-06",
+        "name": "Estimated database reads with cache",
+        "formula": "redirectRate * (1 - cacheHitRatio)",
+        "outputUnit": "reads/second",
+        "expectedValue": 115.7407407
+      }
+    ],
+    "formulaAssumptions": [
+      "One day contains 86400 seconds.",
+      "One year contains 365 days for this calculation.",
+      "Average rates do not represent peak rates.",
+      "The cache calculation assumes one database read for each cache miss.",
+      "The cache model ignores concurrent misses and cache refresh overhead."
+    ]
+  },
+  "apiDesign": [
+    {
+      "id": "API-01",
+      "name": "Create short URL",
+      "method": "POST",
+      "path": "/api/urls",
+      "purpose": "Create a short URL mapping.",
+      "request": {
+        "contentType": "application/json",
+        "fields": [
+          {
+            "name": "originalUrl",
+            "type": "string",
+            "required": true,
+            "validation": [
+              "valid-url",
+              "permitted-scheme"
+            ]
+          },
+          {
+            "name": "customCode",
+            "type": "string",
+            "required": false,
+            "validation": [
+              "allowed-characters",
+              "length-limit",
+              "uniqueness-check"
+            ]
+          },
+          {
+            "name": "expiresAt",
+            "type": "datetime",
+            "required": false
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": 201,
+          "meaning": "Short URL created"
+        },
+        {
+          "status": 400,
+          "meaning": "Invalid request"
+        },
+        {
+          "status": 409,
+          "meaning": "Requested custom code already exists"
+        },
+        {
+          "status": 429,
+          "meaning": "Rate limit exceeded"
+        },
+        {
+          "status": 500,
+          "meaning": "Unexpected server error"
+        }
+      ],
+      "security": [
+        "Input validation",
+        "Abuse prevention",
+        "Optional caller rate limiting"
+      ],
+      "relatedRequirements": [
+        "FR-01",
+        "FR-03",
+        "FR-06"
+      ]
+    },
+    {
+      "id": "API-02",
+      "name": "Resolve short URL",
+      "method": "GET",
+      "path": "/{shortCode}",
+      "purpose": "Resolve a short code and redirect to the original URL.",
+      "request": {
+        "pathParameters": [
+          {
+            "name": "shortCode",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status": 301,
+          "meaning": "Permanent redirect, if this behavior is selected"
+        },
+        {
+          "status": 302,
+          "meaning": "Temporary redirect, if this behavior is selected"
+        },
+        {
+          "status": 404,
+          "meaning": "Short code does not exist"
+        },
+        {
+          "status": 410,
+          "meaning": "Short link has expired, if expiration is enabled"
+        },
+        {
+          "status": 429,
+          "meaning": "Rate limit exceeded"
+        },
+        {
+          "status": 500,
+          "meaning": "Unexpected server error"
+        },
+        {
+          "status": 503,
+          "meaning": "Required service temporarily unavailable"
+        }
+      ],
+      "security": [
+        "Validate short-code format",
+        "Avoid open redirects based on arbitrary user-supplied destinations"
+      ],
+      "relatedRequirements": [
+        "FR-02",
+        "FR-04",
+        "FR-05"
+      ]
+    },
+    {
+      "id": "API-03",
+      "name": "Get URL statistics",
+      "method": "GET",
+      "path": "/api/urls/{shortCode}/stats",
+      "purpose": "Retrieve basic click statistics as an optional extension.",
+      "optional": true,
+      "relatedRequirements": []
     }
-   },
-   {
-    "id": "NFR-02",
-    "title": "Read scalability",
-    "priority": "must",
-    "target": {
-     "requestsPerSecond": 10000,
-     "trafficType": "redirect"
-    }
-   },
-   {
-    "id": "NFR-03",
-    "title": "Data integrity",
-    "priority": "must"
-   },
-   {
-    "id": "NFR-04",
-    "title": "Application availability",
-    "priority": "should",
-    "target": {
-     "availabilityPercent": 99.9
-    }
-   },
-   {
-    "id": "NFR-05",
-    "title": "Durable URL mappings",
-    "priority": "must"
-   }
-  ]
- },
- "capacityEstimation": {
-  "defaultInputs": [
-   {
-    "id": "CAP-IN-01",
-    "name": "New URLs per day",
-    "value": 10000000,
-    "unit": "urls/day",
-    "configurable": true
-   },
-   {
-    "id": "CAP-IN-02",
-    "name": "Redirects per day",
-    "value": 100000000,
-    "unit": "requests/day",
-    "configurable": true
-   },
-   {
-    "id": "CAP-IN-03",
-    "name": "Average stored mapping size",
-    "value": 500,
-    "unit": "bytes",
-    "configurable": true
-   },
-   {
-    "id": "CAP-IN-04",
-    "name": "Retention duration",
-    "value": 3,
-    "unit": "years",
-    "configurable": true
-   },
-   {
-    "id": "CAP-IN-05",
-    "name": "Peak traffic multiplier",
-    "value": 3,
-    "unit": "multiplier",
-    "configurable": true
-   },
-   {
-    "id": "CAP-IN-06",
-    "name": "Cache hit ratio",
-    "value": 0.9,
-    "unit": "ratio",
-    "configurable": true
-   }
-  ]
- },
- "componentCatalogue": {
-  "allowedComponentIds": [
-   "COMP-CLIENT",
-   "COMP-DNS",
-   "COMP-CDN",
-   "COMP-LOAD-BALANCER",
-   "COMP-API-GATEWAY",
-   "COMP-APP-SERVER",
-   "COMP-CACHE",
-   "COMP-SQL-DATABASE",
-   "COMP-NOSQL-DATABASE",
-   "COMP-KEY-GENERATOR",
-   "COMP-RATE-LIMITER",
-   "COMP-QUEUE",
-   "COMP-WORKER",
-   "COMP-METRICS",
-   "COMP-WAF",
-   "COMP-AUTH",
-   "COMP-READ-REPLICA",
-   "COMP-ANALYTICS-STORE",
-   "COMP-LOGGING"
   ],
-  "components": [
-   {
-    "id": "COMP-CLIENT",
-    "type": "client",
-    "displayName": "Client",
-    "responsibilities": [
-     "Send URL creation requests",
-     "Request short URLs",
-     "Follow redirects"
-    ],
-    "supportedOperations": [
-     "http-request",
-     "http-response"
-    ],
-    "defaultConfig": {},
-    "category": "Clients"
-   },
-   {
-    "id": "COMP-DNS",
-    "type": "dns",
-    "displayName": "DNS",
-    "responsibilities": [
-     "Resolve the service hostname"
-    ],
-    "supportedOperations": [
-     "hostname-resolution"
-    ],
-    "defaultConfig": {},
-    "category": "Networking"
-   },
-   {
-    "id": "COMP-CDN",
-    "type": "cdn",
-    "displayName": "CDN",
-    "responsibilities": [
-     "Optionally cache eligible redirect responses near clients"
-    ],
-    "supportedOperations": [
-     "http-cache",
-     "http-forward"
-    ],
-    "defaultConfig": {
-     "enabled": false,
-     "hitRatio": 0.5,
-     "averageLatencyMs": 20
+  "dataModel": [
+    {
+      "id": "ENTITY-URL-MAPPING",
+      "name": "UrlMapping",
+      "purpose": "Persist the relationship between a short code and its destination.",
+      "fields": [
+        {
+          "name": "shortCode",
+          "type": "string",
+          "required": true,
+          "constraints": [
+            "unique",
+            "indexed"
+          ]
+        },
+        {
+          "name": "originalUrl",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "createdAt",
+          "type": "datetime",
+          "required": true
+        },
+        {
+          "name": "expiresAt",
+          "type": "datetime",
+          "required": false
+        },
+        {
+          "name": "ownerId",
+          "type": "string",
+          "required": false
+        }
+      ],
+      "accessPatterns": [
+        "Insert mapping by short code",
+        "Read mapping by short code",
+        "Optionally query mappings by owner"
+      ],
+      "integrityRequirements": [
+        "shortCode must be unique",
+        "originalUrl must not be empty",
+        "A mapping must not silently overwrite a different mapping"
+      ],
+      "candidateStorageTypes": [
+        "relational-database",
+        "key-value-database",
+        "document-database"
+      ]
     },
-    "configSchema": {
-     "hitRatio": {
-      "type": "number",
-      "minimum": 0,
-      "maximum": 1
-     },
-     "averageLatencyMs": {
-      "type": "number",
-      "minimum": 0
-     }
-    },
-    "category": "Networking"
-   },
-   {
-    "id": "COMP-LOAD-BALANCER",
-    "type": "load-balancer",
-    "displayName": "Load Balancer",
-    "responsibilities": [
-     "Distribute requests among eligible application instances"
-    ],
-    "supportedOperations": [
-     "request-distribution",
-     "health-based-routing"
-    ],
-    "defaultConfig": {
-     "averageLatencyMs": 2
-    },
-    "category": "Networking"
-   },
-   {
-    "id": "COMP-API-GATEWAY",
-    "type": "api-gateway",
-    "displayName": "API Gateway",
-    "responsibilities": [
-     "Route API requests",
-     "Optionally enforce authentication and request policies"
-    ],
-    "supportedOperations": [
-     "http-routing",
-     "authentication",
-     "rate-limiting"
-    ],
-    "defaultConfig": {
-     "averageLatencyMs": 3
-    },
-    "category": "Networking"
-   },
-   {
-    "id": "COMP-APP-SERVER",
-    "type": "application-server",
-    "displayName": "Application Server",
-    "responsibilities": [
-     "Validate URL input",
-     "Generate or request short codes",
-     "Resolve mappings",
-     "Produce redirect responses"
-    ],
-    "supportedOperations": [
-     "http-request",
-     "url-validation",
-     "short-code-generation",
-     "mapping-lookup",
-     "redirect-response",
-     "durable-write",
-     "publish-message"
-    ],
-    "defaultConfig": {
-     "instances": 2,
-     "capacityPerInstanceRps": 3000,
-     "averageProcessingLatencyMs": 10
-    },
-    "configSchema": {
-     "instances": {
-      "type": "integer",
-      "minimum": 1
-     },
-     "capacityPerInstanceRps": {
-      "type": "number",
-      "exclusiveMinimum": 0
-     },
-     "averageProcessingLatencyMs": {
-      "type": "number",
-      "minimum": 0
-     }
-    },
-    "category": "Compute"
-   },
-   {
-    "id": "COMP-CACHE",
-    "type": "cache",
-    "displayName": "Distributed Cache",
-    "responsibilities": [
-     "Store frequently accessed URL mappings",
-     "Reduce repeated database reads"
-    ],
-    "supportedOperations": [
-     "cache-read",
-     "cache-write",
-     "ttl-expiration"
-    ],
-    "defaultConfig": {
-     "hitRatio": 0.9,
-     "averageLatencyMs": 2,
-     "available": true,
-     "ttlSeconds": 3600
-    },
-    "configSchema": {
-     "hitRatio": {
-      "type": "number",
-      "minimum": 0,
-      "maximum": 1
-     },
-     "averageLatencyMs": {
-      "type": "number",
-      "minimum": 0
-     },
-     "available": {
-      "type": "boolean"
-     },
-     "ttlSeconds": {
-      "type": "integer",
-      "minimum": 1
-     }
-    },
-    "category": "Caching"
-   },
-   {
-    "id": "COMP-SQL-DATABASE",
-    "type": "sql-database",
-    "displayName": "Relational Database",
-    "responsibilities": [
-     "Persist URL mappings",
-     "Enforce unique constraints",
-     "Support indexed lookup by short code"
-    ],
-    "supportedOperations": [
-     "durable-read",
-     "durable-write",
-     "unique-constraint",
-     "indexed-lookup"
-    ],
-    "defaultConfig": {
-     "readCapacityRps": 5000,
-     "writeCapacityRps": 1000,
-     "averageReadLatencyMs": 20,
-     "averageWriteLatencyMs": 30,
-     "durable": true,
-     "uniqueConstraintSupported": true
-    },
-    "category": "Storage"
-   },
-   {
-    "id": "COMP-NOSQL-DATABASE",
-    "type": "nosql-database",
-    "displayName": "NoSQL Database",
-    "responsibilities": [
-     "Persist mappings with a key-oriented access pattern"
-    ],
-    "supportedOperations": [
-     "durable-read",
-     "durable-write",
-     "key-lookup",
-     "conditional-write"
-    ],
-    "defaultConfig": {
-     "readCapacityRps": 10000,
-     "writeCapacityRps": 3000,
-     "averageReadLatencyMs": 10,
-     "averageWriteLatencyMs": 15,
-     "durable": true,
-     "uniqueConstraintSupported": true
-    },
-    "category": "Storage"
-   },
-   {
-    "id": "COMP-KEY-GENERATOR",
-    "type": "key-generator",
-    "displayName": "ID / Short-Code Generator",
-    "responsibilities": [
-     "Generate candidate short codes",
-     "Provide an identifier allocation strategy"
-    ],
-    "supportedOperations": [
-     "generate-identifier",
-     "allocate-identifier"
-    ],
-    "defaultConfig": {
-     "strategy": "base62",
-     "collisionHandling": "retry"
-    },
-    "category": "Compute"
-   },
-   {
-    "id": "COMP-RATE-LIMITER",
-    "type": "rate-limiter",
-    "displayName": "Rate Limiter",
-    "responsibilities": [
-     "Limit excessive request rates"
-    ],
-    "supportedOperations": [
-     "request-rate-check",
-     "reject-excess-requests"
-    ],
-    "defaultConfig": {
-     "algorithm": "token-bucket",
-     "requestsPerSecond": 100
-    },
-    "category": "Security"
-   },
-   {
-    "id": "COMP-QUEUE",
-    "type": "message-queue",
-    "displayName": "Message Queue",
-    "responsibilities": [
-     "Buffer asynchronous work",
-     "Decouple producers from consumers"
-    ],
-    "supportedOperations": [
-     "publish-message",
-     "consume-message",
-     "buffer-work"
-    ],
-    "defaultConfig": {
-     "arrivalRatePerSecond": 0,
-     "processingCapacityPerSecond": 0
-    },
-    "category": "Messaging"
-   },
-   {
-    "id": "COMP-WORKER",
-    "type": "worker",
-    "displayName": "Background Worker",
-    "responsibilities": [
-     "Process asynchronous jobs"
-    ],
-    "supportedOperations": [
-     "consume-message",
-     "process-job"
-    ],
-    "defaultConfig": {
-     "instances": 1,
-     "capacityPerInstancePerSecond": 100
-    },
-    "category": "Compute"
-   },
-   {
-    "id": "COMP-METRICS",
-    "type": "metrics-collector",
-    "displayName": "Metrics Collector",
-    "responsibilities": [
-     "Collect service health and performance measurements"
-    ],
-    "supportedOperations": [
-     "collect-metrics",
-     "collect-health"
-    ],
-    "defaultConfig": {},
-    "category": "Observability"
-   },
-   {
-    "id": "COMP-WAF",
-    "type": "waf",
-    "category": "Security",
-    "displayName": "Web Application Firewall",
-    "responsibilities": [
-     "Block malicious and abusive traffic before it reaches the application",
-     "Filter known bad URL patterns"
-    ],
-    "supportedOperations": [
-     "http-routing",
-     "request-rate-check"
-    ],
-    "defaultConfig": {
-     "averageLatencyMs": 2
+    {
+      "id": "ENTITY-CLICK-EVENT",
+      "name": "ClickEvent",
+      "purpose": "Optional event record for analytics.",
+      "optional": true,
+      "fields": [
+        {
+          "name": "eventId",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "shortCode",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "occurredAt",
+          "type": "datetime",
+          "required": true
+        }
+      ],
+      "accessPatterns": [
+        "Append click events",
+        "Aggregate events by short code and time"
+      ],
+      "candidateStorageTypes": [
+        "event-stream",
+        "append-oriented-storage",
+        "analytical-database"
+      ]
     }
-   },
-   {
-    "id": "COMP-AUTH",
-    "type": "auth-service",
-    "category": "Security",
-    "displayName": "Auth Service",
-    "responsibilities": [
-     "Authenticate API callers",
-     "Issue and validate tokens"
+  ],
+  "componentCatalogue": {
+    "allowedComponentIds": [
+      "COMP-CLIENT",
+      "COMP-DNS",
+      "COMP-CDN",
+      "COMP-LOAD-BALANCER",
+      "COMP-API-GATEWAY",
+      "COMP-APP-SERVER",
+      "COMP-CACHE",
+      "COMP-SQL-DATABASE",
+      "COMP-NOSQL-DATABASE",
+      "COMP-KEY-GENERATOR",
+      "COMP-RATE-LIMITER",
+      "COMP-QUEUE",
+      "COMP-WORKER",
+      "COMP-METRICS"
     ],
-    "supportedOperations": [
-     "http-request",
-     "authentication"
-    ],
-    "defaultConfig": {
-     "averageLatencyMs": 5
-    }
-   },
-   {
-    "id": "COMP-READ-REPLICA",
-    "type": "read-replica",
-    "category": "Storage",
-    "displayName": "Read Replica",
-    "responsibilities": [
-     "Serve read traffic replicated from the primary database",
-     "Absorb cache misses"
-    ],
-    "supportedOperations": [
-     "durable-read",
-     "indexed-lookup",
-     "key-lookup",
-     "replication-target"
-    ],
-    "defaultConfig": {
-     "readCapacityRps": 5000,
-     "averageReadLatencyMs": 20,
-     "durable": true,
-     "replicationLagMs": 100
+    "components": [
+      {
+        "id": "COMP-CLIENT",
+        "type": "client",
+        "displayName": "Client",
+        "responsibilities": [
+          "Send URL creation requests",
+          "Request short URLs",
+          "Follow redirects"
+        ],
+        "supportedOperations": [
+          "http-request",
+          "http-response"
+        ],
+        "defaultConfig": {}
+      },
+      {
+        "id": "COMP-DNS",
+        "type": "dns",
+        "displayName": "DNS",
+        "responsibilities": [
+          "Resolve the service hostname"
+        ],
+        "supportedOperations": [
+          "hostname-resolution"
+        ],
+        "defaultConfig": {}
+      },
+      {
+        "id": "COMP-CDN",
+        "type": "cdn",
+        "displayName": "CDN",
+        "responsibilities": [
+          "Optionally cache eligible redirect responses near clients"
+        ],
+        "supportedOperations": [
+          "http-cache",
+          "http-forward"
+        ],
+        "defaultConfig": {
+          "enabled": false,
+          "hitRatio": 0.5,
+          "averageLatencyMs": 20
+        },
+        "configSchema": {
+          "hitRatio": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "averageLatencyMs": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      },
+      {
+        "id": "COMP-LOAD-BALANCER",
+        "type": "load-balancer",
+        "displayName": "Load Balancer",
+        "responsibilities": [
+          "Distribute requests among eligible application instances"
+        ],
+        "supportedOperations": [
+          "request-distribution",
+          "health-based-routing"
+        ],
+        "defaultConfig": {
+          "averageLatencyMs": 2
+        }
+      },
+      {
+        "id": "COMP-API-GATEWAY",
+        "type": "api-gateway",
+        "displayName": "API Gateway",
+        "responsibilities": [
+          "Route API requests",
+          "Optionally enforce authentication and request policies"
+        ],
+        "supportedOperations": [
+          "http-routing",
+          "authentication",
+          "rate-limiting"
+        ],
+        "defaultConfig": {
+          "averageLatencyMs": 3
+        }
+      },
+      {
+        "id": "COMP-APP-SERVER",
+        "type": "application-server",
+        "displayName": "Application Server",
+        "responsibilities": [
+          "Validate URL input",
+          "Generate or request short codes",
+          "Resolve mappings",
+          "Produce redirect responses"
+        ],
+        "supportedOperations": [
+          "http-request",
+          "url-validation",
+          "short-code-generation",
+          "mapping-lookup",
+          "redirect-response",
+          "durable-write"
+        ],
+        "defaultConfig": {
+          "instances": 2,
+          "capacityPerInstanceRps": 3000,
+          "averageProcessingLatencyMs": 10
+        },
+        "configSchema": {
+          "instances": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "capacityPerInstanceRps": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "averageProcessingLatencyMs": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      },
+      {
+        "id": "COMP-CACHE",
+        "type": "cache",
+        "displayName": "Distributed Cache",
+        "responsibilities": [
+          "Store frequently accessed URL mappings",
+          "Reduce repeated database reads"
+        ],
+        "supportedOperations": [
+          "cache-read",
+          "cache-write",
+          "ttl-expiration"
+        ],
+        "defaultConfig": {
+          "hitRatio": 0.9,
+          "averageLatencyMs": 2,
+          "available": true,
+          "ttlSeconds": 3600
+        },
+        "configSchema": {
+          "hitRatio": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "averageLatencyMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "ttlSeconds": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      {
+        "id": "COMP-SQL-DATABASE",
+        "type": "sql-database",
+        "displayName": "Relational Database",
+        "responsibilities": [
+          "Persist URL mappings",
+          "Enforce unique constraints",
+          "Support indexed lookup by short code"
+        ],
+        "supportedOperations": [
+          "durable-read",
+          "durable-write",
+          "unique-constraint",
+          "indexed-lookup"
+        ],
+        "defaultConfig": {
+          "readCapacityRps": 5000,
+          "writeCapacityRps": 1000,
+          "averageReadLatencyMs": 20,
+          "averageWriteLatencyMs": 30,
+          "durable": true,
+          "uniqueConstraintSupported": true
+        }
+      },
+      {
+        "id": "COMP-NOSQL-DATABASE",
+        "type": "nosql-database",
+        "displayName": "NoSQL Database",
+        "responsibilities": [
+          "Persist mappings with a key-oriented access pattern"
+        ],
+        "supportedOperations": [
+          "durable-read",
+          "durable-write",
+          "key-lookup",
+          "conditional-write"
+        ],
+        "defaultConfig": {
+          "readCapacityRps": 10000,
+          "writeCapacityRps": 3000,
+          "averageReadLatencyMs": 10,
+          "averageWriteLatencyMs": 15,
+          "durable": true,
+          "uniqueConstraintSupported": true
+        }
+      },
+      {
+        "id": "COMP-KEY-GENERATOR",
+        "type": "key-generator",
+        "displayName": "Short-Code Generator",
+        "responsibilities": [
+          "Generate candidate short codes",
+          "Provide an identifier allocation strategy"
+        ],
+        "supportedOperations": [
+          "generate-identifier",
+          "allocate-identifier"
+        ],
+        "defaultConfig": {
+          "strategy": "base62",
+          "collisionHandling": "retry"
+        }
+      },
+      {
+        "id": "COMP-RATE-LIMITER",
+        "type": "rate-limiter",
+        "displayName": "Rate Limiter",
+        "responsibilities": [
+          "Limit excessive request rates"
+        ],
+        "supportedOperations": [
+          "request-rate-check",
+          "reject-excess-requests"
+        ],
+        "defaultConfig": {
+          "algorithm": "token-bucket",
+          "requestsPerSecond": 100
+        }
+      },
+      {
+        "id": "COMP-QUEUE",
+        "type": "message-queue",
+        "displayName": "Message Queue",
+        "responsibilities": [
+          "Buffer asynchronous work",
+          "Decouple producers from consumers"
+        ],
+        "supportedOperations": [
+          "publish-message",
+          "consume-message",
+          "buffer-work"
+        ],
+        "defaultConfig": {
+          "arrivalRatePerSecond": 0,
+          "processingCapacityPerSecond": 0
+        }
+      },
+      {
+        "id": "COMP-WORKER",
+        "type": "worker",
+        "displayName": "Background Worker",
+        "responsibilities": [
+          "Process asynchronous jobs"
+        ],
+        "supportedOperations": [
+          "consume-message",
+          "process-job"
+        ],
+        "defaultConfig": {
+          "instances": 1,
+          "capacityPerInstancePerSecond": 100
+        }
+      },
+      {
+        "id": "COMP-METRICS",
+        "type": "metrics-collector",
+        "displayName": "Metrics Collector",
+        "responsibilities": [
+          "Collect service health and performance measurements"
+        ],
+        "supportedOperations": [
+          "collect-metrics",
+          "collect-health"
+        ],
+        "defaultConfig": {}
+      }
+    ]
+  },
+  "connectionTypes": [
+    {
+      "id": "EDGE-SYNC-HTTP",
+      "name": "Synchronous HTTP",
+      "semantics": "The source sends an HTTP request and expects a response.",
+      "compatibleSourceOperations": [
+        "http-request",
+        "http-routing",
+        "request-distribution"
+      ],
+      "compatibleTargetOperations": [
+        "http-request",
+        "http-routing",
+        "request-distribution"
+      ]
     },
-    "configSchema": {
-     "readCapacityRps": {
-      "type": "number",
-      "exclusiveMinimum": 0
-     },
-     "averageReadLatencyMs": {
-      "type": "number",
-      "minimum": 0
-     },
-     "replicationLagMs": {
-      "type": "number",
-      "minimum": 0
-     }
+    {
+      "id": "EDGE-CACHE-READ",
+      "name": "Cache Lookup",
+      "semantics": "The source attempts to retrieve a value from the target cache.",
+      "compatibleSourceOperations": [
+        "mapping-lookup",
+        "cache-read"
+      ],
+      "compatibleTargetOperations": [
+        "cache-read"
+      ]
+    },
+    {
+      "id": "EDGE-DB-READ",
+      "name": "Database Read",
+      "semantics": "The source reads persisted data from the target data store.",
+      "compatibleSourceOperations": [
+        "mapping-lookup",
+        "durable-read",
+        "indexed-lookup"
+      ],
+      "compatibleTargetOperations": [
+        "durable-read",
+        "indexed-lookup",
+        "key-lookup"
+      ]
+    },
+    {
+      "id": "EDGE-DB-WRITE",
+      "name": "Database Write",
+      "semantics": "The source persists a new mapping in the target data store.",
+      "compatibleSourceOperations": [
+        "durable-write"
+      ],
+      "compatibleTargetOperations": [
+        "durable-write"
+      ]
+    },
+    {
+      "id": "EDGE-CACHE-WRITE",
+      "name": "Cache Write",
+      "semantics": "The source stores or updates a value in the target cache.",
+      "compatibleSourceOperations": [
+        "cache-write"
+      ],
+      "compatibleTargetOperations": [
+        "cache-write"
+      ]
+    },
+    {
+      "id": "EDGE-ASYNC-PUBLISH",
+      "name": "Asynchronous Publish",
+      "semantics": "The source publishes a message to a queue.",
+      "compatibleSourceOperations": [
+        "publish-message"
+      ],
+      "compatibleTargetOperations": [
+        "buffer-work"
+      ]
     }
-   },
-   {
-    "id": "COMP-ANALYTICS-STORE",
-    "type": "analytics-store",
-    "category": "Storage",
-    "displayName": "Analytics Store",
-    "responsibilities": [
-     "Store click events (append-only)",
-     "Serve aggregate queries"
-    ],
-    "supportedOperations": [
-     "append-write",
-     "aggregate-query"
-    ],
-    "defaultConfig": {
-     "writeCapacityRps": 5000,
-     "averageWriteLatencyMs": 10,
-     "durable": true
+  ],
+  "hints": [
+    {
+      "id": "HINT-01",
+      "level": 1,
+      "type": "clarification",
+      "text": "Which operation do you expect to happen more frequently: creating a short URL or redirecting a visitor?",
+      "relatedConcepts": [
+        "read-write-ratio"
+      ],
+      "revealsComponents": false
+    },
+    {
+      "id": "HINT-02",
+      "level": 2,
+      "type": "conceptual",
+      "text": "Think about the creation path and redirect path separately. They perform different operations and may have different traffic patterns.",
+      "relatedConcepts": [
+        "request-flow",
+        "read-write-paths"
+      ],
+      "revealsComponents": false
+    },
+    {
+      "id": "HINT-03",
+      "level": 3,
+      "type": "conceptual",
+      "text": "The redirect path repeatedly looks up mappings by short code. Which storage access pattern would make that lookup efficient?",
+      "relatedConcepts": [
+        "indexed-lookup",
+        "key-value-access"
+      ],
+      "revealsComponents": false
+    },
+    {
+      "id": "HINT-04",
+      "level": 4,
+      "type": "component-guidance",
+      "text": "If many requests resolve the same popular short codes, consider whether a cache could reduce repeated database reads.",
+      "relatedConcepts": [
+        "caching",
+        "read-heavy-workloads"
+      ],
+      "revealsComponents": true,
+      "revealedComponentIds": [
+        "COMP-CACHE"
+      ]
+    },
+    {
+      "id": "HINT-05",
+      "level": 5,
+      "type": "architecture-guidance",
+      "text": "A possible redirect flow is: client request, application resolver, cache lookup, database lookup on cache miss, and redirect response. Consider what happens when the cache is unavailable.",
+      "relatedConcepts": [
+        "cache-aside",
+        "failure-handling"
+      ],
+      "revealsArchitecturePattern": true
     }
-   },
-   {
-    "id": "COMP-LOGGING",
-    "type": "logging",
-    "category": "Observability",
-    "displayName": "Logging & Tracing",
-    "responsibilities": [
-     "Collect structured logs",
-     "Trace requests across services"
+  ],
+  "evaluation": {
+    "version": 1,
+    "evaluationPrinciples": [
+      "Evaluate requirement satisfaction, not diagram similarity.",
+      "Accept multiple valid architecture patterns.",
+      "Distinguish hard failures from improvement suggestions.",
+      "Use deterministic calculations for numeric metrics.",
+      "Report unsupported evaluations as not evaluated rather than assuming success.",
+      "Include evidence for every evaluation finding."
     ],
-    "supportedOperations": [
-     "collect-logs",
-     "collect-traces"
+    "rules": [
+      {
+        "id": "RULE-STRUCT-01",
+        "category": "structural",
+        "title": "Valid component references",
+        "severity": "error",
+        "check": "Every node and edge references a valid component or node ID.",
+        "passCondition": "All node types are supported and every edge references existing nodes."
+      },
+      {
+        "id": "RULE-STRUCT-02",
+        "category": "structural",
+        "title": "Compatible connection semantics",
+        "severity": "error",
+        "check": "Every connection type is compatible with the source and target operations.",
+        "passCondition": "All connections conform to their declared semantic contracts."
+      },
+      {
+        "id": "RULE-FR-01",
+        "category": "functional",
+        "requirementId": "FR-01",
+        "title": "URL creation path exists",
+        "severity": "error",
+        "check": "Verify a request path supports input validation, code generation or allocation, durable persistence, and a response.",
+        "passCondition": "All required capabilities are present and connected in a valid creation flow."
+      },
+      {
+        "id": "RULE-FR-02",
+        "category": "functional",
+        "requirementId": "FR-02",
+        "title": "Redirect resolution path exists",
+        "severity": "error",
+        "check": "Verify that a redirect request can reach a mapping lookup and produce a redirect response.",
+        "passCondition": "A valid lookup and response path exists."
+      },
+      {
+        "id": "RULE-FR-03",
+        "category": "data-integrity",
+        "requirementId": "FR-03",
+        "title": "Short-code uniqueness",
+        "severity": "error",
+        "check": "Verify that the design addresses identifier collision and concurrent creation.",
+        "passCondition": "The architecture provides a supported uniqueness strategy, such as an atomic unique constraint or equivalent allocation mechanism."
+      },
+      {
+        "id": "RULE-FR-04",
+        "category": "functional",
+        "requirementId": "FR-04",
+        "title": "Unknown-code handling",
+        "severity": "warning",
+        "check": "Verify that missing mappings produce a defined not-found response.",
+        "passCondition": "The design includes missing-record handling and error response behavior."
+      },
+      {
+        "id": "RULE-FR-05",
+        "category": "scalability",
+        "requirementId": "FR-05",
+        "title": "Redirect capacity strategy",
+        "severity": "warning",
+        "check": "Evaluate the redirect path against the required traffic and configured capacities.",
+        "passCondition": "The supported model indicates that required components can handle the configured workload."
+      },
+      {
+        "id": "RULE-FR-06",
+        "category": "security",
+        "requirementId": "FR-06",
+        "title": "Destination URL validation",
+        "severity": "warning",
+        "check": "Verify that URL validation and permitted-scheme controls are represented in the request path.",
+        "passCondition": "The design identifies an appropriate validation control."
+      },
+      {
+        "id": "RULE-NFR-01",
+        "category": "performance",
+        "requirementId": "NFR-01",
+        "title": "Redirect latency estimate",
+        "severity": "warning",
+        "check": "Estimate the redirect-path latency using the supported latency model.",
+        "passCondition": "The estimated latency is below the target under the declared model assumptions.",
+        "notEvaluatedWhen": [
+          "Required component latency values are missing.",
+          "The request path cannot be determined."
+        ]
+      },
+      {
+        "id": "RULE-NFR-02",
+        "category": "capacity",
+        "requirementId": "NFR-02",
+        "title": "Redirect throughput",
+        "severity": "warning",
+        "check": "Compare the target request rate with the modeled capacity of components on the redirect path.",
+        "passCondition": "No modeled required component exceeds its configured capacity."
+      },
+      {
+        "id": "RULE-NFR-03",
+        "category": "data-integrity",
+        "requirementId": "NFR-03",
+        "title": "Mapping integrity",
+        "severity": "error",
+        "check": "Verify that the chosen data store or allocation process can enforce unique short-code mappings.",
+        "passCondition": "The design includes a valid uniqueness mechanism."
+      },
+      {
+        "id": "RULE-NFR-04",
+        "category": "reliability",
+        "requirementId": "NFR-04",
+        "title": "Application redundancy",
+        "severity": "warning",
+        "check": "Assess whether application instance failure leaves a viable request path.",
+        "passCondition": "At least one healthy application instance and a viable routing path remain in the modeled failure scenario."
+      },
+      {
+        "id": "RULE-NFR-05",
+        "category": "durability",
+        "requirementId": "NFR-05",
+        "title": "Durable mapping storage",
+        "severity": "error",
+        "check": "Verify that successful URL creation persists mappings in a component marked as durable.",
+        "passCondition": "The creation path reaches a supported durable data store."
+      }
     ],
-    "defaultConfig": {}
-   }
-  ]
- },
- "connectionTypes": [
-  {
-   "id": "EDGE-SYNC-HTTP",
-   "name": "Synchronous HTTP",
-   "semantics": "The source sends an HTTP request and expects a response.",
-   "compatibleSourceOperations": [
-    "http-request",
-    "http-routing",
-    "request-distribution"
-   ],
-   "compatibleTargetOperations": [
-    "http-request",
-    "http-routing",
-    "request-distribution"
-   ]
+    "scoring": {
+      "maximumScore": 100,
+      "dimensions": [
+        {
+          "id": "SCORE-FUNCTIONAL",
+          "name": "Functional requirement coverage",
+          "weight": 35
+        },
+        {
+          "id": "SCORE-ARCHITECTURE",
+          "name": "Architecture correctness",
+          "weight": 20
+        },
+        {
+          "id": "SCORE-PERFORMANCE",
+          "name": "Performance and capacity",
+          "weight": 20
+        },
+        {
+          "id": "SCORE-RELIABILITY",
+          "name": "Reliability and failure handling",
+          "weight": 15
+        },
+        {
+          "id": "SCORE-TRADEOFFS",
+          "name": "Trade-off explanations",
+          "weight": 10
+        }
+      ],
+      "scoringPolicy": [
+        "Score only applicable dimensions.",
+        "Normalize scores when a dimension is not applicable or cannot be evaluated.",
+        "Do not award full credit solely because a component is present; verify relevant connections and capabilities.",
+        "Do not penalize valid alternatives merely because they differ from a reference solution.",
+        "Deduct for unsupported claims only when the rubric explicitly checks the claim.",
+        "Show the evidence behind each score."
+      ]
+    }
   },
-  {
-   "id": "EDGE-CACHE-READ",
-   "name": "Cache Lookup",
-   "semantics": "The source attempts to retrieve a value from the target cache.",
-   "compatibleSourceOperations": [
-    "mapping-lookup",
-    "cache-read"
-   ],
-   "compatibleTargetOperations": [
-    "cache-read"
-   ]
+  "metrics": [
+    {
+      "id": "METRIC-CREATE-RATE",
+      "name": "Average URL creation rate",
+      "category": "traffic",
+      "formula": "newUrlsPerDay / 86400",
+      "unit": "requests/second",
+      "inputs": [
+        "newUrlsPerDay"
+      ],
+      "assumptions": [
+        "Traffic is averaged across a 24-hour day."
+      ]
+    },
+    {
+      "id": "METRIC-REDIRECT-RATE",
+      "name": "Average redirect rate",
+      "category": "traffic",
+      "formula": "redirectsPerDay / 86400",
+      "unit": "requests/second",
+      "inputs": [
+        "redirectsPerDay"
+      ],
+      "assumptions": [
+        "Traffic is averaged across a 24-hour day."
+      ]
+    },
+    {
+      "id": "METRIC-DB-READ-RATE",
+      "name": "Estimated database read rate",
+      "category": "storage",
+      "formula": "redirectRate * (1 - cacheHitRatio)",
+      "unit": "reads/second",
+      "inputs": [
+        "redirectRate",
+        "cacheHitRatio"
+      ],
+      "assumptions": [
+        "Each cache miss requires one database read.",
+        "The cache is available.",
+        "Concurrent cache misses are not modeled."
+      ]
+    },
+    {
+      "id": "METRIC-REDIRECT-LATENCY",
+      "name": "Estimated redirect-path latency",
+      "category": "performance",
+      "formula": "sumOfModeledSequentialComponentLatencies",
+      "unit": "ms",
+      "inputs": [
+        "requestPath",
+        "componentLatencyConfigurations"
+      ],
+      "assumptions": [
+        "Only known sequential component latencies are summed.",
+        "Parallel operations are not added as though they were sequential.",
+        "Queueing delay, network variability, and tail latency are excluded unless explicitly modeled."
+      ]
+    },
+    {
+      "id": "METRIC-APP-UTILIZATION",
+      "name": "Application capacity utilization",
+      "category": "capacity",
+      "formula": "incomingRequestsPerSecond / totalConfiguredCapacityPerSecond",
+      "unit": "ratio",
+      "inputs": [
+        "incomingRequestsPerSecond",
+        "instances",
+        "capacityPerInstanceRps"
+      ],
+      "assumptions": [
+        "Instances have equal capacity.",
+        "Capacity is additive.",
+        "The model does not account for uneven load distribution."
+      ]
+    },
+    {
+      "id": "METRIC-RAW-STORAGE",
+      "name": "Raw mapping storage",
+      "category": "storage",
+      "formula": "newUrlsPerDay * retentionDays * averageRecordBytes",
+      "unit": "bytes",
+      "inputs": [
+        "newUrlsPerDay",
+        "retentionDays",
+        "averageRecordBytes"
+      ],
+      "assumptions": [
+        "Every new URL creates one record.",
+        "Indexes, replication, backups, and database overhead are excluded."
+      ]
+    }
+  ],
+  "failureScenarios": [
+    {
+      "id": "FAIL-01",
+      "name": "Application instance failure",
+      "difficulty": "beginner",
+      "trigger": {
+        "componentType": "application-server",
+        "event": "instance-removed"
+      },
+      "expectedBehavior": [
+        "The router should stop directing requests to the failed instance.",
+        "Remaining capacity should be recalculated.",
+        "The system should continue only if the remaining path and capacity are sufficient."
+      ],
+      "metricsToRecalculate": [
+        "METRIC-APP-UTILIZATION",
+        "METRIC-REDIRECT-LATENCY"
+      ],
+      "passCriteria": [
+        "A viable request path remains.",
+        "Remaining configured capacity is sufficient for the tested load."
+      ]
+    },
+    {
+      "id": "FAIL-02",
+      "name": "Cache unavailable",
+      "difficulty": "beginner",
+      "trigger": {
+        "componentType": "cache",
+        "event": "unavailable"
+      },
+      "expectedBehavior": [
+        "The design should define whether requests bypass the cache or fail.",
+        "Database traffic should be recalculated.",
+        "The evaluator should identify possible database overload."
+      ],
+      "metricsToRecalculate": [
+        "METRIC-DB-READ-RATE"
+      ],
+      "passCriteria": [
+        "The behavior is explicitly defined.",
+        "Any database capacity violation is reported."
+      ]
+    },
+    {
+      "id": "FAIL-03",
+      "name": "Database unavailable",
+      "difficulty": "intermediate",
+      "trigger": {
+        "componentType": "sql-database",
+        "event": "unavailable"
+      },
+      "expectedBehavior": [
+        "The design identifies whether redirects can continue from valid cached entries.",
+        "Cache misses must not be treated as successful database lookups.",
+        "URL creation should not be reported as successful if durable persistence fails."
+      ],
+      "passCriteria": [
+        "Failure behavior is explicitly explained.",
+        "The design does not claim full functionality without required data."
+      ]
+    },
+    {
+      "id": "FAIL-04",
+      "name": "Popular short URL receives a traffic spike",
+      "difficulty": "intermediate",
+      "trigger": {
+        "event": "hot-key-traffic-spike"
+      },
+      "expectedBehavior": [
+        "The learner considers cache effectiveness and uneven request distribution.",
+        "Potential hot-key or storage bottlenecks are identified.",
+        "The design explains how capacity is protected."
+      ],
+      "passCriteria": [
+        "The architecture identifies a plausible mitigation.",
+        "Unsupported performance guarantees are not accepted."
+      ]
+    },
+    {
+      "id": "FAIL-05",
+      "name": "Short-code collision",
+      "difficulty": "intermediate",
+      "trigger": {
+        "event": "identifier-collision"
+      },
+      "expectedBehavior": [
+        "The system must not silently overwrite an existing unrelated mapping.",
+        "The design defines a retry, rejection, or allocation strategy."
+      ],
+      "passCriteria": [
+        "A collision-handling strategy exists.",
+        "Uniqueness is enforced atomically or by an equivalent safe mechanism."
+      ]
+    }
+  ],
+  "referenceSolutions": [
+    {
+      "id": "REF-01",
+      "name": "Minimal valid architecture",
+      "difficulty": "beginner",
+      "components": [
+        "Client",
+        "Application Server",
+        "Relational Database",
+        "Short-Code Generator"
+      ],
+      "flows": [
+        {
+          "id": "FLOW-CREATE",
+          "name": "Create URL",
+          "steps": [
+            "Client submits a URL.",
+            "Application validates the URL.",
+            "Application generates or allocates a short code.",
+            "Application persists the mapping with uniqueness enforcement.",
+            "Application returns the short URL."
+          ]
+        },
+        {
+          "id": "FLOW-REDIRECT",
+          "name": "Redirect",
+          "steps": [
+            "Client requests a short code.",
+            "Application looks up the mapping.",
+            "Application returns the redirect response."
+          ]
+        }
+      ],
+      "strengths": [
+        "Simple to understand and implement.",
+        "Provides a clear durable source of truth.",
+        "Suitable as a starting point."
+      ],
+      "limitations": [
+        "The database may become a read bottleneck.",
+        "Application capacity must be evaluated against the workload.",
+        "A single database instance may be a reliability limitation."
+      ],
+      "tradeoffs": [
+        "Simple architecture versus limited redundancy.",
+        "Direct database reads versus additional caching complexity."
+      ]
+    },
+    {
+      "id": "REF-02",
+      "name": "Cached redirect architecture",
+      "difficulty": "intermediate",
+      "components": [
+        "Client",
+        "Load Balancer",
+        "Application Server",
+        "Distributed Cache",
+        "Relational Database",
+        "Short-Code Generator"
+      ],
+      "flows": [
+        {
+          "id": "FLOW-CREATE",
+          "name": "Create URL",
+          "steps": [
+            "Client submits a URL.",
+            "Application validates the URL.",
+            "Application generates or allocates a short code.",
+            "Application writes the mapping to the durable database.",
+            "Application returns the short URL."
+          ]
+        },
+        {
+          "id": "FLOW-REDIRECT",
+          "name": "Redirect",
+          "steps": [
+            "Client requests a short code.",
+            "Load balancer routes the request to an application instance.",
+            "Application checks the cache.",
+            "On a cache hit, the application obtains the destination from the cache.",
+            "On a cache miss, the application reads the database and may populate the cache.",
+            "Application returns the redirect response."
+          ]
+        }
+      ],
+      "strengths": [
+        "Reduces repeated database reads.",
+        "Supports horizontal application scaling.",
+        "Provides a useful architecture for studying read-heavy workloads."
+      ],
+      "limitations": [
+        "Cache misses still reach the database.",
+        "Cache availability and eviction affect performance.",
+        "Cache stampedes and hot keys may require additional handling.",
+        "A cache does not replace durable storage."
+      ],
+      "tradeoffs": [
+        "Lower expected database load versus added operational complexity.",
+        "Cache freshness versus expiration and invalidation complexity."
+      ]
+    },
+    {
+      "id": "REF-03",
+      "name": "Key-value storage architecture",
+      "difficulty": "intermediate",
+      "components": [
+        "Client",
+        "Load Balancer",
+        "Application Server",
+        "Key-Value Database",
+        "Short-Code Generator"
+      ],
+      "flows": [
+        {
+          "id": "FLOW-REDIRECT",
+          "name": "Redirect",
+          "steps": [
+            "Client requests a short code.",
+            "Application performs a key-based lookup.",
+            "Application returns the redirect response."
+          ]
+        }
+      ],
+      "strengths": [
+        "Aligns storage access with lookup by short code.",
+        "Can support horizontal scaling when the selected database provides appropriate capabilities."
+      ],
+      "limitations": [
+        "Actual capacity depends on the database and its configuration.",
+        "Partitioning, replication, and consistency guarantees must be evaluated.",
+        "The design still needs a safe uniqueness strategy."
+      ],
+      "tradeoffs": [
+        "Key-based access efficiency versus data-model and operational constraints."
+      ]
+    }
+  ],
+  "followUpQuestions": [
+    {
+      "id": "FU-01",
+      "difficulty": "beginner",
+      "category": "fundamentals",
+      "prompt": "Why does the system need a unique short code?",
+      "expectedAnswerPoints": [
+        "Each code must resolve to one intended mapping.",
+        "Duplicate codes can redirect users to the wrong destination.",
+        "Uniqueness must hold under concurrent creation."
+      ],
+      "commonMisconceptions": [
+        "Assuming a random generator guarantees uniqueness."
+      ],
+      "evaluationMode": "rubric"
+    },
+    {
+      "id": "FU-02",
+      "difficulty": "beginner",
+      "category": "database",
+      "prompt": "Why is an index on shortCode useful?",
+      "expectedAnswerPoints": [
+        "Redirect requests search by short code.",
+        "An appropriate index can avoid scanning every mapping.",
+        "Indexes have storage and write-maintenance costs."
+      ],
+      "evaluationMode": "rubric"
+    },
+    {
+      "id": "FU-03",
+      "difficulty": "beginner",
+      "category": "caching",
+      "prompt": "Why might a cache improve redirect performance?",
+      "expectedAnswerPoints": [
+        "Repeated lookups can be served without reading the primary database.",
+        "Database read load may decrease.",
+        "Cache misses still require a lookup.",
+        "Cache behavior depends on access patterns and hit ratio."
+      ],
+      "evaluationMode": "rubric"
+    },
+    {
+      "id": "FU-04",
+      "difficulty": "intermediate",
+      "category": "consistency",
+      "prompt": "How would you prevent two concurrent requests from creating conflicting short codes?",
+      "expectedAnswerPoints": [
+        "Use an atomic uniqueness constraint or equivalent allocation mechanism.",
+        "Handle conflicts safely.",
+        "Retry or allocate a different identifier when appropriate.",
+        "Do not rely solely on a prior existence check."
+      ],
+      "evaluationMode": "rubric"
+    },
+    {
+      "id": "FU-05",
+      "difficulty": "intermediate",
+      "category": "scalability",
+      "prompt": "What would you change if redirect traffic increased tenfold?",
+      "expectedAnswerPoints": [
+        "Recalculate peak request rate.",
+        "Identify the limiting component.",
+        "Evaluate application scaling and database capacity.",
+        "Consider caching and uneven traffic distribution.",
+        "Avoid scaling components without evidence of a bottleneck."
+      ],
+      "evaluationMode": "rubric"
+    },
+    {
+      "id": "FU-06",
+      "difficulty": "advanced",
+      "category": "reliability",
+      "prompt": "What happens if the primary database becomes unavailable?",
+      "expectedAnswerPoints": [
+        "New URL creation may need to fail or be deferred.",
+        "Cache hits may continue to work if the cache remains available and contains valid mappings.",
+        "Cache misses cannot be resolved from an unavailable database.",
+        "Replicas and failover may improve availability, depending on the design.",
+        "Consistency and recovery trade-offs must be considered."
+      ],
+      "evaluationMode": "rubric"
+    },
+    {
+      "id": "FU-07",
+      "difficulty": "advanced",
+      "category": "identifier-generation",
+      "prompt": "Compare sequential IDs encoded with Base62, random short codes, and preallocated ID ranges.",
+      "expectedAnswerPoints": [
+        "Sequential IDs can be simple but may expose creation patterns.",
+        "Random codes require collision handling.",
+        "Preallocated ranges can reduce central coordination but require safe allocation.",
+        "Identifier length, predictability, coordination, and collision probability matter."
+      ],
+      "evaluationMode": "rubric"
+    },
+    {
+      "id": "FU-08",
+      "difficulty": "advanced",
+      "category": "global-scale",
+      "prompt": "How would you adapt the architecture for users distributed across several continents?",
+      "expectedAnswerPoints": [
+        "Evaluate geographic latency.",
+        "Consider regional deployment and routing.",
+        "Choose an appropriate replication strategy.",
+        "Define consistency expectations.",
+        "Address regional failure and recovery."
+      ],
+      "evaluationMode": "rubric"
+    }
+  ],
+  "solutionExplanation": {
+    "sections": [
+      {
+        "id": "SOL-01",
+        "title": "Analyze the workload",
+        "content": "Redirect traffic is ten times the URL creation traffic under the default assumptions. This makes lookup performance an important design consideration."
+      },
+      {
+        "id": "SOL-02",
+        "title": "Separate the request flows",
+        "content": "URL creation writes a mapping, while redirection resolves a mapping. Keeping these flows distinct makes their capacity and failure characteristics easier to reason about."
+      },
+      {
+        "id": "SOL-03",
+        "title": "Choose storage around access patterns",
+        "content": "The redirect path retrieves records by short code. A suitable key-based lookup and uniqueness mechanism are more important than choosing a database solely by its category."
+      },
+      {
+        "id": "SOL-04",
+        "title": "Add caching when justified",
+        "content": "A cache can reduce repeated database reads, particularly when access is concentrated on popular links. Its effectiveness depends on the hit ratio, workload distribution, and failure behavior."
+      },
+      {
+        "id": "SOL-05",
+        "title": "Handle uniqueness correctly",
+        "content": "Generating a candidate code is not enough. The system needs a concurrency-safe mechanism that prevents conflicting mappings."
+      },
+      {
+        "id": "SOL-06",
+        "title": "Evaluate failures",
+        "content": "Application redundancy does not eliminate database failure. Each dependency should have explicit failure behavior, and the architecture should not claim functionality it cannot provide."
+      }
+    ],
+    "commonMistakes": [
+      {
+        "id": "MISTAKE-01",
+        "title": "Treating the cache as the source of truth",
+        "explanation": "A cache may evict entries or become unavailable. Durable mapping storage is still required unless a different durable architecture is explicitly designed."
+      },
+      {
+        "id": "MISTAKE-02",
+        "title": "Assuming random codes cannot collide",
+        "explanation": "Random generation does not guarantee uniqueness. The design must handle collisions safely."
+      },
+      {
+        "id": "MISTAKE-03",
+        "title": "Adding components without a reason",
+        "explanation": "Every additional component introduces complexity. Components should be justified by a requirement, workload, or operational need."
+      },
+      {
+        "id": "MISTAKE-04",
+        "title": "Claiming a latency guarantee from a diagram",
+        "explanation": "A diagram does not establish production latency. Estimates require workload inputs, component assumptions, and a clearly defined model."
+      }
+    ]
   },
-  {
-   "id": "EDGE-DB-READ",
-   "name": "Database Read",
-   "semantics": "The source reads persisted data from the target data store.",
-   "compatibleSourceOperations": [
-    "mapping-lookup",
-    "durable-read",
-    "indexed-lookup"
-   ],
-   "compatibleTargetOperations": [
-    "durable-read",
-    "indexed-lookup",
-    "key-lookup"
-   ]
-  },
-  {
-   "id": "EDGE-DB-WRITE",
-   "name": "Database Write",
-   "semantics": "The source persists a new mapping in the target data store.",
-   "compatibleSourceOperations": [
-    "durable-write",
-    "process-job"
-   ],
-   "compatibleTargetOperations": [
-    "durable-write",
-    "append-write"
-   ]
-  },
-  {
-   "id": "EDGE-CACHE-WRITE",
-   "name": "Cache Write",
-   "semantics": "The source stores or updates a value in the target cache.",
-   "compatibleSourceOperations": [
-    "cache-write"
-   ],
-   "compatibleTargetOperations": [
-    "cache-write"
-   ]
-  },
-  {
-   "id": "EDGE-ASYNC-PUBLISH",
-   "name": "Asynchronous Publish",
-   "semantics": "The source publishes a message to a queue.",
-   "compatibleSourceOperations": [
-    "publish-message"
-   ],
-   "compatibleTargetOperations": [
-    "buffer-work"
-   ]
-  },
-  {
-   "id": "EDGE-ASYNC-CONSUME",
-   "name": "Queue Consume",
-   "semantics": "The target consumes messages buffered by the source queue.",
-   "compatibleSourceOperations": [
-    "buffer-work"
-   ],
-   "compatibleTargetOperations": [
-    "consume-message"
-   ]
-  },
-  {
-   "id": "EDGE-ID-ALLOC",
-   "name": "ID Allocation",
-   "semantics": "The source requests an identifier or short code from the target generator.",
-   "compatibleSourceOperations": [
-    "short-code-generation"
-   ],
-   "compatibleTargetOperations": [
-    "generate-identifier",
-    "allocate-identifier"
-   ]
-  },
-  {
-   "id": "EDGE-REPLICATION",
-   "name": "Replication",
-   "semantics": "The source primary store replicates data to the target replica.",
-   "compatibleSourceOperations": [
-    "unique-constraint",
-    "conditional-write"
-   ],
-   "compatibleTargetOperations": [
-    "replication-target"
-   ]
-  },
-  {
-   "id": "EDGE-TELEMETRY",
-   "name": "Telemetry",
-   "semantics": "The source emits metrics, logs or health signals to the target collector.",
-   "compatibleSourceOperations": [
-    "http-request",
-    "request-distribution",
-    "durable-read",
-    "cache-read",
-    "consume-message"
-   ],
-   "compatibleTargetOperations": [
-    "collect-metrics",
-    "collect-health",
-    "collect-logs",
-    "collect-traces"
-   ]
+  "evaluatorTestCases": [
+    {
+      "id": "TEST-01",
+      "category": "valid-architecture",
+      "name": "Minimal valid relational architecture",
+      "description": "An application server connects to durable relational storage, supports creation and lookup, and enforces short-code uniqueness.",
+      "expected": {
+        "structuralValidation": "pass",
+        "urlCreation": "pass",
+        "redirectResolution": "pass",
+        "uniqueness": "pass"
+      }
+    },
+    {
+      "id": "TEST-02",
+      "category": "invalid-architecture",
+      "name": "Missing durable write path",
+      "description": "The creation path generates a code but does not persist the mapping.",
+      "expected": {
+        "urlCreation": "fail",
+        "durability": "fail"
+      }
+    },
+    {
+      "id": "TEST-03",
+      "category": "invalid-architecture",
+      "name": "Missing redirect lookup",
+      "description": "The design accepts creation requests but has no way to resolve short codes.",
+      "expected": {
+        "redirectResolution": "fail"
+      }
+    },
+    {
+      "id": "TEST-04",
+      "category": "alternative-valid-architecture",
+      "name": "Key-value storage alternative",
+      "description": "The architecture uses a key-value database with a valid uniqueness strategy and appropriate request flows.",
+      "expected": {
+        "urlCreation": "pass",
+        "redirectResolution": "pass",
+        "uniqueness": "pass"
+      }
+    },
+    {
+      "id": "TEST-05",
+      "category": "metric-boundary",
+      "name": "Cache hit ratio is zero",
+      "inputs": {
+        "redirectRate": 10000,
+        "cacheHitRatio": 0
+      },
+      "expected": {
+        "databaseReadRate": 10000
+      }
+    },
+    {
+      "id": "TEST-06",
+      "category": "metric-boundary",
+      "name": "Cache hit ratio is one",
+      "inputs": {
+        "redirectRate": 10000,
+        "cacheHitRatio": 1
+      },
+      "expected": {
+        "databaseReadRate": 0
+      },
+      "notes": [
+        "This result applies only to the simplified cache-hit calculation and assumes all requests are cache hits."
+      ]
+    },
+    {
+      "id": "TEST-07",
+      "category": "failure-scenario",
+      "name": "Cache failure increases database traffic",
+      "inputs": {
+        "redirectRate": 10000,
+        "cacheHitRatio": 0.9,
+        "cacheAvailable": false
+      },
+      "expected": {
+        "databaseReadRate": 10000,
+        "capacityCheckRequired": true
+      }
+    },
+    {
+      "id": "TEST-08",
+      "category": "integrity",
+      "name": "Collision does not overwrite mapping",
+      "description": "A generated short code conflicts with an existing mapping.",
+      "expected": {
+        "existingMappingPreserved": true,
+        "collisionHandled": true
+      }
+    }
+  ],
+  "progression": {
+    "completionCriteria": [
+      "Learner submits a structurally valid architecture.",
+      "Learner receives an evaluation report.",
+      "Learner reviews mandatory requirement failures.",
+      "Learner completes the required follow-up questions."
+    ],
+    "masterySignals": [
+      "Mandatory requirements are satisfied.",
+      "Learner can explain the data model.",
+      "Learner can justify caching decisions.",
+      "Learner can reason about database and application failures."
+    ],
+    "revisionRecommendations": [
+      {
+        "condition": "Database lookup or indexing concept is weak",
+        "recommendation": "Review database indexes and key-based lookups."
+      },
+      {
+        "condition": "Cache evaluation is weak",
+        "recommendation": "Review cache hit ratio, cache misses, and cache failure behavior."
+      },
+      {
+        "condition": "Uniqueness evaluation fails",
+        "recommendation": "Review unique constraints, identifier generation, and concurrent writes."
+      }
+    ]
   }
- ],
- "hints": [
-  {
-   "id": "HINT-01",
-   "level": 1,
-   "text": "Which operation do you expect to happen more frequently: creating a short URL or redirecting a visitor?"
-  },
-  {
-   "id": "HINT-02",
-   "level": 2,
-   "text": "Think about the creation path and redirect path separately. They perform different operations and may have different traffic patterns."
-  },
-  {
-   "id": "HINT-03",
-   "level": 3,
-   "text": "The redirect path repeatedly looks up mappings by short code. Which storage access pattern would make that lookup efficient?"
-  },
-  {
-   "id": "HINT-04",
-   "level": 4,
-   "text": "If many requests resolve the same popular short codes, consider whether a cache could reduce repeated database reads."
-  },
-  {
-   "id": "HINT-05",
-   "level": 5,
-   "text": "A possible redirect flow is: client request, application resolver, cache lookup, database lookup on cache miss, and redirect response. Consider what happens when the cache is unavailable."
-  }
- ]
 }

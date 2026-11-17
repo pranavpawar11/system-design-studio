@@ -1,4 +1,5 @@
-import { Monitor, Globe, Network, Shield, ShieldAlert, Server, Database, Zap, Radio, Gauge, KeyRound, Activity, Cog, Boxes, HardDrive, Copy, BarChart3, FileText, UserCheck, Hash, type LucideIcon } from 'lucide-react';
+import { question } from '../../features/architecture/architecture.store';
+import { Monitor, Globe, Network, Shield, ShieldAlert, Server, Database, Zap, Radio, Gauge, Activity, Cog, Boxes, HardDrive, Copy, BarChart3, FileText, UserCheck, Hash, type LucideIcon } from 'lucide-react';
 
 export const CATEGORIES = ['Clients', 'Networking', 'Compute', 'Caching', 'Storage', 'Messaging', 'Security', 'Observability'] as const;
 export const CATEGORY_HELP: Record<string, string> = {
@@ -23,5 +24,10 @@ const ICON: Record<string, LucideIcon> = {
   'analytics-store': BarChart3, cache: Zap, 'message-queue': Radio, 'rate-limiter': Gauge, waf: ShieldAlert,
   'auth-service': UserCheck, 'metrics-collector': Activity, logging: FileText,
 };
-export const categoryOf = (type: string) => CAT[type] ?? 'Compute';
-export const iconOf = (type: string): LucideIcon => ICON[type] ?? (type === 'x' ? KeyRound : Boxes);
+const fromCatalogue = new Map<string, string>();
+/** Components may declare their own `category`; this lets brand-new component types colour and group correctly with no code change. */
+export function registerCatalogue(components: { type: string; category?: string }[]) { for (const c of components) if (c.category) fromCatalogue.set(c.type, c.category); }
+export const categoryOf = (type: string) => fromCatalogue.get(type) ?? CAT[type] ?? 'Compute';
+const CATEGORY_ICON: Record<string, LucideIcon> = { Clients: Monitor, Networking: Network, Compute: Server, Caching: Zap, Storage: Database, Messaging: Radio, Security: Shield, Observability: Activity };
+export const iconOf = (type: string): LucideIcon => ICON[type] ?? CATEGORY_ICON[categoryOf(type)] ?? Boxes;
+registerCatalogue(question.componentCatalogue.components);

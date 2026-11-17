@@ -2,7 +2,7 @@
  "followUpQuestions": [
   {
    "id": "RLF-01",
-   "difficulty": "beginner",
+   "difficulty": "easy",
    "category": "consistency",
    "prompt": "Why can\u2019t each limiter server just keep its own counts in memory?",
    "expectedAnswerPoints": [
@@ -13,7 +13,7 @@
   },
   {
    "id": "RLF-02",
-   "difficulty": "intermediate",
+   "difficulty": "medium",
    "category": "algorithms",
    "prompt": "Compare a token bucket with a fixed window counter.",
    "expectedAnswerPoints": [
@@ -24,7 +24,7 @@
   },
   {
    "id": "RLF-03",
-   "difficulty": "advanced",
+   "difficulty": "hard",
    "category": "reliability",
    "prompt": "Should the limiter fail open or fail closed when its counter store is down?",
    "expectedAnswerPoints": [
@@ -38,7 +38,7 @@
   {
    "id": "RLREF-01",
    "name": "Shared-counter limiter in front of the service",
-   "difficulty": "intermediate",
+   "difficulty": "medium",
    "architecture": {
     "schemaVersion": 1,
     "questionId": "hld-rate-limiter-001",

@@ -1,0 +1,157 @@
+{
+  "followUpQuestions": [
+    {
+      "id": "FU-01",
+      "difficulty": "easy",
+      "category": "fundamentals",
+      "prompt": "TODO: A question about WHY, not WHAT.",
+      "expectedAnswerPoints": [
+        "TODO: One checkable idea.",
+        "TODO: Another checkable idea."
+      ]
+    },
+    {
+      "id": "FU-02",
+      "difficulty": "medium",
+      "category": "scalability",
+      "prompt": "TODO: What would you change if traffic grew tenfold?",
+      "expectedAnswerPoints": [
+        "TODO",
+        "TODO"
+      ]
+    },
+    {
+      "id": "FU-03",
+      "difficulty": "hard",
+      "category": "reliability",
+      "prompt": "TODO: What happens when the primary database is unavailable?",
+      "expectedAnswerPoints": [
+        "TODO",
+        "TODO"
+      ]
+    }
+  ],
+  "referenceSolutions": [
+    {
+      "id": "REF-01",
+      "name": "TODO: Minimal valid design",
+      "difficulty": "easy",
+      "architecture": {
+        "schemaVersion": 1,
+        "questionId": "hld-your-topic-001",
+        "questionVersion": 1,
+        "nodes": [
+          {
+            "id": "client",
+            "componentId": "COMP-CLIENT",
+            "componentType": "client",
+            "name": "Client",
+            "position": {
+              "x": 0,
+              "y": 160
+            },
+            "config": {}
+          },
+          {
+            "id": "lb",
+            "componentId": "COMP-LOAD-BALANCER",
+            "componentType": "load-balancer",
+            "name": "Load Balancer",
+            "position": {
+              "x": 330,
+              "y": 160
+            },
+            "config": {
+              "averageLatencyMs": 2
+            }
+          },
+          {
+            "id": "app",
+            "componentId": "COMP-APP-SERVER",
+            "componentType": "application-server",
+            "name": "Application Server",
+            "position": {
+              "x": 660,
+              "y": 160
+            },
+            "config": {
+              "instances": 4,
+              "capacityPerInstanceRps": 3000,
+              "averageProcessingLatencyMs": 10
+            }
+          },
+          {
+            "id": "db",
+            "componentId": "COMP-SQL-DATABASE",
+            "componentType": "sql-database",
+            "name": "Relational Database",
+            "position": {
+              "x": 990,
+              "y": 160
+            },
+            "config": {
+              "readCapacityRps": 5000,
+              "writeCapacityRps": 1000,
+              "averageReadLatencyMs": 20,
+              "averageWriteLatencyMs": 30,
+              "durable": true,
+              "uniqueConstraintSupported": true
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "source": "client",
+            "target": "lb",
+            "connectionTypeId": "EDGE-SYNC-HTTP"
+          },
+          {
+            "id": "e2",
+            "source": "lb",
+            "target": "app",
+            "connectionTypeId": "EDGE-SYNC-HTTP"
+          },
+          {
+            "id": "e3",
+            "source": "app",
+            "target": "db",
+            "connectionTypeId": "EDGE-DB-WRITE"
+          },
+          {
+            "id": "e4",
+            "source": "app",
+            "target": "db",
+            "connectionTypeId": "EDGE-DB-READ"
+          }
+        ]
+      },
+      "flows": [
+        {
+          "name": "TODO: Main flow",
+          "steps": [
+            "TODO: Step one.",
+            "TODO: Step two."
+          ]
+        }
+      ],
+      "strengths": [
+        "TODO"
+      ],
+      "limitations": [
+        "TODO: Be honest. A reference may fail a requirement if this says so."
+      ],
+      "tradeoffs": [
+        "TODO: X versus Y."
+      ]
+    }
+  ],
+  "revisionRecommendations": [
+    {
+      "requirementIds": [
+        "FR-01"
+      ],
+      "text": "TODO: What to study if this requirement is not met."
+    }
+  ]
+}

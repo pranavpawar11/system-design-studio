@@ -46,11 +46,26 @@ paths:
   /shares/{shareId}:
     parameters: [{ name: shareId, in: path, required: true, schema: { type: string } }]
     get: { operationId: getShare, security: [], responses: { '200': { description: OK, content: { application/json: { schema: { type: object, required: [questionId, doc], properties: { questionId: { type: string }, doc: { $ref: '#/components/schemas/ArchitectureDocument' } } } } } }, '404': { $ref: '#/components/responses/Problem' } } }
+  /learning/roadmap:
+    get: { operationId: getRoadmap, security: [], responses: { '200': { description: OK, content: { application/json: { schema: { type: object, required: [version, nodes], properties: { version: { type: integer }, nodes: { type: array, items: { $ref: '#/components/schemas/RoadmapNode' } } } } } } } } }
+  /learning/lessons/{lessonId}:
+    parameters: [{ name: lessonId, in: path, required: true, schema: { type: string } }]
+    get: { operationId: getLesson, security: [], responses: { '200': { description: Lesson, content: { application/json: { schema: { type: object, required: [id, title, summary, minutes, blocks] } } } }, '404': { $ref: '#/components/responses/Problem' } } }
+  /learning/progress:
+    get: { operationId: getProgress, responses: { '200': { description: Events oldest first, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/ProgressEvent' } } } } } } }
+    post:
+      operationId: recordProgress
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [nodeId, type], properties: { nodeId: { type: string }, type: { $ref: '#/components/schemas/ProgressEventType' }, score: { type: number, minimum: 0, maximum: 1 } } } } } }
+      responses: { '201': { description: Stored, content: { application/json: { schema: { $ref: '#/components/schemas/ProgressEvent' } } } }, '400': { $ref: '#/components/responses/Problem' }, '404': { $ref: '#/components/responses/Problem' } }
+    delete: { operationId: resetProgress, responses: { '204': { description: Reset } } }
 components:
   securitySchemes: { bearer: { type: http, scheme: bearer } }
   parameters: { id: { name: id, in: path, required: true, schema: { type: string }, description: Question ID } }
   responses: { Problem: { description: Error, content: { application/problem+json: { schema: { $ref: '#/components/schemas/Problem' } } } } }
   schemas:
+    ProgressEventType: { type: string, enum: [lesson_viewed, lesson_read, lab_completed, quiz_passed] }
+    ProgressEvent: { type: object, required: [nodeId, type, at], properties: { nodeId: { type: string }, type: { $ref: '#/components/schemas/ProgressEventType' }, score: { type: number }, at: { type: string, format: date-time } } }
+    RoadmapNode: { type: object, required: [id, title, kind, status], properties: { id: { type: string }, title: { type: string }, summary: { type: string }, kind: { type: string, enum: [topic, group, lesson] }, status: { type: string, enum: [ready, planned] }, minutes: { type: integer }, hasLab: { type: boolean }, hasQuiz: { type: boolean }, children: { type: array, items: { $ref: '#/components/schemas/RoadmapNode' } } } }
     Problem: { type: object, required: [status, code, message], properties: { status: { type: integer }, code: { type: string, enum: [NOT_FOUND, VALIDATION_FAILED, UNAUTHORIZED, RATE_LIMITED, SERVER_ERROR] }, message: { type: string }, details: { type: array, items: { type: string } } } }
     QuestionSummary: { type: object, required: [id, title, difficulty], properties: { id: { type: string }, title: { type: string }, difficulty: { type: string }, estimatedMinutes: { type: integer } } }
     ArchNode: { type: object, required: [id, componentId, componentType, name, position, config], properties: { id: { type: string }, componentId: { type: string }, componentType: { type: string }, name: { type: string }, position: { type: object, properties: { x: { type: number }, y: { type: number } } }, config: { type: object, additionalProperties: { oneOf: [{ type: number }, { type: string }, { type: boolean }] } } } }

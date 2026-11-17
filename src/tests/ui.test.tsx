@@ -391,3 +391,18 @@ describe('v6 accessibility and states', () => {
     expect(screen.getByLabelText('New connection type').closest('.canvas-wrap')).not.toBeNull();
   });
 });
+
+
+describe('problem section', () => {
+  it('shows the statement, scope, objectives and assumptions written in the question file', async () => {
+    render(<App />);
+    await userEvent.click(screen.getByRole('tab', { name: 'Question' }));
+    const sec = screen.getByText('The problem').closest('details')!;
+    expect(sec).toHaveAttribute('open');
+    expect(within(sec).getByText(/URL-shortening service similar to Bitly/)).toBeInTheDocument();
+    expect(within(sec).getByText('In scope')).toBeInTheDocument();
+    expect(within(sec).getByText('Out of scope')).toBeInTheDocument();
+    expect(within(sec).getByText('What you will practise')).toBeInTheDocument();
+    expect(within(sec).getByText('Assumptions')).toBeInTheDocument();
+  });
+});

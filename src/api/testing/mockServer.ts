@@ -20,6 +20,13 @@ export function createMockFetch(local: LocalApi, opts: { failWith?: (path: strin
     const forced = opts.failWith?.(path, method); if (forced) return forced;
     try {
       let m: RegExpExecArray | null;
+      if (method === 'GET' && path === '/learning/roadmap') return json(200, await local.getRoadmap());
+      if ((m = /^\/learning\/lessons\/([^/]+)$/.exec(path)) && method === 'GET') return json(200, await local.getLesson(decodeURIComponent(m[1])));
+      if (path === '/learning/progress') {
+        if (method === 'GET') return json(200, await local.getProgress());
+        if (method === 'POST') return json(201, await local.recordProgress(body));
+        if (method === 'DELETE') { await local.resetProgress(); return json(204); }
+      }
       if (method === 'GET' && path === '/questions') return json(200, await local.listQuestions());
       if ((m = /^\/questions\/([^/]+)(\/.*)?$/.exec(path))) {
         const id = decodeURIComponent(m[1]); const rest = m[2] ?? '';

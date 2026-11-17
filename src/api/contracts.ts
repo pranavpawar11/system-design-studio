@@ -3,6 +3,8 @@ import type { Interview, Snapshot } from '../features/architecture/session.types
 import type { QuestionSpec } from '../features/questions/question.types';
 import type { EvaluationReport, Workload } from '../features/evaluation/evaluation.types';
 
+import type { Lesson, ProgressEvent, ProgressEventType, Roadmap } from '../features/learning/types';
+export type { Lesson, ProgressEvent, ProgressEventType, Roadmap };
 export type { Interview, Snapshot, QuestionSpec, EvaluationReport, ArchitectureDocument, Workload };
 
 /** What the learner has typed into a follow-up question. */
@@ -60,6 +62,14 @@ export interface ApiClient {
 
   /** Deterministic evaluation of a design. A server may run the same rules, or richer ones. */
   evaluate(questionId: string, input: { doc: ArchitectureDocument; workload?: Workload }): Promise<EvaluationReport>;
+
+  /** The whole learning map. Small enough to load at once; lessons are loaded one at a time. */
+  getRoadmap(): Promise<Roadmap>;
+  getLesson(lessonId: string): Promise<Lesson>;
+  /** The learner's progress as an append-only list of events. Completion is worked out from it, never stored. */
+  getProgress(): Promise<ProgressEvent[]>;
+  recordProgress(event: { nodeId: string; type: ProgressEventType; score?: number }): Promise<ProgressEvent>;
+  resetProgress(): Promise<void>;
 
   createShareLink(questionId: string, doc: ArchitectureDocument): Promise<ShareLink>;
   /** Returns null when the location holds no share link. Throws ApiError for broken or unknown links. */

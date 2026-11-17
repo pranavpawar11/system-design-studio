@@ -1,0 +1,41 @@
+{
+  "id": "replace-with-topic-id",
+  "title": "Replace with lesson title",
+  "summary": "Write one or two sentences explaining what the learner will understand after this lesson.",
+  "minutes": 10,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Concept"
+    },
+    {
+      "type": "paragraph",
+      "text": "Explain the concept, why it exists, and the problem it solves."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "How it works"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Explain the mechanism.",
+        "Explain the important components.",
+        "Explain the relevant trade-offs."
+      ]
+    },
+    {
+      "type": "example",
+      "title": "Worked example",
+      "text": "Add a concrete example that demonstrates the concept in a realistic system."
+    },
+    {
+      "type": "callout",
+      "tone": "tip",
+      "title": "Design takeaway",
+      "text": "Summarize when this concept is useful and what a designer should watch for."
+    }
+  ]
+}

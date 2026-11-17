@@ -1,4 +1,4 @@
-import { ApiError, type ApiClient, type ApiErrorCode, type ArchitectureDocument, type Draft, type DraftResult, type EvaluationReport, type Interview, type Learning, type QuestionSpec, type QuestionSummary, type ShareLink, type ShareRef, type SharedDesign, type Snapshot, type Workload } from '../contracts';
+import { ApiError, type ApiClient, type ApiErrorCode, type ArchitectureDocument, type Lesson, type ProgressEvent, type ProgressEventType, type Roadmap, type Draft, type DraftResult, type EvaluationReport, type Interview, type Learning, type QuestionSpec, type QuestionSummary, type ShareLink, type ShareRef, type SharedDesign, type Snapshot, type Workload } from '../contracts';
 
 export interface HttpApiOptions {
   /** e.g. "/api/v1" or "https://api.example.com/v1" */
@@ -61,6 +61,12 @@ export class HttpApi implements ApiClient {
   deleteInterview(id: string) { return this.none('DELETE', `${this.q(id)}/interview`); }
 
   evaluate(id: string, input: { doc: ArchitectureDocument; workload?: Workload }) { return this.json<EvaluationReport>('POST', `${this.q(id)}/evaluations`, input); }
+
+  getRoadmap() { return this.json<Roadmap>('GET', '/learning/roadmap'); }
+  getLesson(lessonId: string) { return this.json<Lesson>('GET', `/learning/lessons/${encodeURIComponent(lessonId)}`); }
+  getProgress() { return this.json<ProgressEvent[]>('GET', '/learning/progress'); }
+  recordProgress(e: { nodeId: string; type: ProgressEventType; score?: number }) { return this.json<ProgressEvent>('POST', '/learning/progress', e); }
+  resetProgress() { return this.none('DELETE', '/learning/progress'); }
 
   async createShareLink(id: string, doc: ArchitectureDocument): Promise<ShareLink> {
     const r = await this.json<{ id: string; path: string }>('POST', `${this.q(id)}/shares`, { doc });

@@ -1,0 +1,35 @@
+{
+  "id": "iso-27001-soc2-and-pci-dss",
+  "title": "ISO 27001, SOC 2 and PCI DSS context",
+  "summary": "TODO: Write a concise explanation of iso 27001, soc 2 and pci dss context and its role in privacy and compliance.",
+  "minutes": 8,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "TODO: Core concept"
+    },
+    {
+      "type": "paragraph",
+      "text": "TODO: Explain the concept, its purpose, and the problem it solves. Replace this placeholder before publishing."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "TODO: Architecture decisions"
+    },
+    {
+      "type": "list",
+      "items": [
+        "TODO: Add the important design considerations.",
+        "TODO: Explain relevant trade-offs and failure modes."
+      ]
+    },
+    {
+      "type": "callout",
+      "tone": "info",
+      "title": "Authoring note",
+      "text": "This is a starter template only. Replace every TODO with reviewed lesson content before changing the roadmap status to ready."
+    }
+  ]
+}

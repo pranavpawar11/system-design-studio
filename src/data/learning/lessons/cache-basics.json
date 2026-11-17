@@ -1,0 +1,138 @@
+{
+ "id": "cache-basics",
+ "title": "What a cache is and why it exists",
+ "minutes": 8,
+ "summary": "A cache keeps a copy of data somewhere faster, so repeated requests do not repeat expensive work.",
+ "blocks": [
+  {
+   "type": "paragraph",
+   "text": "A **cache** is a small, fast store that holds copies of data you have already fetched or computed. When the same data is asked for again, the system answers from the cache instead of going back to the slower place it came from."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Why it exists"
+  },
+  {
+   "type": "paragraph",
+   "text": "Different kinds of storage have very different speeds. Reading from memory close to your application usually takes a millisecond or less. A database query often takes several milliseconds or more, and it also uses the database's limited capacity. If thousands of people ask for the same thing, repeating that work is wasteful."
+  },
+  {
+   "type": "example",
+   "title": "A product page",
+   "text": "A shop's best-selling product is viewed 10,000 times a minute. Without a cache, each view runs the same database query and the database does 10,000 identical jobs. With a cache, the first view asks the database and stores the answer. The next 9,999 views are answered from the cache."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Hits and misses"
+  },
+  {
+   "type": "list",
+   "items": [
+    "A **hit** means the cache had the answer. It is fast and the database is not touched.",
+    "A **miss** means the cache did not have it. The system fetches it from the database and usually stores a copy for next time."
+   ]
+  },
+  {
+   "type": "callout",
+   "tone": "warning",
+   "title": "A cache is not the source of truth",
+   "text": "A cache can lose data, run out of space or go down. The database still holds the real data. Design so the system keeps working, perhaps slowly, when the cache is empty."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "When a cache helps, and when it does not"
+  },
+  {
+   "type": "list",
+   "items": [
+    "It helps when the same data is requested again and again. Popular items, home pages and profile lookups are typical.",
+    "It helps when reads are far more common than writes.",
+    "It helps little when almost every request is different, because there is nothing to reuse.",
+    "It is risky when data changes constantly and being slightly out of date is not acceptable."
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Where caches live"
+  },
+  {
+   "type": "list",
+   "items": [
+    "In the user's browser or app.",
+    "At a content delivery network, near the user.",
+    "Inside your application server's memory.",
+    "In a shared cache service that many application servers use. This is the one system design questions usually mean.",
+    "Inside the database itself, as a buffer of recently used data."
+   ]
+  }
+ ],
+ "quiz": {
+  "passScore": 0.66,
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "A request finds the data it needs in the cache. What is this called?",
+    "options": [
+     {
+      "id": "a",
+      "text": "A hit"
+     },
+     {
+      "id": "b",
+      "text": "A miss"
+     },
+     {
+      "id": "c",
+      "text": "An eviction"
+     }
+    ],
+    "correct": "a",
+    "explanation": "A hit means the cache already had the answer, so the database is not asked."
+   },
+   {
+    "id": "q2",
+    "prompt": "Which system gets the most benefit from a cache?",
+    "options": [
+     {
+      "id": "a",
+      "text": "One where every request asks for different, never-repeated data"
+     },
+     {
+      "id": "b",
+      "text": "One where a small set of popular items is read very often"
+     },
+     {
+      "id": "c",
+      "text": "One where data changes every second and must always be exact"
+     }
+    ],
+    "correct": "b",
+    "explanation": "Caches pay off when the same data is read repeatedly. Unique requests give nothing to reuse, and constantly changing exact data makes copies go stale."
+   },
+   {
+    "id": "q3",
+    "prompt": "The cache goes down. What should the design assume?",
+    "options": [
+     {
+      "id": "a",
+      "text": "All the data is gone, because the cache held the only copy"
+     },
+     {
+      "id": "b",
+      "text": "Nothing changes, because the system treats the cache as the main store"
+     },
+     {
+      "id": "c",
+      "text": "The database still holds the real data, so the system keeps working, if more slowly"
+     }
+    ],
+    "correct": "c",
+    "explanation": "The cache holds copies. The database is the source of truth, so the system can fall back to it, but it must be able to cope with the extra load."
+   }
+  ]
+ }
+}

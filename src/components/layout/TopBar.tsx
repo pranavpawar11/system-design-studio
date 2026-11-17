@@ -9,6 +9,7 @@ import Menu from '../ui/Menu';
 import Modal from '../ui/Modal';
 import InterviewClock from './InterviewClock';
 import SaveStatus from './SaveStatus';
+import ModeNav from './ModeNav';
 import SummaryModal from './SummaryModal';
 import HistoryDialog from './HistoryDialog';
 
@@ -53,6 +54,7 @@ export default function TopBar() {
       <div className="bar-group">
         <button className="icon-btn" aria-label="Toggle left panel" title="Toggle left panel" aria-pressed={s.leftOpen} onClick={() => s.togglePanel('left')}><PanelLeft size={18} aria-hidden /></button>
         <h1 className="brand" translate="no"><Layers size={18} aria-hidden /> HLD Studio</h1>
+        <ModeNav current="studio" />
         <span className="divider" aria-hidden />
         <select className="qselect" aria-label="Choose question" name="question" value={question.question.id} onChange={(e) => switchQuestion(e.target.value)}>
           {questions.map((q) => <option key={q.id} value={q.id}>{q.title}</option>)}

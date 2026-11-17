@@ -1,0 +1,35 @@
+{
+  "id": "pacelc-theorem",
+  "title": "PACELC theorem",
+  "summary": "TODO: Write a concise explanation of pacelc theorem and its role in distributed systems theory.",
+  "minutes": 8,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "TODO: Core concept"
+    },
+    {
+      "type": "paragraph",
+      "text": "TODO: Explain the concept, its purpose, and the problem it solves. Replace this placeholder before publishing."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "TODO: Architecture decisions"
+    },
+    {
+      "type": "list",
+      "items": [
+        "TODO: Add the important design considerations.",
+        "TODO: Explain relevant trade-offs and failure modes."
+      ]
+    },
+    {
+      "type": "callout",
+      "tone": "info",
+      "title": "Authoring note",
+      "text": "This is a starter template only. Replace every TODO with reviewed lesson content before changing the roadmap status to ready."
+    }
+  ]
+}

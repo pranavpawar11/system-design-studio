@@ -1,0 +1,124 @@
+// HLD STUDIO QUESTION TEMPLATE (annotated)
+// Copy to src/data/questions/<slug>.json. The plain .json next to this file is the same data without comments.
+// Search for "TODO" and replace every one. Publish mode refuses to pass while any TODO remains.
+// Sections marked [REQUIRED] stop the app working if missing. [RECOMMENDED] sections are checked by publish mode.
+{
+  "schemaVersion": "1.0.0", // [REQUIRED] Format version of this file. Keep 1.0.0.
+
+  "question": { // [REQUIRED]
+    "id": "hld-your-topic-001",          // PERMANENT. hld-<slug>-<3 digits>. Storage key, evaluator key, share-link key. Never rename after release.
+    "version": 1,                         // Whole number. Bump when requirements or components change enough to invalidate saved designs.
+    "slug": "your-topic",                 // lower-case-with-dashes. Also the file name: your-topic.json
+    "title": "TODO: Design a ...",        // Shown in the question picker and summary. 5 to 80 characters.
+    "subtitle": "TODO: One sentence on what the learner builds.",
+    "category": "TODO: storage-and-retrieval", // Topic area, free text, lower-case-with-dashes.
+    "difficulty": "easy",                 // easy | medium | hard. See DIFFICULTY-AND-CATALOG.md for how to choose.
+    "status": "draft",                    // draft | review | published
+    "estimatedMinutes": 45,               // easy 30-45, medium 45-60, hard 60-90. Also sets the default interview length.
+    "tags": ["system-design"],
+    "prerequisites": ["http-basics"],
+    "learningObjectives": [               // [RECOMMENDED] 3 to 8 outcomes. Shown under "What you will practise".
+      "TODO: Identify functional and non-functional requirements.",
+      "TODO: Estimate request rates and storage.",
+      "TODO: Choose and justify a storage strategy."
+    ],
+    "relatedQuestions": []                // ids of other questions
+  },
+
+  "presentation": { // [RECOMMENDED] Shown in the Question tab under "The problem".
+    "problemStatement": {
+      "short": "TODO: One sentence.",
+      "full": "TODO: The full brief as a learner would hear it in an interview. 3 to 6 sentences. Say what to design, who uses it, and what matters (scale, reliability). Do not reveal the solution."
+    },
+    "scope": {
+      "inScope": ["TODO: Behaviour 1", "TODO: Behaviour 2", "TODO: Behaviour 3"],
+      "outOfScope": ["TODO: Thing learners should NOT design", "TODO: Another"],
+      "optionalExtensions": []
+    }
+  },
+
+  "requirements": { // [REQUIRED] Learners see only the title, grouped as "What the system must do" and "How well it must do it".
+    "functional": [ // WHAT it does. 3 to 8. Each needs a rule in your evaluator (or an explicit "declare it" config).
+      { "id": "FR-01", "title": "TODO: Plain-language requirement", "description": "TODO", "priority": "must",
+        "acceptanceCriteria": ["TODO: How you will know it is met"], "evaluationRuleIds": ["RULE-FR-01"] },
+      { "id": "FR-02", "title": "TODO: Second requirement", "description": "TODO", "priority": "must", "acceptanceCriteria": ["TODO"], "evaluationRuleIds": ["RULE-FR-02"] },
+      { "id": "FR-03", "title": "TODO: Third requirement", "description": "TODO", "priority": "should", "acceptanceCriteria": ["TODO"], "evaluationRuleIds": ["RULE-FR-03"] }
+    ],
+    "nonFunctional": [ // HOW WELL. 2 to 6. Performance, scale, durability, availability.
+      { "id": "NFR-01", "title": "TODO: Handle peak traffic", "category": "scalability", "priority": "must",
+        "target": { "requestsPerSecond": 10000 }, // Numeric goal your evaluator reads. Shape is yours; document it in your evaluator.
+        "measurementMethod": "component-capacity-check", "evaluationRuleIds": ["RULE-NFR-01"] },
+      { "id": "NFR-02", "title": "TODO: Keep data safe", "category": "durability", "priority": "must", "measurementMethod": "storage-and-failure-rule-check", "evaluationRuleIds": ["RULE-NFR-02"] }
+    ]
+  },
+
+  "assumptions": [ // [RECOMMENDED] Shown in the Question tab. State the numbers and conditions the learner may rely on.
+    { "id": "ASM-01", "description": "TODO: e.g. The service receives ten times more reads than writes.", "defaultValue": { "readsPerWrite": 10 }, "configurable": false, "affects": ["capacityEstimation"] }
+  ],
+
+  "capacityEstimation": { // [REQUIRED] Shown read-only in Question > Capacity estimates.
+    "defaultInputs": [ // Keep the order stable: code that reads these may rely on ids.
+      { "id": "CAP-IN-01", "name": "TODO: Writes per day", "value": 10000000, "unit": "writes/day", "configurable": false },
+      { "id": "CAP-IN-02", "name": "TODO: Reads per day", "value": 100000000, "unit": "reads/day", "configurable": false },
+      { "id": "CAP-IN-03", "name": "TODO: Average record size", "value": 500, "unit": "bytes", "configurable": false }
+    ],
+    "calculations": [ // Documentation of the arithmetic. The app does not run formulas from JSON; implement them in code if you want them displayed.
+      { "id": "CAP-CALC-01", "name": "Average write rate", "formula": "writesPerDay / 86400", "outputUnit": "requests/second", "expectedValue": 115.74 }
+    ],
+    "formulaAssumptions": ["One day contains 86400 seconds."]
+  },
+
+  "componentCatalogue": { // [REQUIRED] What learners may drag onto the canvas. Start from catalogue-library.json and delete what you do not want.
+    "allowedComponentIds": ["COMP-CLIENT", "COMP-LOAD-BALANCER", "COMP-APP-SERVER", "COMP-SQL-DATABASE"], // Every id here must be defined below, and vice versa.
+    "components": [
+      { "id": "COMP-CLIENT", "type": "client", "category": "Clients", "displayName": "Client",
+        "responsibilities": ["Send requests to the service"],               // First line is shown in the library.
+        "supportedOperations": ["http-request", "http-response"],           // What this component CAN do. Connection rules match on these.
+        "defaultConfig": {} },
+      { "id": "COMP-LOAD-BALANCER", "type": "load-balancer", "category": "Networking", "displayName": "Load Balancer",
+        "responsibilities": ["Spread requests across servers"],
+        "supportedOperations": ["request-distribution", "health-based-routing"],
+        "defaultConfig": { "averageLatencyMs": 2 } },                       // Config keys such as averageLatencyMs are read by capacity and latency models.
+      { "id": "COMP-APP-SERVER", "type": "application-server", "category": "Compute", "displayName": "Application Server",
+        "responsibilities": ["Handle requests and apply business rules"],
+        "supportedOperations": ["http-request", "request-handling", "durable-read", "durable-write"],
+        "defaultConfig": { "instances": 2, "capacityPerInstanceRps": 3000, "averageProcessingLatencyMs": 10 },
+        "configSchema": { // Validation for the inspector form. Every key here must also be in defaultConfig.
+          "instances": { "type": "integer", "minimum": 1 },
+          "capacityPerInstanceRps": { "type": "number", "exclusiveMinimum": 0 },
+          "averageProcessingLatencyMs": { "type": "number", "minimum": 0 } } },
+      { "id": "COMP-SQL-DATABASE", "type": "sql-database", "category": "Storage", "displayName": "Relational Database",
+        "responsibilities": ["Persist records durably", "Enforce unique constraints"],
+        "supportedOperations": ["durable-read", "durable-write", "unique-constraint", "indexed-lookup"],
+        "defaultConfig": { "readCapacityRps": 5000, "writeCapacityRps": 1000, "averageReadLatencyMs": 20, "averageWriteLatencyMs": 30, "durable": true, "uniqueConstraintSupported": true } }
+    ]
+  },
+
+  "connectionTypes": [ // [REQUIRED] A line can be drawn only if the source has one of compatibleSourceOperations AND the target has one of compatibleTargetOperations.
+    { "id": "EDGE-SYNC-HTTP", "name": "Synchronous HTTP", "semantics": "The source sends a request and waits for the response.",
+      "compatibleSourceOperations": ["http-request", "request-distribution"], "compatibleTargetOperations": ["http-request", "request-distribution"] },
+    { "id": "EDGE-DB-READ", "name": "Database Read", "semantics": "The source reads stored data from the target.",
+      "compatibleSourceOperations": ["durable-read"], "compatibleTargetOperations": ["durable-read", "indexed-lookup"] },
+    { "id": "EDGE-DB-WRITE", "name": "Database Write", "semantics": "The source stores new data in the target.",
+      "compatibleSourceOperations": ["durable-write"], "compatibleTargetOperations": ["durable-write"] }
+  ],
+
+  "hints": [ // [REQUIRED, 5 recommended] Revealed one at a time. Level 1 is a question; level 5 nearly gives the shape of the answer.
+    { "id": "HINT-01", "level": 1, "text": "TODO: A clarifying question that nudges toward the main trade-off." },
+    { "id": "HINT-02", "level": 2, "text": "TODO: Ask the learner to separate the main flows." },
+    { "id": "HINT-03", "level": 3, "text": "TODO: Point at the key access pattern or bottleneck." },
+    { "id": "HINT-04", "level": 4, "text": "TODO: Suggest the kind of component that helps." },
+    { "id": "HINT-05", "level": 5, "text": "TODO: Describe a possible flow and ask about its failure behaviour." }
+  ],
+
+  "evaluation": { // [RECOMMENDED] Documents your rules. The app does not execute these; your evaluator code does (EVALUATOR-GUIDE.md).
+    "version": 1,
+    "rules": [
+      { "id": "RULE-FR-01", "category": "functional", "requirementId": "FR-01", "title": "TODO: What is checked", "severity": "error", "check": "TODO: how", "passCondition": "TODO" }
+    ]
+  },
+
+  "failureScenarios": [ // [RECOMMENDED] What breaks and what a good design does about it. Used by follow-ups and by your evaluator.
+    { "id": "FAIL-01", "name": "TODO: Component failure", "difficulty": "easy", "expectedBehavior": ["TODO"], "passCriteria": ["TODO"] }
+  ]
+}

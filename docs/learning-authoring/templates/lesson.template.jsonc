@@ -1,0 +1,64 @@
+// HLD STUDIO LESSON TEMPLATE (annotated)
+// Copy to src/data/learning/lessons/<id>.json. The plain .json beside this file is the same data without comments.
+// Then add or update the matching lesson node in src/data/learning/roadmap.json (see README.md).
+// Replace every TODO. Publish mode refuses to pass while one remains.
+{
+  "id": "your-lesson-id",   // lower-case-with-dashes. Must equal the roadmap node id and the file name.
+  "title": "TODO: Lesson title",
+  "summary": "TODO: One or two sentences that say what the learner will understand by the end.",
+  "minutes": 12,            // honest time for reading, the lab and the quiz. The linter estimates it and warns if you are far off.
+
+  "blocks": [               // The lesson body, in order. Block types: heading, paragraph, list, callout, example, formula. Min 3 blocks.
+    { "type": "paragraph", "text": "TODO: Open with the idea in plain words. Use **bold** for the term being defined and `code` for names." },
+    { "type": "heading", "level": 2, "text": "TODO: Why it exists" },          // level 2 or 3
+    { "type": "paragraph", "text": "TODO: The problem this solves, before the solution." },
+    { "type": "example", "title": "TODO: A concrete case", "text": "TODO: A worked example with real numbers. This is what most learners remember." },
+    { "type": "formula", "expression": "utilization = load ÷ capacity", "caption": "TODO: Say in words what the formula means.",
+      "variables": [ { "name": "load", "meaning": "TODO: requests arriving per second" }, { "name": "capacity", "meaning": "TODO: requests the system can serve per second" } ] },
+    { "type": "callout", "tone": "warning", "title": "TODO: A common mistake", "text": "TODO: Tones: info, tip, warning." },
+    { "type": "list", "items": ["TODO: First point.", "TODO: Second point."] }   // add "ordered": true for numbered
+  ],
+
+  "lab": {                  // OPTIONAL. A live experiment. Delete this whole section for a reading-only lesson.
+    "title": "TODO: What the learner experiments with",
+    "intro": "TODO: One sentence on what to try.",
+    "inputs": [             // What the learner can change. A slider needs min, max, step. A toggle is 0 or 1.
+      { "id": "load", "label": "Load", "unit": "req/s", "min": 500, "max": 10000, "step": 500, "default": 3000, "format": "integer" },
+      { "id": "capacity", "label": "Capacity", "unit": "req/s", "min": 500, "max": 5000, "step": 500, "default": 2500, "format": "integer", "help": "TODO: optional hint shown under the slider" }
+    ],
+    "derived": [            // Formulas, evaluated in order. A formula may use inputs and EARLIER formulas. "output": true shows it as a result tile.
+      { "id": "utilization", "label": "Utilization", "formula": "round(load / capacity * 1000) / 1000", "format": "percent", "output": true }   // round() keeps the 100% boundary stable
+    ],
+    "narrative": [          // The headline. The FIRST message whose "when" is true is shown. End with "when": "true" as a fallback.
+      { "when": "utilization > 1", "tone": "bad", "text": "TODO: Say what is going wrong. Use {load} and {capacity} to insert live numbers." },
+      { "when": "utilization > 0.7", "tone": "warn", "text": "TODO: Working, but with little headroom ({utilization} used)." },
+      { "when": "true", "tone": "ok", "text": "TODO: Healthy at {utilization}." }
+    ],
+    "notes": [              // OPTIONAL. Every note whose "when" is true is listed as "also worth noticing".
+      { "when": "load > 8000", "tone": "info", "text": "TODO: An extra insight that only appears in some situations." }
+    ],
+    "sweep": { "input": "load", "output": "utilization", "title": "TODO: Utilization as load grows" },   // OPTIONAL chart: vary one slider, read one result
+    "scenarios": [ { "label": "TODO: A named situation", "set": { "load": 8000 } } ],                       // OPTIONAL one-click presets
+    "tasks": [              // 2 to 4 goals. Each needs a "check" formula. Every task must be reachable: the linter tries.
+      { "id": "t1", "text": "TODO: Push the system past its limit and see what happens.", "check": "utilization > 1" },
+      { "id": "t2", "text": "TODO: Bring it back under 70% while still handling real load.", "check": "utilization <= 0.7 && load >= 2000" }
+    ]
+  },
+
+  "quiz": {                 // OPTIONAL but recommended. 3 questions. The learner may retry freely.
+    "passScore": 0.66,      // 0.66 with 3 questions means 2 right to pass.
+    "questions": [
+      { "id": "q1", "prompt": "TODO: A question that checks understanding, not memory.",
+        "options": [ { "id": "a", "text": "TODO: right answer, about as long as the others" }, { "id": "b", "text": "TODO: a plausible wrong answer" }, { "id": "c", "text": "TODO: another plausible wrong answer" } ],
+        "correct": "a", "explanation": "TODO: Why it is right, and why the tempting wrong answer is wrong." },
+      { "id": "q2", "prompt": "TODO: A second question.",
+        "options": [ { "id": "a", "text": "TODO: wrong answer, similar length" }, { "id": "b", "text": "TODO: right answer, similar length" }, { "id": "c", "text": "TODO: wrong answer, similar length" } ],
+        "correct": "b", "explanation": "TODO: Explanation of at least a sentence." },
+      { "id": "q3", "prompt": "TODO: A third question.",
+        "options": [ { "id": "a", "text": "TODO: wrong answer, similar length" }, { "id": "b", "text": "TODO: wrong answer, similar length" }, { "id": "c", "text": "TODO: right answer, similar length" } ],
+        "correct": "c", "explanation": "TODO: Explanation of at least a sentence." }
+    ]
+  },
+
+  "practice": [ { "questionId": "hld-url-shortener-001", "label": "TODO: Design a URL Shortener" } ]   // OPTIONAL Studio questions that practise this lesson
+}

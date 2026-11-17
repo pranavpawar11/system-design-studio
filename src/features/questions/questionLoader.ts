@@ -2,6 +2,12 @@ import type { QuestionSpec } from './question.types';
 
 export class QuestionLoadError extends Error {}
 
+export const DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
+export type Difficulty = (typeof DIFFICULTIES)[number];
+/** Older files say beginner / intermediate / advanced. Both vocabularies load; the app always shows easy, medium or hard. */
+const LEGACY: Record<string, Difficulty> = { beginner: 'easy', intermediate: 'medium', advanced: 'hard' };
+export const normalizeDifficulty = (d: unknown): string => { const s = String(d ?? '').toLowerCase(); return LEGACY[s] ?? s; };
+
 /** Validates the parts of the spec the frontend depends on; never fabricates missing content. */
 export function parseQuestion(raw: unknown): QuestionSpec {
   const q = raw as Partial<QuestionSpec> | null;
@@ -11,8 +17,9 @@ export function parseQuestion(raw: unknown): QuestionSpec {
   if (!Array.isArray(q.componentCatalogue?.components)) problems.push('componentCatalogue.components is missing');
   if (!Array.isArray(q.connectionTypes)) problems.push('connectionTypes is missing');
   if (!Array.isArray(q.capacityEstimation?.defaultInputs)) problems.push('capacityEstimation.defaultInputs is missing');
+  if (q?.question && !DIFFICULTIES.includes(normalizeDifficulty(q.question.difficulty) as Difficulty)) problems.push('question.difficulty must be easy, medium or hard');
   if (problems.length) throw new QuestionLoadError(`Invalid question specification: ${problems.join('; ')}`);
-  return q as QuestionSpec;
+  return { ...(q as QuestionSpec), question: { ...(q as QuestionSpec).question, difficulty: normalizeDifficulty((q as QuestionSpec).question.difficulty) } };
 }
 
 interface Extensions {

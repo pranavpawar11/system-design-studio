@@ -1,8 +1,9 @@
-import { ApiError, type ApiClient, type Draft, type DraftResult, type Interview, type Learning, type QuestionSpec, type QuestionSummary, type ShareLink, type ShareRef, type SharedDesign, type Snapshot, type Workload, type ArchitectureDocument, type EvaluationReport } from '../contracts';
+import { ApiError, type Lesson, type ProgressEvent, type ProgressEventType, type Roadmap, type ApiClient, type Draft, type DraftResult, type Interview, type Learning, type QuestionSpec, type QuestionSummary, type ShareLink, type ShareRef, type SharedDesign, type Snapshot, type Workload, type ArchitectureDocument, type EvaluationReport } from '../contracts';
 import { evaluate, DEFAULT_WORKLOAD } from '../../features/evaluation/evaluator';
 import { catalogGet, catalogList } from './questionCatalog';
+import { catalogHasNode, catalogLesson, catalogRoadmap } from './learningCatalog';
 import { encodeShare, parseShare } from './shareCodec';
-import { readDraft, writeDraft, removeDraft, readSnapshots, writeSnapshots, readInterview, writeInterview, removeInterview } from './storage';
+import { readProgress, writeProgress, removeProgress, readDraft, writeDraft, removeDraft, readSnapshots, writeSnapshots, readInterview, writeInterview, removeInterview } from './storage';
 
 const MAX_SNAPSHOTS = 20;
 const id = () => `snap_${Math.random().toString(36).slice(2, 8)}${Date.now().toString(36).slice(-3)}`;
@@ -44,6 +45,20 @@ export class LocalApi implements ApiClient {
   async evaluate(questionId: string, input: { doc: ArchitectureDocument; workload?: Workload }): Promise<EvaluationReport> {
     const r = evaluate(catalogGet(questionId).spec, input.doc, input.workload ?? DEFAULT_WORKLOAD); await this.settle(); return r;
   }
+
+  async getRoadmap(): Promise<Roadmap> { await this.settle(); return catalogRoadmap(); }
+  async getLesson(lessonId: string): Promise<Lesson> { const l = catalogLesson(lessonId); await this.settle(); return l; }
+  async getProgress(): Promise<ProgressEvent[]> { const r = readProgress(); await this.settle(); return r; }
+  async recordProgress(e: { nodeId: string; type: ProgressEventType; score?: number }): Promise<ProgressEvent> {
+    if (!['lesson_viewed', 'lesson_read', 'lab_completed', 'quiz_passed'].includes(e.type)) throw new ApiError(400, 'VALIDATION_FAILED', `Unknown progress type “${e.type}”.`);
+    if (!catalogHasNode(e.nodeId)) throw new ApiError(404, 'NOT_FOUND', `Lesson “${e.nodeId}” is not on the roadmap.`);
+    if (e.score !== undefined && !(e.score >= 0 && e.score <= 1)) throw new ApiError(400, 'VALIDATION_FAILED', 'Score must be between 0 and 1.');
+    const list = readProgress(); const event: ProgressEvent = { nodeId: e.nodeId, type: e.type, ...(e.score === undefined ? {} : { score: e.score }), at: new Date().toISOString() };
+    if (e.type === 'lesson_viewed' && list.some((x) => x.nodeId === e.nodeId && x.type === 'lesson_viewed')) return list.find((x) => x.nodeId === e.nodeId && x.type === 'lesson_viewed')!; // first view only
+    try { writeProgress([...list, event]); } catch (err) { wrap(err); }
+    await this.settle(); return event;
+  }
+  async resetProgress(): Promise<void> { removeProgress(); await this.settle(); }
 
   async createShareLink(questionId: string, doc: ArchitectureDocument): Promise<ShareLink> {
     try { const payload = await encodeShare(questionId, doc); return { url: `${window.location.origin}${window.location.pathname}#share=${payload}` }; }

@@ -87,6 +87,12 @@ function Results() {
 
 function nextAction(s: ReturnType<typeof useStudio.getState>): string {
   const has = (type: string) => s.doc.nodes.some((n) => n.componentType === type);
+  if (question.question.id !== 'hld-rate-limiter-001' && question.question.id !== 'hld-url-shortener-001') {
+    if (!s.doc.nodes.length) return 'Add components from the library to start your design.';
+    if (!s.report) return 'Click Validate to check your design against the requirements.';
+    const g = s.report.findings.find((x) => x.severity === 'error' || x.severity === 'warning' || x.severity === 'not-evaluated');
+    return g ? `${g.title}${g.suggestion ? ` — ${g.suggestion}` : ''}` : 'No blocking findings. Think about failure scenarios.';
+  }
   if (question.question.id === 'hld-rate-limiter-001') {
     if (!s.doc.nodes.length) return 'Add a Client and an Application Server to protect.';
     if (!has('rate-limiter')) return 'Add a Rate Limiter and place it between the Client and the Application Server.';

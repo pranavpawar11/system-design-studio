@@ -1,0 +1,327 @@
+{
+ "id": "health-checks",
+ "title": "Health checks and failover",
+ "minutes": 15,
+ "summary": "A balancer must notice that a server has died and stop sending it traffic. How fast it notices is a trade-off.",
+ "blocks": [
+  {
+   "type": "paragraph",
+   "text": "A load balancer can only protect you from a dead server if it **knows the server is dead**. It finds out with **health checks**: every few seconds it sends each server a small test request. A server that keeps failing is taken out of rotation, and put back when it passes again."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Three settings"
+  },
+  {
+   "type": "list",
+   "items": [
+    "**Interval.** How often the balancer checks each server.",
+    "**Failures needed.** How many checks in a row must fail before the server is removed.",
+    "**Timeout.** How long the balancer waits for an answer before counting a check as failed."
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "How long a dead server stays in rotation"
+  },
+  {
+   "type": "formula",
+   "expression": "worst-case detection time = failures needed \u00d7 interval + timeout",
+   "caption": "In the worst case the server dies just after a successful check.",
+   "variables": [
+    {
+     "name": "failures needed",
+     "meaning": "failed checks in a row before removal"
+    },
+    {
+     "name": "interval",
+     "meaning": "seconds between checks"
+    },
+    {
+     "name": "timeout",
+     "meaning": "seconds the last check waits before failing"
+    }
+   ]
+  },
+  {
+   "type": "paragraph",
+   "text": "Until the server is removed, the balancer keeps sending it its share of the traffic, and that traffic fails."
+  },
+  {
+   "type": "example",
+   "title": "What a slow check costs",
+   "text": "Traffic is 6,000 requests per second across 4 servers, so each server gets about 1,500. If it takes 17 seconds to notice that one has died, about 25,500 requests are sent into the void. Clients that retry can hide some of this, but retries add load of their own."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Why not just check constantly?"
+  },
+  {
+   "type": "paragraph",
+   "text": "Because healthy servers sometimes fail a check by accident: a busy moment, a garbage-collection pause, a lost packet. If one failed check removes a server, healthy servers will be pulled in and out all day. That is called **flapping**, and each removal moves load onto the other servers."
+  },
+  {
+   "type": "callout",
+   "tone": "warning",
+   "title": "Faster detection means more false alarms",
+   "text": "Checking more often and removing after fewer failures finds real failures sooner, but wrongly removes healthy servers more often. There is no perfect setting. You are choosing a point on a trade-off."
+  },
+  {
+   "type": "callout",
+   "tone": "info",
+   "title": "Shallow and deep checks",
+   "text": "A shallow check only asks \"is the server answering?\". A deep check also tests something the server depends on, such as its database. Deep checks catch more problems, but if the shared database is down, every server fails the check at once and the balancer removes all of them, which turns a partial problem into a total outage."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Try it"
+  },
+  {
+   "type": "paragraph",
+   "text": "Move the settings and watch the two costs. Try to find one that is quick to notice a failure and also rarely removes a healthy server."
+  }
+ ],
+ "lab": {
+  "title": "Detecting a dead server",
+  "intro": "One server has just died. See how long the balancer takes to notice, and how often it wrongly removes a healthy server.",
+  "inputs": [
+   {
+    "id": "rps",
+    "label": "Traffic",
+    "unit": "req/s",
+    "min": 1000,
+    "max": 30000,
+    "step": 500,
+    "default": 6000,
+    "format": "integer"
+   },
+   {
+    "id": "servers",
+    "label": "Servers",
+    "min": 2,
+    "max": 10,
+    "step": 1,
+    "default": 4,
+    "format": "integer"
+   },
+   {
+    "id": "interval",
+    "label": "Check every",
+    "unit": "s",
+    "min": 1,
+    "max": 30,
+    "step": 1,
+    "default": 5,
+    "format": "integer"
+   },
+   {
+    "id": "failuresNeeded",
+    "label": "Failures in a row to remove",
+    "min": 1,
+    "max": 5,
+    "step": 1,
+    "default": 3,
+    "format": "integer"
+   },
+   {
+    "id": "timeout",
+    "label": "Check timeout",
+    "unit": "s",
+    "min": 1,
+    "max": 10,
+    "step": 1,
+    "default": 2,
+    "format": "integer"
+   },
+   {
+    "id": "probeFailChance",
+    "label": "Chance a healthy server fails one check",
+    "min": 0,
+    "max": 0.1,
+    "step": 0.005,
+    "default": 0.02,
+    "format": "percent",
+    "help": "Busy moments, pauses and lost packets make a healthy server occasionally miss a check."
+   }
+  ],
+  "derived": [
+   {
+    "id": "worstDetect",
+    "label": "Time to notice a dead server",
+    "unit": "s",
+    "formula": "failuresNeeded * interval + timeout",
+    "format": "integer",
+    "output": true
+   },
+   {
+    "id": "lostRequests",
+    "label": "Requests sent to the dead server",
+    "unit": "requests",
+    "formula": "round(rps / servers * worstDetect)",
+    "format": "integer",
+    "output": true
+   },
+   {
+    "id": "falseRemovals",
+    "label": "Healthy servers wrongly removed",
+    "unit": "per day",
+    "formula": "(86400 / interval) * pow(probeFailChance, failuresNeeded)",
+    "format": "decimal2",
+    "output": true
+   }
+  ],
+  "narrative": [
+   {
+    "when": "falseRemovals > 5",
+    "tone": "bad",
+    "text": "A healthy server is wrongly removed about {falseRemovals}. That is flapping: capacity keeps disappearing and coming back. Require more failures in a row before removing a server."
+   },
+   {
+    "when": "lostRequests > 50000",
+    "tone": "warn",
+    "text": "Detection is slow. A dead server takes up to {worstDetect} to be noticed, and about {lostRequests} are sent to it meanwhile. Check more often, or remove after fewer failures."
+   },
+   {
+    "when": "true",
+    "tone": "ok",
+    "text": "A balanced setting. A dead server is noticed within {worstDetect}, about {lostRequests} fail in that time, and a healthy server is wrongly removed {falseRemovals}."
+   }
+  ],
+  "notes": [
+   {
+    "when": "failuresNeeded == 1",
+    "tone": "warn",
+    "text": "One failed check removes a server. A single slow reply is enough, so servers will keep flapping."
+   },
+   {
+    "when": "interval >= 20",
+    "tone": "info",
+    "text": "Checking every 20 seconds or more leaves a dead server in rotation for a long time."
+   }
+  ],
+  "sweep": {
+   "input": "interval",
+   "output": "lostRequests",
+   "title": "Requests lost before a dead server is removed"
+  },
+  "scenarios": [
+   {
+    "label": "Fast but jumpy",
+    "set": {
+     "interval": 1,
+     "failuresNeeded": 1,
+     "timeout": 1
+    }
+   },
+   {
+    "label": "Slow but calm",
+    "set": {
+     "interval": 30,
+     "failuresNeeded": 5,
+     "timeout": 5
+    }
+   },
+   {
+    "label": "Balanced",
+    "set": {
+     "interval": 5,
+     "failuresNeeded": 3,
+     "timeout": 2,
+     "probeFailChance": 0.02
+    }
+   }
+  ],
+  "tasks": [
+   {
+    "id": "t1",
+    "text": "Make detection fast: notice a dead server within 6 seconds.",
+    "check": "worstDetect <= 6"
+   },
+   {
+    "id": "t2",
+    "text": "See the cost of that speed: keep detection within 6 seconds and watch healthy servers get wrongly removed more than 5 times a day.",
+    "check": "worstDetect <= 6 && falseRemovals > 5"
+   },
+   {
+    "id": "t3",
+    "text": "Find a better balance: notice a failure within 15 seconds and wrongly remove a healthy server less than once a day.",
+    "check": "worstDetect <= 15 && falseRemovals < 1"
+   }
+  ]
+ },
+ "quiz": {
+  "passScore": 0.66,
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "A balancer checks every 10 seconds, removes a server after 3 failures in a row, and uses a 2 second timeout. What is the worst-case time to notice a dead server?",
+    "options": [
+     {
+      "id": "a",
+      "text": "About 12 seconds"
+     },
+     {
+      "id": "b",
+      "text": "About 32 seconds"
+     },
+     {
+      "id": "c",
+      "text": "About 60 seconds"
+     }
+    ],
+    "correct": "b",
+    "explanation": "Failures needed \u00d7 interval + timeout = 3 \u00d7 10 + 2 = 32 seconds in the worst case, when the server dies just after a successful check."
+   },
+   {
+    "id": "q2",
+    "prompt": "Why is removing a server after a single failed check usually a bad idea?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Balancers are not able to count failures"
+     },
+     {
+      "id": "b",
+      "text": "One slow reply from a healthy server would pull it out, so servers keep flapping"
+     },
+     {
+      "id": "c",
+      "text": "One check cannot be sent to a server that is busy"
+     }
+    ],
+    "correct": "b",
+    "explanation": "Healthy servers occasionally miss a check. If one miss removes them, they flap in and out of rotation and the remaining servers keep absorbing their load."
+   },
+   {
+    "id": "q3",
+    "prompt": "A deep health check tests the shared database. What is the main danger?",
+    "options": [
+     {
+      "id": "a",
+      "text": "If the database is down, every server fails the check and all are removed at once"
+     },
+     {
+      "id": "b",
+      "text": "It makes the checks too quick to be useful"
+     },
+     {
+      "id": "c",
+      "text": "It uses no resources and so hides real failures"
+     }
+    ],
+    "correct": "a",
+    "explanation": "A shared dependency failing makes every server look unhealthy together. Removing them all turns a partial problem into a total outage."
+   }
+  ]
+ },
+ "practice": [
+  {
+   "questionId": "hld-rate-limiter-001",
+   "label": "Design a Rate Limiter"
+  }
+ ]
+}

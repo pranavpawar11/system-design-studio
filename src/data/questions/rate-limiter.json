@@ -5,8 +5,69 @@
   "version": 1,
   "slug": "design-rate-limiter",
   "title": "Design a Rate Limiter",
-  "difficulty": "intermediate",
-  "estimatedMinutes": 40
+  "difficulty": "medium",
+  "estimatedMinutes": 45,
+  "subtitle": "Design a service that limits how many requests each client can make, without slowing down the requests it allows.",
+  "category": "traffic-management",
+  "status": "draft",
+  "tags": [
+   "system-design",
+   "rate-limiter",
+   "distributed-state",
+   "reliability",
+   "api-protection"
+  ],
+  "prerequisites": [
+   "http-basics",
+   "caching-basics"
+  ],
+  "learningObjectives": [
+   "Decide where in a request path a limit must be enforced so it cannot be bypassed.",
+   "Explain why several limiter servers need shared state, and where it should live.",
+   "Compare limiting algorithms such as token bucket and fixed window.",
+   "Decide what the system does when its counter store fails: fail open or fail closed.",
+   "Estimate the extra latency and throughput a per-request check adds."
+  ],
+  "relatedQuestions": [
+   "hld-url-shortener-001",
+   "hld-key-value-store-001"
+  ]
+ },
+ "presentation": {
+  "problemStatement": {
+   "short": "Design a rate limiter that protects an API by rejecting clients that send too many requests.",
+   "full": "Design a rate limiter for a public API. Each client may make a fixed number of requests per minute; requests over the limit must be rejected with a clear response, and requests under it must pass through with almost no added delay. The API runs on several servers behind a load balancer, so the limiter cannot count requests in one server's memory alone. Design the high-level architecture, decide where counts are stored, choose a limiting algorithm, and explain what happens when the counting system fails.",
+   "learnerTask": [
+    "Decide where the limiter sits in the request path.",
+    "Choose where request counts live.",
+    "Pick a limiting algorithm and justify it.",
+    "Say what happens to a rejected request.",
+    "Decide what happens when the counter store is down.",
+    "Validate the design and improve it."
+   ]
+  },
+  "scope": {
+   "inScope": [
+    "Limit requests per client over a time window.",
+    "Share counts across several limiter servers.",
+    "Reject excess requests with a defined response.",
+    "Choose and explain a limiting algorithm.",
+    "Handle failure of the counting system."
+   ],
+   "outOfScope": [
+    "Billing or paid plans.",
+    "Distributed denial-of-service protection at network level.",
+    "Per-user quotas that last for days or months.",
+    "Geographic rules and multi-region counting.",
+    "Machine-learning-based abuse detection."
+   ],
+   "optionalExtensions": [
+    "Different limits per customer plan.",
+    "Limits per endpoint.",
+    "Showing remaining quota in response headers.",
+    "Multi-region limiting."
+   ]
+  }
  },
  "requirements": {
   "functional": [
@@ -57,6 +118,48 @@
    }
   ]
  },
+ "assumptions": [
+  {
+   "id": "ASM-01",
+   "description": "Every request identifies its client, for example by an API key.",
+   "defaultValue": true,
+   "configurable": false,
+   "affects": [
+    "counting"
+   ]
+  },
+  {
+   "id": "ASM-02",
+   "description": "Limits are counted per client, in requests per minute.",
+   "defaultValue": {
+    "requestsPerMinute": 100
+   },
+   "configurable": false,
+   "affects": [
+    "capacityEstimation"
+   ]
+  },
+  {
+   "id": "ASM-03",
+   "description": "The API serves a peak of about 10,000 requests per second across all clients.",
+   "defaultValue": {
+    "peakRequestsPerSecond": 10000
+   },
+   "configurable": false,
+   "affects": [
+    "capacityEstimation"
+   ]
+  },
+  {
+   "id": "ASM-04",
+   "description": "The limiter may add at most a few milliseconds to each request.",
+   "defaultValue": true,
+   "configurable": false,
+   "affects": [
+    "latency"
+   ]
+  }
+ ],
  "capacityEstimation": {
   "defaultInputs": [
    {

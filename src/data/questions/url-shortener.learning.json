@@ -2,7 +2,7 @@
  "followUpQuestions": [
   {
    "id": "FU-01",
-   "difficulty": "beginner",
+   "difficulty": "easy",
    "category": "fundamentals",
    "prompt": "Why does the system need a unique short code?",
    "expectedAnswerPoints": [
@@ -13,7 +13,7 @@
   },
   {
    "id": "FU-02",
-   "difficulty": "beginner",
+   "difficulty": "easy",
    "category": "database",
    "prompt": "Why is an index on shortCode useful?",
    "expectedAnswerPoints": [
@@ -24,7 +24,7 @@
   },
   {
    "id": "FU-03",
-   "difficulty": "beginner",
+   "difficulty": "easy",
    "category": "caching",
    "prompt": "Why might a cache improve redirect performance?",
    "expectedAnswerPoints": [
@@ -36,7 +36,7 @@
   },
   {
    "id": "FU-04",
-   "difficulty": "intermediate",
+   "difficulty": "medium",
    "category": "consistency",
    "prompt": "How would you prevent two concurrent requests from creating conflicting short codes?",
    "expectedAnswerPoints": [
@@ -48,7 +48,7 @@
   },
   {
    "id": "FU-05",
-   "difficulty": "intermediate",
+   "difficulty": "medium",
    "category": "scalability",
    "prompt": "What would you change if redirect traffic increased tenfold?",
    "expectedAnswerPoints": [
@@ -61,7 +61,7 @@
   },
   {
    "id": "FU-06",
-   "difficulty": "advanced",
+   "difficulty": "hard",
    "category": "reliability",
    "prompt": "What happens if the primary database becomes unavailable?",
    "expectedAnswerPoints": [
@@ -74,7 +74,7 @@
   },
   {
    "id": "FU-07",
-   "difficulty": "advanced",
+   "difficulty": "hard",
    "category": "identifier-generation",
    "prompt": "Compare sequential IDs encoded with Base62, random short codes, and preallocated ID ranges.",
    "expectedAnswerPoints": [
@@ -86,7 +86,7 @@
   },
   {
    "id": "FU-08",
-   "difficulty": "advanced",
+   "difficulty": "hard",
    "category": "global-scale",
    "prompt": "How would you adapt the architecture for users distributed across several continents?",
    "expectedAnswerPoints": [
@@ -102,7 +102,7 @@
   {
    "id": "REF-01",
    "name": "Minimal valid architecture",
-   "difficulty": "beginner",
+   "difficulty": "easy",
    "architecture": {
     "schemaVersion": 1,
     "questionId": "hld-url-shortener-001",
@@ -233,7 +233,7 @@
   {
    "id": "REF-02",
    "name": "Cached redirect architecture",
-   "difficulty": "intermediate",
+   "difficulty": "medium",
    "architecture": {
     "schemaVersion": 1,
     "questionId": "hld-url-shortener-001",
@@ -410,7 +410,7 @@
   {
    "id": "REF-03",
    "name": "Key-value storage architecture",
-   "difficulty": "intermediate",
+   "difficulty": "medium",
    "architecture": {
     "schemaVersion": 1,
     "questionId": "hld-url-shortener-001",

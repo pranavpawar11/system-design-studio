@@ -27,11 +27,13 @@ export default function MetricsPanel() {
   const { doc, workload, scenario, setWorkload, setScenario, setHighlight } = useStudio();
   let a: CapacityAnalysis | null = null; let err = '';
   const isRL = question.question.id === 'hld-rate-limiter-001';
-  try { a = (isRL ? analyzeRateLimiter : analyzeCapacity)(question, doc, workload, scenario); } catch (e) { err = (e as Error).message; }
+  const modeled = isRL || question.question.id === 'hld-url-shortener-001';
+  try { if (modeled) a = (isRL ? analyzeRateLimiter : analyzeCapacity)(question, doc, workload, scenario); } catch (e) { err = (e as Error).message; }
   const app = isRL ? doc.nodes.find((n) => n.componentType === 'rate-limiter') : doc.nodes.find((n) => n.componentType === 'application-server' && doc.edges.some((e) => e.source === n.id && e.connectionTypeId === 'EDGE-DB-READ'));
   const lat = app && !isRL ? estimateRedirectLatency(question, doc, app.id) : null;
   const worst = a?.rows.find((r) => r.nodeId === a?.bottleneckNodeId);
 
+  if (!modeled) return <div className="mp"><div className="callout"><b>No capacity model yet</b><p>What-if scenarios aren’t available for this question yet. Validate still checks your design against its requirements.</p></div></div>;
   return (
     <div className="mp">
       <p className="mp-intro">Try “what if” scenarios and see which part of your design fills up first. Numbers use the capacities you configured, not benchmarks.</p>

@@ -1,0 +1,370 @@
+{
+ "id": "load-balancing",
+ "title": "Load balancing",
+ "minutes": 16,
+ "summary": "A load balancer spreads requests across several servers, so you can add capacity and survive a server failing.",
+ "blocks": [
+  {
+   "type": "paragraph",
+   "text": "A **load balancer** sits in front of several identical servers. Clients talk to the balancer, and it passes each request to one of the servers. Clients never need to know how many servers there are."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Why it exists"
+  },
+  {
+   "type": "list",
+   "items": [
+    "**More capacity.** One server can only handle so many requests. Several servers behind a balancer can handle several times as many, and you can add more as traffic grows.",
+    "**Survival.** If one server fails, the balancer stops sending it requests and the others carry on.",
+    "**Easy changes.** You can add, remove or update servers one at a time without the clients noticing."
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "How it chooses a server"
+  },
+  {
+   "type": "list",
+   "items": [
+    "**Round robin.** Take turns: server 1, then 2, then 3, then back to 1. Simple, and fair when requests cost about the same.",
+    "**Least connections.** Send the request to the server that is busy with the fewest requests right now. Better when some requests take much longer than others.",
+    "**Weighted.** Give stronger servers a bigger share. Useful when the servers are not all the same size.",
+    "**Hashing.** The same client, or the same key, always goes to the same server. This keeps a user's data close to one server, but it can load some servers more than others."
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "The capacity maths"
+  },
+  {
+   "type": "formula",
+   "expression": "utilization = traffic \u00f7 ((servers \u2212 failed) \u00d7 capacity per server)",
+   "caption": "Utilization is how full the working servers are. Above 100% they cannot keep up.",
+   "variables": [
+    {
+     "name": "traffic",
+     "meaning": "requests arriving per second"
+    },
+    {
+     "name": "servers \u2212 failed",
+     "meaning": "servers that are working"
+    },
+    {
+     "name": "capacity per server",
+     "meaning": "requests one server can handle per second"
+    }
+   ]
+  },
+  {
+   "type": "example",
+   "title": "Four servers and a bad day",
+   "text": "You have 4 servers that each handle 3,000 requests per second, so 12,000 in total. Peak traffic is 10,000, which keeps them about 83% busy. That looks healthy. Now one server fails. Three servers can handle 9,000, but 10,000 are arriving, so they are at 111% and requests start failing. The balancer worked perfectly. There was simply not enough capacity left."
+  },
+  {
+   "type": "callout",
+   "tone": "tip",
+   "title": "Plan for N+1",
+   "text": "Size the system so it still copes when one server is down. That means you always run one more server than the traffic strictly needs. Many outages are caused by a system that was fine, until the first failure."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "When the share is not equal"
+  },
+  {
+   "type": "paragraph",
+   "text": "Averages hide problems. If the balancing is uneven, for example because of hashing or long-lived connections, one server can be asked for far more than the average. It overloads while the others still have room. The busiest server is the one that decides when users see errors."
+  },
+  {
+   "type": "callout",
+   "tone": "warning",
+   "title": "A balancer is not magic",
+   "text": "It spreads load, but it cannot create capacity. If total traffic is more than all the servers together can handle, no clever algorithm helps. And the balancer itself can fail, so real systems run more than one, or use a managed service that does."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Try it"
+  },
+  {
+   "type": "paragraph",
+   "text": "Fail some servers, make the balancing uneven, and raise the traffic. Watch which limit you hit first."
+  }
+ ],
+ "lab": {
+  "title": "Servers behind a balancer",
+  "intro": "Traffic is shared across your servers. Take servers away, skew the balancing, and see when something breaks.",
+  "inputs": [
+   {
+    "id": "rps",
+    "label": "Traffic",
+    "unit": "req/s",
+    "min": 1000,
+    "max": 30000,
+    "step": 500,
+    "default": 10000,
+    "format": "integer"
+   },
+   {
+    "id": "servers",
+    "label": "Servers",
+    "min": 1,
+    "max": 10,
+    "step": 1,
+    "default": 4,
+    "format": "integer"
+   },
+   {
+    "id": "capacityPerServer",
+    "label": "Capacity of one server",
+    "unit": "req/s",
+    "min": 1000,
+    "max": 5000,
+    "step": 500,
+    "default": 3000,
+    "format": "integer"
+   },
+   {
+    "id": "failed",
+    "label": "Servers that have failed",
+    "min": 0,
+    "max": 10,
+    "step": 1,
+    "default": 0,
+    "format": "integer",
+    "help": "Failed servers get no traffic. The balancer sends everything to the rest."
+   },
+   {
+    "id": "skew",
+    "label": "How uneven the balancing is",
+    "min": 0,
+    "max": 1,
+    "step": 0.05,
+    "default": 0,
+    "format": "percent",
+    "help": "How much more than average the busiest server receives."
+   }
+  ],
+  "derived": [
+   {
+    "id": "limit",
+    "formula": "1",
+    "format": "percent"
+   },
+   {
+    "id": "working",
+    "label": "Servers working",
+    "formula": "max(servers - failed, 0)",
+    "format": "integer",
+    "output": true
+   },
+   {
+    "id": "totalCapacity",
+    "label": "Total capacity",
+    "unit": "req/s",
+    "formula": "working * capacityPerServer",
+    "format": "integer"
+   },
+   {
+    "id": "utilization",
+    "label": "Average server load",
+    "formula": "round(rps / totalCapacity * 1000) / 1000",
+    "format": "percent",
+    "output": true
+   },
+   {
+    "id": "busiestLoad",
+    "unit": "req/s",
+    "formula": "rps / working * (1 + skew)",
+    "format": "integer"
+   },
+   {
+    "id": "busiestUtil",
+    "label": "Busiest server load",
+    "formula": "round(busiestLoad / capacityPerServer * 1000) / 1000",
+    "format": "percent",
+    "output": true
+   }
+  ],
+  "narrative": [
+   {
+    "when": "working == 0",
+    "tone": "bad",
+    "text": "Every server is down, so nothing can answer. A load balancer cannot help when there is nothing behind it."
+   },
+   {
+    "when": "utilization > 1",
+    "tone": "bad",
+    "text": "Traffic is {rps} but the {working} working servers can only handle {totalCapacity}. Requests queue up and fail. No balancing trick fixes this: it needs more capacity."
+   },
+   {
+    "when": "busiestUtil > 1",
+    "tone": "bad",
+    "text": "On average the servers cope, but the busiest one is asked for {busiestLoad} and can only do {capacityPerServer}. Uneven balancing overloads one server while others have room to spare."
+   },
+   {
+    "when": "utilization > 0.85",
+    "tone": "warn",
+    "text": "The servers are {utilization} busy. It works, but one more failure or a small spike would overload them."
+   },
+   {
+    "when": "failed > 0",
+    "tone": "info",
+    "text": "{failed} of {servers} servers are down, and the rest still cope at {utilization} busy. This is what spare capacity is for."
+   },
+   {
+    "when": "true",
+    "tone": "ok",
+    "text": "Healthy. Traffic is shared across {working} servers and each is about {utilization} busy."
+   }
+  ],
+  "notes": [
+   {
+    "when": "failed == 0 && servers > 1 && rps > (servers - 1) * capacityPerServer",
+    "tone": "warn",
+    "text": "You have no spare server. If any one server failed right now, the rest could not carry this traffic. Plan for N+1."
+   },
+   {
+    "when": "servers == 1",
+    "tone": "info",
+    "text": "With a single server there is nothing to balance, and one failure is a complete outage."
+   },
+   {
+    "when": "skew > 0.3 && busiestUtil <= 1",
+    "tone": "info",
+    "text": "The balancing is quite uneven. It is coping now, but the busiest server has much less room than the average suggests."
+   }
+  ],
+  "sweep": {
+   "input": "rps",
+   "output": "utilization",
+   "title": "Average server load as traffic grows",
+   "reference": {
+    "label": "Capacity (100%)",
+    "value": "limit"
+   }
+  },
+  "scenarios": [
+   {
+    "label": "A server fails",
+    "set": {
+     "failed": 1
+    }
+   },
+   {
+    "label": "Two servers fail",
+    "set": {
+     "failed": 2
+    }
+   },
+   {
+    "label": "Balancing becomes uneven",
+    "set": {
+     "skew": 0.5
+    }
+   },
+   {
+    "label": "Back to normal",
+    "set": {
+     "rps": 10000,
+     "servers": 4,
+     "capacityPerServer": 3000,
+     "failed": 0,
+     "skew": 0
+    }
+   }
+  ],
+  "tasks": [
+   {
+    "id": "t1",
+    "text": "Fail a server and still keep every working server at or under 100% busy.",
+    "check": "failed >= 1 && utilization <= 1 && busiestUtil <= 1"
+   },
+   {
+    "id": "t2",
+    "text": "Make the balancing uneven so one server is overloaded even though the average is fine.",
+    "check": "utilization <= 1 && busiestUtil > 1"
+   },
+   {
+    "id": "t3",
+    "text": "Plan for N+1: with four or more servers and none failed, carry at least 10,000 requests per second so that losing any one server would still leave the rest at or under 100%.",
+    "check": "servers >= 4 && failed == 0 && skew == 0 && rps >= 10000 && rps <= (servers - 1) * capacityPerServer"
+   }
+  ]
+ },
+ "quiz": {
+  "passScore": 0.66,
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "Four servers each handle 3,000 requests per second. Traffic is 10,000 per second and one server fails. What happens?",
+    "options": [
+     {
+      "id": "a",
+      "text": "The three left handle 9,000, so they are overloaded at about 111%"
+     },
+     {
+      "id": "b",
+      "text": "The balancer shares the traffic out evenly, so nothing changes"
+     },
+     {
+      "id": "c",
+      "text": "The traffic drops to match what the three servers can manage"
+     }
+    ],
+    "correct": "a",
+    "explanation": "Three servers have 9,000 requests per second of capacity, but 10,000 still arrive. The balancer cannot create capacity, so the servers run at 111% and requests fail."
+   },
+   {
+    "id": "q2",
+    "prompt": "The average server is only 70% busy, yet users are seeing errors. What is the most likely cause?",
+    "options": [
+     {
+      "id": "a",
+      "text": "The balancing is uneven, so one server is overloaded"
+     },
+     {
+      "id": "b",
+      "text": "The average is always the number that decides errors"
+     },
+     {
+      "id": "c",
+      "text": "The load balancer has too much spare capacity"
+     }
+    ],
+    "correct": "a",
+    "explanation": "Averages hide the busiest server. If the share is uneven, one server can pass 100% while the average still looks comfortable."
+   },
+   {
+    "id": "q3",
+    "prompt": "What does planning for N+1 mean?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Adding one extra load balancer in front of the servers"
+     },
+     {
+      "id": "b",
+      "text": "Having enough servers that losing any one still leaves enough capacity"
+     },
+     {
+      "id": "c",
+      "text": "Using one more balancing algorithm than you need"
+     }
+    ],
+    "correct": "b",
+    "explanation": "N+1 means running one more server than the traffic needs, so a single failure does not cause an overload."
+   }
+  ]
+ },
+ "practice": [
+  {
+   "questionId": "hld-url-shortener-001",
+   "label": "Design a URL Shortener"
+  }
+ ]
+}

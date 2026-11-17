@@ -45,6 +45,24 @@ Base path: `/api/v1`. JSON in and out. Timestamps are ISO 8601 UTC.
 | `POST /questions/{id}/shares` | Body `{doc}`; returns `{id, path}` where path is `/s/{id}` | 201 | 413 too large, 422 invalid |
 | `GET /shares/{id}` | Returns `{questionId, doc}` | 200 | 404 |
 
+### Learning
+
+Content is read-only and public; progress belongs to the signed-in learner.
+
+| Method and path | Purpose | Success | Failure |
+|---|---|---|---|
+| `GET /learning/roadmap` | The whole map: topics → groups → lessons (`Roadmap`). Small enough to load at once. | 200 | |
+| `GET /learning/lessons/{id}` | One lesson (`Lesson`): blocks, optional lab and quiz | 200 | 404 not written yet or unknown |
+| `GET /learning/progress` | The learner's events, oldest first (`ProgressEvent[]`) | 200 | 401 |
+| `POST /learning/progress` | Body `{nodeId, type, score?}`; the server stamps `at` and returns the stored event | 201 | 400 unknown type or score outside 0 to 1, 404 unknown lesson |
+| `DELETE /learning/progress` | Reset the learner's progress | 204 | |
+
+`type` is one of `lesson_viewed`, `lesson_read`, `lab_completed`, `quiz_passed`. Progress is an **append-only event list**.
+Never store "percent complete": the client derives completion from events and the roadmap (a lesson with a lab and a quiz is complete when
+both `lab_completed` and `quiz_passed` exist), so changing the roadmap later cannot corrupt anyone's progress.
+Only the first `lesson_viewed` per lesson need be kept. Accept repeated `quiz_passed` and `lab_completed` events: a learner may redo them.
+Lesson content is authored in `docs/learning-authoring`; `src/data/learning` is the reference data a back end can import.
+
 ### Errors
 
 Return `application/problem+json`: `{ "status": 422, "code": "VALIDATION_FAILED", "message": "…", "details": ["…"] }`.

@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import spec from '../data/questions/url-shortener.json';
 import solved from './fixtures/url-shortener-solved.json';
-import { parseQuestion } from '../features/questions/questionLoader';
+import { parseQuestion, mergeExtensions } from '../features/questions/questionLoader';
+import ext from '../data/questions/url-shortener.extensions.json';
 import { validateDocument } from '../features/architecture/architecture.utils';
 import { evaluate } from '../features/evaluation/evaluator';
 
@@ -20,7 +21,7 @@ describe('solved URL shortener design', () => {
 
 import solved2 from './fixtures/url-shortener-solved-v2.json';
 describe('full production-style design', () => {
-  const q = parseQuestion(spec);
+  const q = mergeExtensions(parseQuestion(spec), ext as never);
   it('is valid with replicas, queue/worker analytics, ID allocation and telemetry', () => {
     const r = validateDocument(solved2, q);
     expect(r.ok).toBe(true);

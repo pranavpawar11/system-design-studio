@@ -1,0 +1,123 @@
+{
+ "id": "l4-vs-l7",
+ "title": "Layer 4 versus layer 7",
+ "minutes": 8,
+ "summary": "A load balancer can decide using only network details, or using the contents of the request. Each choice has a cost.",
+ "blocks": [
+  {
+   "type": "paragraph",
+   "text": "Load balancers come in two main kinds, named after layers in the networking model. The difference is simple: **how much of each request the balancer looks at** before choosing a server."
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Layer 4: look at the connection"
+  },
+  {
+   "type": "paragraph",
+   "text": "A layer 4 balancer works with the transport layer. It sees addresses and ports, such as which machine is calling and which port it wants, but not what is inside the request. It simply forwards the connection to a server."
+  },
+  {
+   "type": "list",
+   "items": [
+    "Very fast and simple, because it does little work per connection.",
+    "Works for any protocol that runs over TCP or UDP, not just web traffic.",
+    "Cannot route by URL, read headers or cookies, or change the request."
+   ]
+  },
+  {
+   "type": "heading",
+   "level": 2,
+   "text": "Layer 7: look at the request"
+  },
+  {
+   "type": "paragraph",
+   "text": "A layer 7 balancer understands the application protocol, usually HTTP. It reads the request, so it can make decisions based on what is being asked."
+  },
+  {
+   "type": "list",
+   "items": [
+    "Route by URL path or host name: send `/api` to one group of servers and `/images` to another.",
+    "Use cookies or headers, for example to keep a user on the same server.",
+    "Handle encryption (TLS) centrally, so the servers behind it do not have to.",
+    "Costs more processing per request than layer 4, and adds a little delay."
+   ]
+  },
+  {
+   "type": "example",
+   "title": "One address, three services",
+   "text": "A site serves its web pages, its API and its video from one address. A layer 7 balancer reads each request path and sends `/video` to the video servers, `/api` to the API servers and everything else to the web servers. A layer 4 balancer cannot do this, because it never sees the path."
+  },
+  {
+   "type": "callout",
+   "tone": "tip",
+   "title": "Choose by what the decision needs to see",
+   "text": "If the choice depends on the content of the request, you need layer 7. If you only need to spread connections quickly and cheaply, layer 4 is enough. Large systems often use both: layer 4 in front for raw speed, and layer 7 behind it for routing."
+  }
+ ],
+ "quiz": {
+  "passScore": 0.66,
+  "questions": [
+   {
+    "id": "q1",
+    "prompt": "You want requests for /video to go to video servers and everything else to web servers. Which balancer do you need?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Layer 4, because it is the fastest"
+     },
+     {
+      "id": "b",
+      "text": "Layer 7, because it can read the request path"
+     },
+     {
+      "id": "c",
+      "text": "Either one, because both can read paths"
+     }
+    ],
+    "correct": "b",
+    "explanation": "Only a layer 7 balancer reads the request. A layer 4 balancer sees addresses and ports, not the URL path."
+   },
+   {
+    "id": "q2",
+    "prompt": "A service speaks a custom protocol over TCP and must handle a very high number of connections cheaply. What is the best fit?",
+    "options": [
+     {
+      "id": "a",
+      "text": "Layer 4, which forwards connections without parsing them"
+     },
+     {
+      "id": "b",
+      "text": "Layer 7, because every protocol has paths and headers"
+     },
+     {
+      "id": "c",
+      "text": "Neither, because balancers only work with web pages"
+     }
+    ],
+    "correct": "a",
+    "explanation": "A custom protocol has no HTTP paths for layer 7 to read, and layer 4 does the least work per connection, which suits very high connection counts."
+   },
+   {
+    "id": "q3",
+    "prompt": "What is the main cost of choosing layer 7 over layer 4?",
+    "options": [
+     {
+      "id": "a",
+      "text": "It cannot balance across more than two servers"
+     },
+     {
+      "id": "b",
+      "text": "It reads every request, so it uses more processing and adds some delay"
+     },
+     {
+      "id": "c",
+      "text": "It can only handle encrypted traffic"
+     }
+    ],
+    "correct": "b",
+    "explanation": "Understanding the request takes work. Layer 7 balancers use more processing and add a little latency in return for smarter decisions."
+   }
+  ]
+ }
+}

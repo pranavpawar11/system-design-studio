@@ -1,3 +1,4 @@
+import type { ProgressEvent } from '../../features/learning/types';
 import type { Draft, DraftResult, Interview, Snapshot, QuestionSpec } from '../contracts';
 import { validateDocument } from '../../features/architecture/architecture.utils';
 
@@ -38,3 +39,10 @@ export function readInterview(q: QuestionSpec): Interview | null {
 }
 export const writeInterview = (q: QuestionSpec, iv: Interview) => localStorage.setItem(ivKey(q), JSON.stringify(iv));
 export const removeInterview = (q: QuestionSpec) => { try { localStorage.removeItem(ivKey(q)); } catch { /* ignore */ } };
+
+const progressKey = 'hld-studio:learn-progress:v1';
+export function readProgress(): ProgressEvent[] {
+  try { const r = JSON.parse(localStorage.getItem(progressKey) ?? '[]'); return Array.isArray(r) ? r.filter((e) => e && typeof e.nodeId === 'string' && typeof e.type === 'string' && typeof e.at === 'string') : []; } catch { return []; }
+}
+export const writeProgress = (list: ProgressEvent[]) => localStorage.setItem(progressKey, JSON.stringify(list));
+export const removeProgress = () => { try { localStorage.removeItem(progressKey); } catch { /* ignore */ } };

@@ -121,6 +121,10 @@ function Question() {
   const [visible, setVisible] = useState<string[]>(hints);
   const sorted = [...question.hints].sort((x, y) => x.level - y.level);
   const nextHint = sorted.find((h) => !hints.includes(h.id));
+  const present = (question as unknown as { presentation?: { problemStatement?: { short?: string; full?: string }; scope?: { inScope?: string[]; outOfScope?: string[] } } }).presentation;
+  const problem = present?.problemStatement ?? {}; const scope = present?.scope;
+  const objectives = (question.question as { learningObjectives?: string[] }).learningObjectives ?? [];
+  const assumptions = (question as unknown as { assumptions?: { id: string; description: string }[] }).assumptions ?? [];
   const reqs = question.requirements as { functional: { id: string; title: string }[]; nonFunctional: { id: string; title: string }[] } | undefined;
   const all = [...(reqs?.functional ?? []), ...(reqs?.nonFunctional ?? [])];
   const status = (id: string) => report?.requirements.find((r) => r.requirementId === id)?.status;
@@ -132,6 +136,13 @@ function Question() {
       <h2>{question.question.title}</h2>
       <p className="muted">{question.question.difficulty} · ~{(question.question as { estimatedMinutes?: number }).estimatedMinutes ?? '?'} min</p>
       <div className="progress" aria-label="Progress"><span>Checks passed <b>{report ? `${passed}/${all.length}` : '—'}</b></span><span>Hints used <b>{hints.length}/{sorted.length}</b></span><span>Follow-ups <b>{reviewed}/{FOLLOW_UPS.length}</b></span></div>
+      <Section title="The problem" defaultOpen>
+        {problem.full ? <p>{problem.full}</p> : problem.short ? <p>{problem.short}</p> : <p className="muted">No problem statement has been written for this question.</p>}
+        {(scope?.inScope?.length ?? 0) > 0 && <><h3>In scope</h3><ul>{scope!.inScope!.map((x) => <li key={x}>{x}</li>)}</ul></>}
+        {(scope?.outOfScope?.length ?? 0) > 0 && <><h3>Out of scope</h3><ul>{scope!.outOfScope!.map((x) => <li key={x}>{x}</li>)}</ul></>}
+        {objectives.length > 0 && <><h3>What you will practise</h3><ul>{objectives.map((x) => <li key={x}>{x}</li>)}</ul></>}
+        {assumptions.length > 0 && <><h3>Assumptions</h3><ul>{assumptions.map((a) => <li key={a.id}>{a.description}</li>)}</ul></>}
+      </Section>
       <Section title={`Requirements (${all.length})`} defaultOpen>
         {REQ_GROUPS.map((g) => (
           <details key={g.label} className="subsec" open>
