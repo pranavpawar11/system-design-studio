@@ -1,0 +1,4437 @@
+{
+  "version": 1,
+  "trackId": "lld",
+  "title": "Low-Level Design",
+  "description": "A complete progression from programming foundations to object modeling, design principles, patterns, concurrency, testing and machine-coded case studies.",
+  "primaryLanguage": "Java",
+  "visibility": {
+    "defaultTrack": "core",
+    "collapsedTracks": [
+      "foundations"
+    ],
+    "note": "Foundations are retained and searchable but should be collapsed by default. All core levels remain accessible."
+  },
+  "levels": 12,
+  "lessonCount": 422,
+  "nodes": [
+    {
+      "id": "level-00-programming-and-computer-science-foundations",
+      "code": "00",
+      "title": "Programming and Computer Science Foundations",
+      "summary": "Optional prerequisites: the minimum programming and Java knowledge needed to learn object-oriented design.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "foundations",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "programming-fundamentals",
+          "title": "Programming fundamentals",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "what-programming-is",
+              "title": "What programming is",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "source-code-compilation-and-execution",
+              "title": "Source code, compilation and execution",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "variables-constants-and-data-types",
+              "title": "Variables, constants and data types",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "operators-and-expressions",
+              "title": "Operators and expressions",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "conditions-and-branching",
+              "title": "Conditions and branching",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "loops-and-iteration",
+              "title": "Loops and iteration",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "functions-parameters-and-return-values",
+              "title": "Functions, parameters and return values",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "scope-and-lifetime",
+              "title": "Scope and lifetime",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "exceptions-and-error-flow",
+              "title": "Exceptions and error flow",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "java-language-essentials",
+          "title": "Java language essentials",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "java-program-structure",
+              "title": "Java program structure",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "classes-and-objects-in-java",
+              "title": "Classes and objects in Java",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "constructors-and-initialization",
+              "title": "Constructors and initialization",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "this-and-super",
+              "title": "this and super",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "static-and-instance-members",
+              "title": "Static and instance members",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "access-modifiers-and-packages",
+              "title": "Access modifiers and packages",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "method-overloading-and-overriding",
+              "title": "Method overloading and overriding",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "interfaces-and-abstract-classes",
+              "title": "Interfaces and abstract classes",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "enums-records-and-annotations",
+              "title": "Enums, records and annotations",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "generics-and-type-parameters",
+              "title": "Generics and type parameters",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "java-collections-overview",
+              "title": "Java collections overview",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "comparable-and-comparator",
+              "title": "Comparable and Comparator",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "checked-and-unchecked-exceptions",
+              "title": "Checked and unchecked exceptions",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "computer-science-foundations",
+          "title": "Computer science foundations",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "stack-and-heap-memory",
+              "title": "Stack and heap memory",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "references-and-object-identity",
+              "title": "References and object identity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "value-and-reference-semantics",
+              "title": "Value and reference semantics",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "garbage-collection-fundamentals",
+              "title": "Garbage collection fundamentals",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "time-and-space-complexity",
+              "title": "Time and space complexity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "recursion-fundamentals",
+              "title": "Recursion fundamentals",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "arrays-and-linked-lists",
+              "title": "Arrays and linked lists",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "stacks-and-queues",
+              "title": "Stacks and queues",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "hashing-and-hash-tables",
+              "title": "Hashing and hash tables",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "trees-and-graphs-overview",
+              "title": "Trees and graphs overview",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "developer-workflow",
+          "title": "Developer workflow",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "git-fundamentals-for-design-work",
+              "title": "Git fundamentals for design work",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "maven-and-gradle-basics",
+              "title": "Maven and Gradle basics",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "ide-navigation-and-debugging",
+              "title": "IDE navigation and debugging",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "reading-stack-traces",
+              "title": "Reading stack traces",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "running-and-organizing-tests",
+              "title": "Running and organizing tests",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "project-and-package-structure",
+              "title": "Project and package structure",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "optional",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-01-object-oriented-programming-fundamentals",
+      "code": "01",
+      "title": "Object-Oriented Programming Fundamentals",
+      "summary": "Understand objects, responsibilities, state, behavior and relationships before designing larger applications.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "core",
+      "defaultExpanded": true,
+      "children": [
+        {
+          "id": "objects-and-classes",
+          "title": "Objects and classes",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "what-is-an-object",
+              "title": "What is an object?",
+              "kind": "lesson",
+              "status": "ready",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10,
+              "hasQuiz": true
+            },
+            {
+              "id": "what-is-a-class",
+              "title": "What is a class?",
+              "kind": "lesson",
+              "status": "ready",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10,
+              "hasQuiz": true
+            },
+            {
+              "id": "state-behavior-and-identity",
+              "title": "State, behavior and identity",
+              "kind": "lesson",
+              "status": "ready",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10,
+              "hasQuiz": true
+            },
+            {
+              "id": "object-lifecycle",
+              "title": "Object lifecycle",
+              "kind": "lesson",
+              "status": "ready",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10,
+              "hasQuiz": true
+            },
+            {
+              "id": "objects-and-classes-constructors-and-initialization",
+              "title": "Constructors and initialization",
+              "kind": "lesson",
+              "status": "ready",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10,
+              "hasQuiz": true
+            },
+            {
+              "id": "instance-methods-and-fields",
+              "title": "Instance methods and fields",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "class-level-state-and-behavior",
+              "title": "Class-level state and behavior",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "object-collaboration",
+              "title": "Object collaboration",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "encapsulation-and-abstraction",
+          "title": "Encapsulation and abstraction",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "encapsulation-and-data-hiding",
+              "title": "Encapsulation and data hiding",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "access-control-and-visibility",
+              "title": "Access control and visibility",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "object-invariants",
+              "title": "Object invariants",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "abstraction-and-implementation-boundaries",
+              "title": "Abstraction and implementation boundaries",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "interfaces-as-contracts",
+              "title": "Interfaces as contracts",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "abstract-classes-and-shared-behavior",
+              "title": "Abstract classes and shared behavior",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "programming-to-an-interface",
+              "title": "Programming to an interface",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "inheritance-and-polymorphism",
+          "title": "Inheritance and polymorphism",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "inheritance-and-specialization",
+              "title": "Inheritance and specialization",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "method-overriding",
+              "title": "Method overriding",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "dynamic-method-dispatch",
+              "title": "Dynamic method dispatch",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "compile-time-polymorphism",
+              "title": "Compile-time polymorphism",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "runtime-polymorphism",
+              "title": "Runtime polymorphism",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "substitutability",
+              "title": "Substitutability",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "inheritance-limitations",
+              "title": "Inheritance limitations",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "object-relationships",
+          "title": "Object relationships",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "association",
+              "title": "Association",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "dependency",
+              "title": "Dependency",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "aggregation",
+              "title": "Aggregation",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "composition",
+              "title": "Composition",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "one-to-one-and-one-to-many-relationships",
+              "title": "One-to-one and one-to-many relationships",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "many-to-many-relationships",
+              "title": "Many-to-many relationships",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "ownership-and-lifecycle",
+              "title": "Ownership and lifecycle",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "composition-versus-inheritance",
+              "title": "Composition versus inheritance",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "object-safety",
+          "title": "Object safety",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "immutable-objects",
+              "title": "Immutable objects",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "defensive-copying",
+              "title": "Defensive copying",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "controlling-object-creation",
+              "title": "Controlling object creation",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "null-and-invalid-states",
+              "title": "Null and invalid states",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "equality-and-object-identity",
+              "title": "Equality and object identity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "equals-and-hashcode-contracts",
+              "title": "equals and hashCode contracts",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-02-object-modeling-and-uml",
+      "code": "02",
+      "title": "Object Modeling and UML",
+      "summary": "Translate requirements into domain concepts, object responsibilities, relationships and interaction diagrams.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "core",
+      "defaultExpanded": true,
+      "children": [
+        {
+          "id": "requirement-analysis",
+          "title": "Requirement analysis",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "functional-requirements-for-object-design",
+              "title": "Functional requirements for object design",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "quality-attributes-at-code-level",
+              "title": "Quality attributes at code level",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "actors-and-use-cases",
+              "title": "Actors and use cases",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "business-rules-and-constraints",
+              "title": "Business rules and constraints",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "domain-vocabulary",
+              "title": "Domain vocabulary",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "assumptions-and-edge-cases",
+              "title": "Assumptions and edge cases",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "acceptance-criteria",
+              "title": "Acceptance criteria",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "object-discovery-and-responsibility",
+          "title": "Object discovery and responsibility",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "identifying-candidate-classes",
+              "title": "Identifying candidate classes",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "entities-and-value-objects",
+              "title": "Entities and value objects",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "services-and-coordinators",
+              "title": "Services and coordinators",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "assigning-responsibilities",
+              "title": "Assigning responsibilities",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "finding-class-boundaries",
+              "title": "Finding class boundaries",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "detecting-god-objects",
+              "title": "Detecting god objects",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "avoiding-unnecessary-classes",
+              "title": "Avoiding unnecessary classes",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "uml-structural-diagrams",
+          "title": "UML structural diagrams",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "uml-class-diagram-notation",
+              "title": "UML class diagram notation",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "attributes-operations-and-visibility",
+              "title": "Attributes, operations and visibility",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "association-and-multiplicity",
+              "title": "Association and multiplicity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "generalization-and-realization",
+              "title": "Generalization and realization",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "dependency-relationships",
+              "title": "Dependency relationships",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "object-diagrams",
+              "title": "Object diagrams",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "package-diagrams",
+              "title": "Package diagrams",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "uml-behavioral-diagrams",
+          "title": "UML behavioral diagrams",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "sequence-diagrams",
+              "title": "Sequence diagrams",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "activity-diagrams",
+              "title": "Activity diagrams",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "state-machine-diagrams",
+              "title": "State machine diagrams",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "communication-diagrams",
+              "title": "Communication diagrams",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "interaction-frames-and-fragments",
+              "title": "Interaction frames and fragments",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "interaction-and-state-modeling",
+          "title": "Interaction and state modeling",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "message-passing-and-method-calls",
+              "title": "Message passing and method calls",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "interaction-and-state-modeling-object-collaboration",
+              "title": "Object collaboration",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "synchronous-and-asynchronous-interactions",
+              "title": "Synchronous and asynchronous interactions",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "state-identification",
+              "title": "State identification",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "events-guards-and-actions",
+              "title": "Events, guards and actions",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "valid-and-invalid-transitions",
+              "title": "Valid and invalid transitions",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            },
+            {
+              "id": "lifecycle-modeling",
+              "title": "Lifecycle modeling",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "beginner",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-03-design-principles-and-design-heuristics",
+      "code": "03",
+      "title": "Design Principles and Design Heuristics",
+      "summary": "Evaluate design quality and make deliberate choices about coupling, cohesion, abstraction and change.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "core",
+      "defaultExpanded": true,
+      "children": [
+        {
+          "id": "solid-principles",
+          "title": "SOLID principles",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "single-responsibility-principle",
+              "title": "Single Responsibility Principle",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "open-closed-principle",
+              "title": "Open Closed Principle",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "liskov-substitution-principle",
+              "title": "Liskov Substitution Principle",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "interface-segregation-principle",
+              "title": "Interface Segregation Principle",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "dependency-inversion-principle",
+              "title": "Dependency Inversion Principle",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "solid-principles-together",
+              "title": "SOLID principles together",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "grasp-responsibility-patterns",
+          "title": "GRASP responsibility patterns",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "information-expert",
+              "title": "Information Expert",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "creator",
+              "title": "Creator",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "controller",
+              "title": "Controller",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "low-coupling",
+              "title": "Low Coupling",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "high-cohesion",
+              "title": "High Cohesion",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "polymorphism",
+              "title": "Polymorphism",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "pure-fabrication",
+              "title": "Pure Fabrication",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "indirection",
+              "title": "Indirection",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "protected-variations",
+              "title": "Protected Variations",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "core-design-heuristics",
+          "title": "Core design heuristics",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "dry-and-knowledge-duplication",
+              "title": "DRY and knowledge duplication",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "kiss-and-essential-simplicity",
+              "title": "KISS and essential simplicity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "yagni-and-avoiding-speculative-features",
+              "title": "YAGNI and avoiding speculative features",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "separation-of-concerns",
+              "title": "Separation of Concerns",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "composition-over-inheritance",
+              "title": "Composition over Inheritance",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "principle-of-least-knowledge",
+              "title": "Principle of Least Knowledge",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "tell-don-t-ask",
+              "title": "Tell Don't Ask",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "law-of-demeter",
+              "title": "Law of Demeter",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "favor-immutability",
+              "title": "Favor immutability",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "coupling-and-cohesion",
+          "title": "Coupling and cohesion",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "tight-and-loose-coupling",
+              "title": "Tight and loose coupling",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "functional-and-logical-cohesion",
+              "title": "Functional and logical cohesion",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "temporal-and-data-coupling",
+              "title": "Temporal and data coupling",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "dependency-direction",
+              "title": "Dependency direction",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "circular-dependencies",
+              "title": "Circular dependencies",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "measuring-design-complexity",
+              "title": "Measuring design complexity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "design-trade-offs",
+          "title": "Design trade-offs",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "flexibility-versus-simplicity",
+              "title": "Flexibility versus simplicity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "abstraction-versus-overengineering",
+              "title": "Abstraction versus overengineering",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "reusability-versus-maintainability",
+              "title": "Reusability versus maintainability",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "extensibility-versus-complexity",
+              "title": "Extensibility versus complexity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "premature-abstraction",
+              "title": "Premature abstraction",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "recognizing-code-smells",
+              "title": "Recognizing code smells",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-04-clean-code-and-maintainable-design",
+      "code": "04",
+      "title": "Clean Code and Maintainable Design",
+      "summary": "Write code that communicates intent, protects invariants and remains easy to change and test.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "core",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "readable-code",
+          "title": "Readable code",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "meaningful-naming",
+              "title": "Meaningful naming",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "small-methods-and-focused-classes",
+              "title": "Small methods and focused classes",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "avoiding-duplication",
+              "title": "Avoiding duplication",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "avoiding-magic-numbers",
+              "title": "Avoiding magic numbers",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "readable-conditionals",
+              "title": "Readable conditionals",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "guard-clauses-and-early-returns",
+              "title": "Guard clauses and early returns",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "managing-nesting-and-complexity",
+              "title": "Managing nesting and complexity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "contracts-and-defensive-design",
+          "title": "Contracts and defensive design",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "preconditions-and-postconditions",
+              "title": "Preconditions and postconditions",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "class-invariants",
+              "title": "Class invariants",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "design-by-contract",
+              "title": "Design by contract",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "null-handling-strategies",
+              "title": "Null handling strategies",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "validation-boundaries",
+              "title": "Validation boundaries",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "defensive-programming",
+              "title": "Defensive programming",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "fail-fast-behavior",
+              "title": "Fail fast behavior",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "errors-and-resources",
+          "title": "Errors and resources",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "exception-design",
+              "title": "Exception design",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "custom-exception-types",
+              "title": "Custom exception types",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "exception-propagation",
+              "title": "Exception propagation",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "checked-versus-unchecked-exceptions",
+              "title": "Checked versus unchecked exceptions",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "resource-cleanup",
+              "title": "Resource cleanup",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "try-with-resources",
+              "title": "Try with resources",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "error-translation",
+              "title": "Error translation",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "immutability-and-object-lifecycle",
+          "title": "Immutability and object lifecycle",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "designing-immutable-classes",
+              "title": "Designing immutable classes",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "immutable-collections",
+              "title": "Immutable collections",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "builder-for-complex-construction",
+              "title": "Builder for complex construction",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "defensive-copies",
+              "title": "Defensive copies",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "safe-object-publication",
+              "title": "Safe object publication",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "lifecycle-and-ownership",
+              "title": "Lifecycle and ownership",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "code-organization",
+          "title": "Code organization",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "package-by-layer-versus-feature",
+              "title": "Package by layer versus feature",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "dependency-boundaries",
+              "title": "Dependency boundaries",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "avoiding-circular-package-dependencies",
+              "title": "Avoiding circular package dependencies",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "modular-code-organization",
+              "title": "Modular code organization",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "refactoring-legacy-code",
+              "title": "Refactoring legacy code",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "technical-debt-and-maintainability",
+              "title": "Technical debt and maintainability",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-05-design-patterns",
+      "code": "05",
+      "title": "Design Patterns",
+      "summary": "Recognize recurring design problems and choose patterns only when they improve the design.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "core",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "creational-patterns",
+          "title": "Creational patterns",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "singleton",
+              "title": "Singleton",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "factory-method",
+              "title": "Factory Method",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "abstract-factory",
+              "title": "Abstract Factory",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "builder",
+              "title": "Builder",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "prototype",
+              "title": "Prototype",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "choosing-a-creational-pattern",
+              "title": "Choosing a creational pattern",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "structural-patterns",
+          "title": "Structural patterns",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "adapter",
+              "title": "Adapter",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "bridge",
+              "title": "Bridge",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "composite",
+              "title": "Composite",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "decorator",
+              "title": "Decorator",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "facade",
+              "title": "Facade",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "flyweight",
+              "title": "Flyweight",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "proxy",
+              "title": "Proxy",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "choosing-a-structural-pattern",
+              "title": "Choosing a structural pattern",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "behavioral-patterns-i",
+          "title": "Behavioral patterns I",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "chain-of-responsibility",
+              "title": "Chain of Responsibility",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "command",
+              "title": "Command",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "interpreter",
+              "title": "Interpreter",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "iterator",
+              "title": "Iterator",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "mediator",
+              "title": "Mediator",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "memento",
+              "title": "Memento",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "behavioral-patterns-ii",
+          "title": "Behavioral patterns II",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "observer",
+              "title": "Observer",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "state",
+              "title": "State",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "strategy",
+              "title": "Strategy",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "template-method",
+              "title": "Template Method",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "visitor",
+              "title": "Visitor",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "choosing-a-behavioral-pattern",
+              "title": "Choosing a behavioral pattern",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "application-and-enterprise-patterns",
+          "title": "Application and enterprise patterns",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "dependency-injection",
+              "title": "Dependency Injection",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "repository",
+              "title": "Repository",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "unit-of-work",
+              "title": "Unit of Work",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "data-mapper",
+              "title": "Data Mapper",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "active-record",
+              "title": "Active Record",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "service-layer",
+              "title": "Service Layer",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "specification",
+              "title": "Specification",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "null-object",
+              "title": "Null Object",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "object-pool",
+              "title": "Object Pool",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "publish-subscribe",
+              "title": "Publish Subscribe",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "event-aggregator",
+              "title": "Event Aggregator",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "pattern-comparison-and-refactoring",
+          "title": "Pattern comparison and refactoring",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "strategy-versus-state",
+              "title": "Strategy versus State",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "factory-method-versus-abstract-factory",
+              "title": "Factory Method versus Abstract Factory",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "decorator-versus-proxy",
+              "title": "Decorator versus Proxy",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "adapter-versus-facade",
+              "title": "Adapter versus Facade",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "observer-versus-publish-subscribe",
+              "title": "Observer versus Publish Subscribe",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "command-versus-strategy",
+              "title": "Command versus Strategy",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "when-not-to-use-a-pattern",
+              "title": "When not to use a pattern",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "refactoring-toward-patterns",
+              "title": "Refactoring toward patterns",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-06-data-structures-and-algorithms-in-lld",
+      "code": "06",
+      "title": "Data Structures and Algorithms in LLD",
+      "summary": "Choose data structures and algorithms that support object responsibilities and real application behavior.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "core",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "collections-for-object-design",
+          "title": "Collections for object design",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "choosing-list-set-and-map",
+              "title": "Choosing List, Set and Map",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "hashmap-and-hash-collisions",
+              "title": "HashMap and hash collisions",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "linkedhashmap-and-ordering",
+              "title": "LinkedHashMap and ordering",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "treemap-and-sorted-lookup",
+              "title": "TreeMap and sorted lookup",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "priorityqueue-and-heaps",
+              "title": "PriorityQueue and heaps",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "deque-and-circular-buffers",
+              "title": "Deque and circular buffers",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "concurrent-collection-overview",
+              "title": "Concurrent collection overview",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "trees-and-graphs",
+          "title": "Trees and graphs",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "tree-representations",
+              "title": "Tree representations",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "trie-and-prefix-search",
+              "title": "Trie and prefix search",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "graph-representations",
+              "title": "Graph representations",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "traversal-and-reachability",
+              "title": "Traversal and reachability",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "dependency-graphs",
+              "title": "Dependency graphs",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "file-tree-traversal",
+              "title": "File tree traversal",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "caching-and-eviction-algorithms",
+          "title": "Caching and eviction algorithms",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "lru-cache-design",
+              "title": "LRU cache design",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "lfu-cache-design",
+              "title": "LFU cache design",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "ttl-expiration",
+              "title": "TTL expiration",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "eviction-policy-trade-offs",
+              "title": "Eviction policy trade-offs",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "cache-key-design",
+              "title": "Cache key design",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "scheduling-and-allocation-algorithms",
+          "title": "Scheduling and allocation algorithms",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "round-robin-scheduling",
+              "title": "Round robin scheduling",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "priority-scheduling",
+              "title": "Priority scheduling",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "interval-overlap-detection",
+              "title": "Interval overlap detection",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "resource-allocation",
+              "title": "Resource allocation",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "matching-and-assignment",
+              "title": "Matching and assignment",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "nearest-eligible-resource",
+              "title": "Nearest eligible resource",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "algorithmic-design-decisions",
+          "title": "Algorithmic design decisions",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "lookup-versus-insertion-trade-offs",
+              "title": "Lookup versus insertion trade-offs",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "ordered-versus-unordered-collections",
+              "title": "Ordered versus unordered collections",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "memory-versus-time-trade-offs",
+              "title": "Memory versus time trade-offs",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "complexity-of-common-operations",
+              "title": "Complexity of common operations",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "choosing-algorithms-for-domain-rules",
+              "title": "Choosing algorithms for domain rules",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-07-application-and-domain-modeling",
+      "code": "07",
+      "title": "Application and Domain Modeling",
+      "summary": "Model business domains and structure applications into clear, testable responsibilities.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "core",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "domain-driven-design-foundations",
+          "title": "Domain-driven design foundations",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "domain-subdomain-and-model",
+              "title": "Domain, subdomain and model",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "entities-and-identity",
+              "title": "Entities and identity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "value-objects",
+              "title": "Value objects",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "aggregates-and-aggregate-roots",
+              "title": "Aggregates and aggregate roots",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "domain-services",
+              "title": "Domain services",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "domain-events",
+              "title": "Domain events",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "business-invariants",
+              "title": "Business invariants",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "bounded-contexts",
+              "title": "Bounded contexts",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "ubiquitous-language",
+              "title": "Ubiquitous language",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "application-layering",
+          "title": "Application layering",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "layered-architecture",
+              "title": "Layered architecture",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "presentation-and-controller-responsibilities",
+              "title": "Presentation and controller responsibilities",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "application-services",
+              "title": "Application services",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "domain-model-responsibilities",
+              "title": "Domain model responsibilities",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "infrastructure-adapters",
+              "title": "Infrastructure adapters",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "application-layering-dependency-injection",
+              "title": "Dependency injection",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "composition-root",
+              "title": "Composition root",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "contracts-and-data-transfer",
+          "title": "Contracts and data transfer",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "dto-design",
+              "title": "DTO design",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "request-and-response-models",
+              "title": "Request and response models",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "mapping-between-layers",
+              "title": "Mapping between layers",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "validation-at-boundaries",
+              "title": "Validation at boundaries",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "pagination-and-filtering-contracts",
+              "title": "Pagination and filtering contracts",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "error-response-models",
+              "title": "Error response models",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "persistence-and-transactions",
+          "title": "Persistence and transactions",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "repository-abstraction",
+              "title": "Repository abstraction",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "orm-and-object-relational-mapping",
+              "title": "ORM and object relational mapping",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "persistence-lifecycle",
+              "title": "Persistence lifecycle",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "transaction-boundaries",
+              "title": "Transaction boundaries",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "atomic-operations",
+              "title": "Atomic operations",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "optimistic-locking",
+              "title": "Optimistic locking",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "pessimistic-locking",
+              "title": "Pessimistic locking",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "persistence-and-transactions-unit-of-work",
+              "title": "Unit of Work",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "integration-design",
+          "title": "Integration design",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "external-service-adapters",
+              "title": "External service adapters",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "payment-provider-abstraction",
+              "title": "Payment provider abstraction",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "notification-provider-abstraction",
+              "title": "Notification provider abstraction",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "file-storage-abstraction",
+              "title": "File storage abstraction",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "third-party-api-integration",
+              "title": "Third party API integration",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "timeout-and-retry-behavior",
+              "title": "Timeout and retry behavior",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "idempotency-keys",
+              "title": "Idempotency keys",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            },
+            {
+              "id": "outbox-pattern-introduction",
+              "title": "Outbox pattern introduction",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "intermediate",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-08-concurrency-and-multithreaded-design",
+      "code": "08",
+      "title": "Concurrency and Multithreaded Design",
+      "summary": "Design objects and workflows that remain correct when operations execute concurrently.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "core",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "thread-fundamentals",
+          "title": "Thread fundamentals",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "process-versus-thread",
+              "title": "Process versus thread",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "thread-lifecycle",
+              "title": "Thread lifecycle",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "runnable-and-callable",
+              "title": "Runnable and Callable",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "executorservice",
+              "title": "ExecutorService",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "thread-pools",
+              "title": "Thread pools",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "future-and-completablefuture",
+              "title": "Future and CompletableFuture",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "synchronization-primitives",
+          "title": "Synchronization primitives",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "race-conditions-and-critical-sections",
+              "title": "Race conditions and critical sections",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "intrinsic-locks-and-synchronized",
+              "title": "Intrinsic locks and synchronized",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "reentrantlock",
+              "title": "ReentrantLock",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "readwritelock",
+              "title": "ReadWriteLock",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "semaphore",
+              "title": "Semaphore",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "countdownlatch",
+              "title": "CountDownLatch",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "cyclicbarrier",
+              "title": "CyclicBarrier",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "atomic-variables-and-compare-and-swap",
+              "title": "Atomic variables and compare and swap",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "concurrency-hazards",
+          "title": "Concurrency hazards",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "deadlocks",
+              "title": "Deadlocks",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "livelocks",
+              "title": "Livelocks",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "starvation",
+              "title": "Starvation",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "memory-visibility",
+              "title": "Memory visibility",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "lost-updates",
+              "title": "Lost updates",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "thread-safety",
+              "title": "Thread safety",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "safe-publication",
+              "title": "Safe publication",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "lock-contention",
+              "title": "Lock contention",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "concurrent-data-structures",
+          "title": "Concurrent data structures",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "concurrenthashmap",
+              "title": "ConcurrentHashMap",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "blockingqueue",
+              "title": "BlockingQueue",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "concurrentlinkedqueue",
+              "title": "ConcurrentLinkedQueue",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "copyonwritearraylist",
+              "title": "CopyOnWriteArrayList",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "thread-safe-collections",
+              "title": "Thread safe collections",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "concurrent-cache-design",
+              "title": "Concurrent cache design",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "concurrent-application-patterns",
+          "title": "Concurrent application patterns",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "producer-consumer",
+              "title": "Producer consumer",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "worker-pools",
+              "title": "Worker pools",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "task-scheduling",
+              "title": "Task scheduling",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "asynchronous-event-handling",
+              "title": "Asynchronous event handling",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "concurrent-booking",
+              "title": "Concurrent booking",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "resource-locking",
+              "title": "Resource locking",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "graceful-shutdown",
+              "title": "Graceful shutdown",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "backpressure-fundamentals",
+              "title": "Backpressure fundamentals",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "advanced-concurrency",
+          "title": "Advanced concurrency",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "java-memory-model",
+              "title": "Java Memory Model",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "happens-before-relationship",
+              "title": "Happens before relationship",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "thread-confinement",
+              "title": "Thread confinement",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "immutable-concurrency",
+              "title": "Immutable concurrency",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "lock-striping",
+              "title": "Lock striping",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "optimistic-concurrency",
+              "title": "Optimistic concurrency",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "lock-free-programming-overview",
+              "title": "Lock free programming overview",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-09-testing-debugging-and-code-quality",
+      "code": "09",
+      "title": "Testing, Debugging and Code Quality",
+      "summary": "Verify behavior, isolate dependencies and make designs observable, deterministic and safe to change.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "core",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "testing-foundations",
+          "title": "Testing foundations",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "unit-testing",
+              "title": "Unit testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "integration-testing",
+              "title": "Integration testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "functional-and-acceptance-testing",
+              "title": "Functional and acceptance testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "regression-testing",
+              "title": "Regression testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "test-driven-development",
+              "title": "Test driven development",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "behavior-driven-development",
+              "title": "Behavior driven development",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "java-testing-tools",
+          "title": "Java testing tools",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "junit-test-structure",
+              "title": "JUnit test structure",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "assertions-and-parameterized-tests",
+              "title": "Assertions and parameterized tests",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "test-lifecycle-and-fixtures",
+              "title": "Test lifecycle and fixtures",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "mockito-mocks-and-stubs",
+              "title": "Mockito mocks and stubs",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "spies-and-verification",
+              "title": "Spies and verification",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "test-data-builders",
+              "title": "Test data builders",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "design-for-testability",
+          "title": "Design for testability",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "dependency-injection-for-testing",
+              "title": "Dependency injection for testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "isolating-external-dependencies",
+              "title": "Isolating external dependencies",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "deterministic-tests",
+              "title": "Deterministic tests",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "controllable-clocks-and-randomness",
+              "title": "Controllable clocks and randomness",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "test-doubles",
+              "title": "Test doubles",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "avoiding-hidden-static-dependencies",
+              "title": "Avoiding hidden static dependencies",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "advanced-testing",
+          "title": "Advanced testing",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "boundary-and-edge-case-testing",
+              "title": "Boundary and edge case testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "state-transition-testing",
+              "title": "State transition testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "concurrency-testing",
+              "title": "Concurrency testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "property-based-testing",
+              "title": "Property based testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "mutation-testing",
+              "title": "Mutation testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "contract-testing",
+              "title": "Contract testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "performance-and-stress-testing",
+              "title": "Performance and stress testing",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "code-quality-practices",
+          "title": "Code quality practices",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "static-analysis",
+              "title": "Static analysis",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "code-review-fundamentals",
+              "title": "Code review fundamentals",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "refactoring-safely",
+              "title": "Refactoring safely",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "cyclomatic-complexity",
+              "title": "Cyclomatic complexity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "test-coverage-interpretation",
+              "title": "Test coverage interpretation",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "debugging-strategies",
+              "title": "Debugging strategies",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "maintainability-checks",
+              "title": "Maintainability checks",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-10-machine-coding-and-lld-interview-methodology",
+      "code": "10",
+      "title": "Machine Coding and LLD Interview Methodology",
+      "summary": "Turn an open-ended prompt into a working implementation while explaining decisions and trade-offs.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "core",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "problem-solving-workflow",
+          "title": "Problem-solving workflow",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "clarifying-requirements",
+              "title": "Clarifying requirements",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "identifying-actors-and-use-cases",
+              "title": "Identifying actors and use cases",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "capturing-assumptions-and-constraints",
+              "title": "Capturing assumptions and constraints",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "finding-entities-and-value-objects",
+              "title": "Finding entities and value objects",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "assigning-object-responsibilities",
+              "title": "Assigning object responsibilities",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "defining-interfaces-and-relationships",
+              "title": "Defining interfaces and relationships",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "drawing-class-diagrams",
+              "title": "Drawing class diagrams",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "modeling-important-sequences",
+              "title": "Modeling important sequences",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "selecting-patterns-deliberately",
+              "title": "Selecting patterns deliberately",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "implementing-core-use-cases",
+              "title": "Implementing core use cases",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "writing-tests-and-validating-behavior",
+              "title": "Writing tests and validating behavior",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "machine-coding-execution",
+          "title": "Machine coding execution",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "project-setup-and-package-structure",
+              "title": "Project setup and package structure",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "building-a-runnable-skeleton",
+              "title": "Building a runnable skeleton",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "incremental-implementation",
+              "title": "Incremental implementation",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "keeping-code-compilable",
+              "title": "Keeping code compilable",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "separating-domain-and-infrastructure",
+              "title": "Separating domain and infrastructure",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "handling-time-constraints",
+              "title": "Handling time constraints",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "demonstrating-working-behavior",
+              "title": "Demonstrating working behavior",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "adding-requirements-without-rewrites",
+              "title": "Adding requirements without rewrites",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "interview-communication",
+          "title": "Interview communication",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "explaining-design-decisions",
+              "title": "Explaining design decisions",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "discussing-alternatives",
+              "title": "Discussing alternatives",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "defending-abstractions",
+              "title": "Defending abstractions",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "identifying-edge-cases",
+              "title": "Identifying edge cases",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "handling-changing-requirements",
+              "title": "Handling changing requirements",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "explaining-trade-offs",
+              "title": "Explaining trade-offs",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "responding-to-interviewer-feedback",
+              "title": "Responding to interviewer feedback",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "evaluation-and-self-review",
+          "title": "Evaluation and self-review",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "requirement-coverage",
+              "title": "Requirement coverage",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "correctness-and-edge-cases",
+              "title": "Correctness and edge cases",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "oop-and-solid-usage",
+              "title": "OOP and SOLID usage",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "extensibility-and-maintainability",
+              "title": "Extensibility and maintainability",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "readability-and-testability",
+              "title": "Readability and testability",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "concurrency-safety",
+              "title": "Concurrency safety",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "avoiding-unnecessary-complexity",
+              "title": "Avoiding unnecessary complexity",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "level-11-advanced-lld-case-studies-and-design-mastery",
+      "code": "11",
+      "title": "Advanced LLD Case Studies and Design Mastery",
+      "summary": "Apply the full toolkit to realistic domains, evolving requirements and production-like constraints.",
+      "kind": "topic",
+      "status": "planned",
+      "track": "core",
+      "defaultExpanded": false,
+      "children": [
+        {
+          "id": "case-study-methodology",
+          "title": "Case study methodology",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "reading-a-case-study-prompt",
+              "title": "Reading a case study prompt",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "scoping-an-implementation",
+              "title": "Scoping an implementation",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "identifying-domain-boundaries",
+              "title": "Identifying domain boundaries",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "modeling-state-and-transitions",
+              "title": "Modeling state and transitions",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "selecting-algorithms-and-patterns",
+              "title": "Selecting algorithms and patterns",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "designing-test-scenarios",
+              "title": "Designing test scenarios",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "planning-requirement-evolution",
+              "title": "Planning requirement evolution",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "reviewing-trade-offs",
+              "title": "Reviewing trade-offs",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "extensible-application-design",
+          "title": "Extensible application design",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "plugin-architecture",
+              "title": "Plugin architecture",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "rules-and-policy-engines",
+              "title": "Rules and policy engines",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "workflow-engines",
+              "title": "Workflow engines",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "configurable-pricing-engines",
+              "title": "Configurable pricing engines",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "notification-orchestration",
+              "title": "Notification orchestration",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "payment-orchestration",
+              "title": "Payment orchestration",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "production-oriented-object-design",
+          "title": "Production-oriented object design",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "idempotent-command-handling",
+              "title": "Idempotent command handling",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "retry-and-timeout-policies",
+              "title": "Retry and timeout policies",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "resilience-at-object-boundaries",
+              "title": "Resilience at object boundaries",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "audit-trails-and-domain-events",
+              "title": "Audit trails and domain events",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "resource-lifecycle-management",
+              "title": "Resource lifecycle management",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "observability-hooks",
+              "title": "Observability hooks",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        },
+        {
+          "id": "senior-level-design-judgment",
+          "title": "Senior-level design judgment",
+          "kind": "group",
+          "status": "planned",
+          "children": [
+            {
+              "id": "balancing-abstractions-and-delivery",
+              "title": "Balancing abstractions and delivery",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "managing-evolving-requirements",
+              "title": "Managing evolving requirements",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "refactoring-under-constraints",
+              "title": "Refactoring under constraints",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "designing-migration-paths",
+              "title": "Designing migration paths",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "reviewing-alternative-designs",
+              "title": "Reviewing alternative designs",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            },
+            {
+              "id": "explaining-architectural-consequences",
+              "title": "Explaining architectural consequences",
+              "kind": "lesson",
+              "status": "planned",
+              "priority": "core",
+              "difficulty": "advanced",
+              "minutes": 10
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

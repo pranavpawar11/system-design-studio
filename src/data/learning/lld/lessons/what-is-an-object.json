@@ -1,0 +1,236 @@
+{
+  "id": "what-is-an-object",
+  "title": "What is an object?",
+  "summary": "Understand an object as a running unit that combines data with the operations that use that data, and learn to recognize objects in everyday software.",
+  "minutes": 12,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Start with a familiar example"
+    },
+    {
+      "type": "paragraph",
+      "text": "Think about a bank account in an application. The account has information such as an account number and current balance. It also supports actions such as depositing money, withdrawing money and checking the balance. In object-oriented programming, we model this cohesive thing as an **object**."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "An object has state and behavior"
+    },
+    {
+      "type": "paragraph",
+      "text": "An object is a runtime entity with **state** (the information it currently holds) and **behavior** (the operations it can perform). In Java, the state is commonly represented by fields and behavior by methods. An object also has an identity: it is one particular instance, even when another object currently has the same field values."
+    },
+    {
+      "type": "example",
+      "title": "A bank account object",
+      "text": "`BankAccount account = new BankAccount(\"A-104\", 500.00);` creates one account object. Its state includes account number `A-104` and balance `500.00`. Calling `account.deposit(100.00)` asks that same object to perform behavior that changes its balance to `600.00`."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "A small Java model"
+    },
+    {
+      "type": "example",
+      "title": "BankAccount.java",
+      "text": "`public class BankAccount {\n    private final String accountNumber;\n    private double balance;\n\n    public BankAccount(String accountNumber, double openingBalance) {\n        this.accountNumber = accountNumber;\n        this.balance = openingBalance;\n    }\n\n    public void deposit(double amount) {\n        if (amount <= 0) throw new IllegalArgumentException();\n        balance += amount;\n    }\n\n    public double getBalance() {\n        return balance;\n    }\n}`"
+    },
+    {
+      "type": "paragraph",
+      "text": "The class is the definition; `new BankAccount(...)` creates an object. The object owns its own `balance`. A caller uses the public methods instead of changing the field directly."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Why objects matter in LLD"
+    },
+    {
+      "type": "list",
+      "items": [
+        "They keep related data and the rules that protect that data together.",
+        "They give responsibilities clear owners: an account changes its own balance; a caller does not edit internal fields.",
+        "They let a design be discussed in terms of collaborating domain concepts rather than a long list of unrelated functions.",
+        "They provide boundaries that can be tested independently."
+      ],
+      "ordered": false
+    },
+    {
+      "type": "callout",
+      "tone": "tip",
+      "title": "Think in responsibilities",
+      "text": "When you identify a possible object, ask: what information does it own, what rules must always hold, and which operations naturally belong with that information?"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Common misconceptions"
+    },
+    {
+      "type": "list",
+      "items": [
+        "An object is not merely a data bag. Its behavior should help preserve valid state.",
+        "Two objects with equal field values are not automatically the same object.",
+        "Not every noun deserves a class. Model concepts that have meaningful identity, state, behavior or responsibility."
+      ],
+      "ordered": false
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Try it yourself"
+    },
+    {
+      "type": "paragraph",
+      "text": "Consider a library application. Identify one object that represents a physical book copy, not just the general book title. Write down two pieces of state and two behaviors that belong to that copy. Then explain why a separate copy can be checked out while another copy of the same title remains available."
+    }
+  ],
+  "quiz": {
+    "passScore": 0.67,
+    "questions": [
+      {
+        "id": "q1",
+        "prompt": "Which description best defines an object?",
+        "options": [
+          {
+            "id": "a",
+            "text": "A source-code file containing functions"
+          },
+          {
+            "id": "b",
+            "text": "A runtime entity with state, behavior and identity"
+          },
+          {
+            "id": "c",
+            "text": "A database table only"
+          }
+        ],
+        "correct": "b",
+        "explanation": "An object exists at runtime and combines its current state with behavior and a distinct identity."
+      },
+      {
+        "id": "q2",
+        "prompt": "In the BankAccount example, where should the balance-changing rule normally live?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Inside the BankAccount behavior"
+          },
+          {
+            "id": "b",
+            "text": "In every screen that displays the balance"
+          },
+          {
+            "id": "c",
+            "text": "In a random utility method"
+          }
+        ],
+        "correct": "a",
+        "explanation": "The account owns the balance and its invariants, so deposit and withdrawal rules belong with the account."
+      },
+      {
+        "id": "q3",
+        "prompt": "Two account objects have the same account number and balance values in memory. What can still be true?",
+        "options": [
+          {
+            "id": "a",
+            "text": "They must be the same object"
+          },
+          {
+            "id": "b",
+            "text": "They can be two distinct objects"
+          },
+          {
+            "id": "c",
+            "text": "Java merges them automatically"
+          }
+        ],
+        "correct": "b",
+        "explanation": "Object identity is distinct from equality of field values. Two separately created instances can contain equal data."
+      }
+    ]
+  },
+  "languageVariants": {
+    "cpp": {
+      "blockOverrides": {
+        "3": {
+          "type": "paragraph",
+          "text": "An object is a runtime entity with **state** (the information it currently holds) and **behavior** (the operations it can perform). In C++, state is commonly represented by data members and behavior by member functions. An object also has identity: it is one particular instance, even when another object has equal field values."
+        },
+        "4": {
+          "type": "example",
+          "title": "A bank account object",
+          "text": "`BankAccount account{\"A-104\", 500.00};` creates one account object. Its state includes account number `A-104` and balance `500.00`. Calling `account.deposit(100.00);` asks that same object to perform behavior that changes its balance to `600.00`."
+        },
+        "5": {
+          "type": "heading",
+          "level": 2,
+          "text": "A small C++ model"
+        },
+        "6": {
+          "type": "example",
+          "title": "BankAccount.hpp",
+          "text": "`#include <stdexcept>\n#include <string>\n\nclass BankAccount {\nprivate:\n    std::string accountNumber;\n    double balance;\n\npublic:\n    BankAccount(std::string number, double openingBalance)\n        : accountNumber(std::move(number)), balance(openingBalance) {}\n\n    void deposit(double amount) {\n        if (amount <= 0) throw std::invalid_argument(\"amount must be positive\");\n        balance += amount;\n    }\n\n    double getBalance() const { return balance; }\n};`"
+        },
+        "7": {
+          "type": "paragraph",
+          "text": "The class defines the structure; `BankAccount account{...}` constructs an object. That object owns its own `balance`. A caller uses the public member functions instead of changing private data directly."
+        }
+      },
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Identity in this language",
+          "text": "Object identity is distinct from equal field or attribute values. C++ compares object addresses when identity is needed; Python exposes identity comparison with `is`."
+        }
+      ]
+    },
+    "python": {
+      "blockOverrides": {
+        "3": {
+          "type": "paragraph",
+          "text": "An object is a runtime entity with **state** (the information it currently holds) and **behavior** (the operations it can perform). In Python, state is commonly stored in instance attributes and behavior is expressed through methods. An object also has identity: it is one particular instance, even when another object has equal attribute values."
+        },
+        "4": {
+          "type": "example",
+          "title": "A bank account object",
+          "text": "`account = BankAccount(\"A-104\", 500.00)` creates one account object. Its state includes account number `A-104` and balance `500.00`. Calling `account.deposit(100.00)` asks that same object to perform behavior that changes its balance to `600.00`."
+        },
+        "5": {
+          "type": "heading",
+          "level": 2,
+          "text": "A small Python model"
+        },
+        "6": {
+          "type": "example",
+          "title": "bank_account.py",
+          "text": "`class BankAccount:\n    def __init__(self, account_number: str, opening_balance: float):\n        self._account_number = account_number\n        self._balance = opening_balance\n\n    def deposit(self, amount: float) -> None:\n        if amount <= 0:\n            raise ValueError(\"amount must be positive\")\n        self._balance += amount\n\n    @property\n    def balance(self) -> float:\n        return self._balance\n\naccount = BankAccount(\"A-104\", 500.00)\naccount.deposit(100.00)\nprint(account.balance)  # 600.0`"
+        },
+        "7": {
+          "type": "paragraph",
+          "text": "The class defines the structure; calling `BankAccount(...)` creates an object. That object owns its own `_balance`. Python uses naming conventions such as a leading underscore to signal non-public attributes; this is not strict access control."
+        }
+      },
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Identity in this language",
+          "text": "Object identity is distinct from equal field or attribute values. C++ compares object addresses when identity is needed; Python exposes identity comparison with `is`."
+        }
+      ]
+    },
+    "java": {
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Java object identity",
+          "text": "Reference variables hold references to objects. `==` compares reference identity for objects; `equals()` can express logical equality when a class overrides it."
+        }
+      ]
+    }
+  }
+}

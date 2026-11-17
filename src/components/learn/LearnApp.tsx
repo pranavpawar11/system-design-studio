@@ -1,27 +1,52 @@
-import { useEffect } from 'react';
 import './learn.css';
+import { useEffect, useLayoutEffect } from 'react';
 import { Layers } from 'lucide-react';
 import type { Route } from '../../app/route';
 import { useLearn } from '../../features/learning/learn.store';
+import { setProgrammingLanguage, useProgrammingLanguage } from '../../features/learning/programming-language';
 import ModeNav from '../layout/ModeNav';
 import LearnHome from './LearnHome';
+import LLDHome from './LLDHome';
+import LearnTrackSwitcher from './LearnTrackSwitcher';
+import ProgrammingLanguageSwitcher from './ProgrammingLanguageSwitcher';
 import LessonPage from './LessonPage';
+import LLDLessonPage from './LLDLessonPage';
 
 export default function LearnApp({ route }: { route: Exclude<Route, { name: 'studio' }> }) {
   const { status, error, load, notice, dismiss } = useLearn();
-  useEffect(() => { if (status === 'idle') void load(); }, [status, load]);
-  useEffect(() => { if (route.name === 'learn') document.title = 'Learn system design · HLD Studio'; }, [route]);
+  const programmingLanguage = useProgrammingLanguage();
+  const usesHld = route.name === 'learn' || route.name === 'lesson';
+  const routeKey = 'id' in route ? `${route.name}:${route.id}` : route.name;
+
+  // Learn uses .learn-main as its own scroll container. Reset it synchronously
+  // after every route change so Next, Back, and browser history always start at top.
+  useLayoutEffect(() => {
+    const main = document.getElementById('learn-main');
+    if (main) {
+      main.scrollTop = 0;
+      main.scrollLeft = 0;
+    }
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [routeKey]);
+
+  useEffect(() => { if (usesHld && status === 'idle') void load(); }, [usesHld, status, load]);
+  useEffect(() => { document.title = route.name === 'lld' || route.name === 'lld-lesson' ? 'Learn low-level design · HLD Studio' : 'Learn system design · HLD Studio'; }, [route]);
   useEffect(() => { if (!notice) return; const t = setTimeout(dismiss, 5000); return () => clearTimeout(t); }, [notice, dismiss]);
   return (
     <div className="app learn">
       <a className="skip" href="#learn-main">Skip to the content</a>
-      <header className="topbar">
+      <header className="topbar learn-topbar">
         <div className="bar-group"><h1 className="brand" translate="no"><Layers size={18} aria-hidden /> HLD Studio</h1><ModeNav current="learn" /></div>
+        <div className="learn-header-controls">
+          <LearnTrackSwitcher current={route.name === 'lld' || route.name === 'lld-lesson' ? 'lld' : 'hld'} />
+          <ProgrammingLanguageSwitcher value={programmingLanguage} onChange={setProgrammingLanguage} />
+        </div>
       </header>
       <main id="learn-main" className="learn-main" tabIndex={-1}>
-        {status === 'error' ? <div className="learn-wrap"><p role="alert" className="err">The roadmap could not be loaded: {error}</p><button className="primary" onClick={() => void load()}>Try again</button></div>
+        {route.name === 'lld' ? <LLDHome /> : route.name === 'lld-lesson' ? <LLDLessonPage key={route.id} id={route.id} /> : status === 'error' ? <div className="learn-wrap"><p role="alert" className="err">The roadmap could not be loaded: {error}</p><button className="primary" onClick={() => void load()}>Try again</button></div>
           : status !== 'ready' ? <div className="learn-wrap" aria-busy="true"><p role="status">Loading the roadmap…</p></div>
-          : route.name === 'learn' ? <LearnHome /> : <LessonPage id={route.id} />}
+          : route.name === 'learn' ? <LearnHome /> : <LessonPage key={route.id} id={route.id} />}
       </main>
       <div className="toast-region" role="status" aria-live="polite">{notice && <div className="toast">{notice}</div>}</div>
     </div>

@@ -1,0 +1,33 @@
+{
+  "id": "domain-vocabulary",
+  "title": "Domain vocabulary",
+  "summary": "TODO: Explain what the learner will understand and why this topic matters in low-level design.",
+  "minutes": 10,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "TODO: Introduce the concept in plain language and establish the problem it helps solve."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Why it matters in LLD"
+    },
+    {
+      "type": "paragraph",
+      "text": "TODO: Explain the mechanics, show a Java example, discuss trade-offs and connect the concept to practical design."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Practice and common mistakes"
+    },
+    {
+      "type": "list",
+      "items": [
+        "TODO: Add a focused exercise or implementation task.",
+        "TODO: Add a common mistake and how to recognize it."
+      ]
+    }
+  ]
+}

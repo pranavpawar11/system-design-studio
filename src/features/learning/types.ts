@@ -1,4 +1,5 @@
 /** Learning content and progress. Content is authored as JSON (docs/learning-authoring); progress is a list of events. */
+import type { ProgrammingLanguage } from './programming-language';
 
 export type NodeKind = 'topic' | 'group' | 'lesson';
 export interface RoadmapNode {
@@ -40,9 +41,22 @@ export interface LabSpec {
 export interface QuizQuestion { id: string; prompt: string; options: { id: string; text: string }[]; correct: string; explanation: string }
 export interface Quiz { passScore: number; questions: QuizQuestion[] }
 
+export interface LessonLanguageVariant {
+  /** Optional language-specific summary when the implementation changes the explanation. */
+  summary?: string;
+  /** Full language-specific block replacement (legacy option). */
+  blocks?: LessonBlock[];
+  /** Sparse replacements keyed by the shared lesson block index. */
+  blockOverrides?: Record<number, LessonBlock>;
+  /** Additional notes for language-specific idioms, runtime behavior, or conventions. */
+  implementationNotes?: LessonBlock[];
+}
+
 export interface Lesson {
   id: string; title: string; summary: string; minutes: number;
   blocks: LessonBlock[]; lab?: LabSpec; quiz?: Quiz;
+  /** Optional variants; shared lesson content remains the fallback when a variant is absent. */
+  languageVariants?: Partial<Record<ProgrammingLanguage, LessonLanguageVariant>>;
   /** Studio questions that practise this lesson. */
   practice?: { questionId: string; label: string }[];
 }

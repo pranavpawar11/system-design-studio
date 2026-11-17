@@ -1,0 +1,237 @@
+{
+  "id": "object-lifecycle",
+  "title": "Object lifecycle",
+  "summary": "Follow an object from creation through active use to completion, and learn how lifecycle rules affect validity, ownership and resource cleanup.",
+  "minutes": 14,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Objects exist over time"
+    },
+    {
+      "type": "paragraph",
+      "text": "An object is not just a collection of fields. It moves through a lifecycle: it is created, initialized, used, possibly changes state, and eventually becomes unreachable or is explicitly closed. Understanding that lifecycle helps you decide where validation, ownership and cleanup belong."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "A typical lifecycle"
+    },
+    {
+      "type": "list",
+      "items": [
+        "**Creation:** memory is allocated and a constructor is invoked.",
+        "**Initialization:** required values are supplied and invariants are established.",
+        "**Use:** other objects call methods and the object changes through valid transitions.",
+        "**Completion:** the object reaches a terminal domain state or is no longer needed.",
+        "**Cleanup:** resources such as files, sockets or database connections are released when required."
+      ],
+      "ordered": false
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Domain lifecycle versus memory lifecycle"
+    },
+    {
+      "type": "paragraph",
+      "text": "Do not confuse an object's business lifecycle with its memory lifecycle. An `Order` may be `CREATED`, `PAID`, `SHIPPED` or `CANCELLED`; those are domain states. Separately, the Java runtime manages object memory and garbage collection. An order can remain stored in a database long after the in-memory object used to process it has been collected."
+    },
+    {
+      "type": "example",
+      "title": "An order lifecycle",
+      "text": "`Order order = Order.create(cart);\norder.markPaid(paymentReference);\norder.ship(trackingNumber);` The order's domain state changes as business events occur. Each transition should validate whether it is allowed. When the local variable goes out of scope and no references remain, the in-memory object may later be garbage-collected; that does not delete the persisted order."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Model lifecycle transitions explicitly"
+    },
+    {
+      "type": "paragraph",
+      "text": "For objects with meaningful states, define the allowed transitions and reject invalid ones. A simple enum can represent the state, while methods represent the transitions. Avoid allowing callers to set arbitrary state values."
+    },
+    {
+      "type": "example",
+      "title": "Guarding a transition",
+      "text": "`public void markPaid(String paymentReference) {\n    if (status != OrderStatus.CREATED) {\n        throw new IllegalStateException(\"Only new orders can be paid\");\n    }\n    this.paymentReference = Objects.requireNonNull(paymentReference);\n    this.status = OrderStatus.PAID;\n}` This operation checks the current state and required input before changing the order."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Who owns cleanup?"
+    },
+    {
+      "type": "paragraph",
+      "text": "For memory, Java's garbage collector reclaims unreachable objects; developers should not try to manually free ordinary objects. For external resources, use explicit lifecycle APIs. For example, `try-with-resources` closes an `AutoCloseable` resource even when an exception occurs."
+    },
+    {
+      "type": "example",
+      "title": "Closing a resource",
+      "text": "`try (BufferedReader reader = Files.newBufferedReader(path)) {\n    return reader.readLine();\n}` The reader is closed automatically at the end of the block. This is resource lifecycle management, not manual object-memory management."
+    },
+    {
+      "type": "callout",
+      "tone": "warning",
+      "title": "Garbage collection is not resource management",
+      "text": "Do not rely on garbage collection to close files, database connections or sockets at a predictable time. Close resources explicitly and define who owns that responsibility."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Try it yourself"
+    },
+    {
+      "type": "paragraph",
+      "text": "Model a `Booking` with states `PENDING`, `CONFIRMED` and `CANCELLED`. Write down which transitions are allowed, which are forbidden, and what data must exist before confirmation. Include what should happen if cancellation is requested twice."
+    }
+  ],
+  "quiz": {
+    "passScore": 0.67,
+    "questions": [
+      {
+        "id": "q1",
+        "prompt": "Which statement correctly separates domain lifecycle from memory lifecycle?",
+        "options": [
+          {
+            "id": "a",
+            "text": "They are the same thing"
+          },
+          {
+            "id": "b",
+            "text": "An order's PAID state is a domain state; garbage collection concerns memory"
+          },
+          {
+            "id": "c",
+            "text": "Garbage collection deletes the database order"
+          }
+        ],
+        "correct": "b",
+        "explanation": "Business state is part of the domain model. Garbage collection reclaims unreachable in-memory objects and does not remove persisted records."
+      },
+      {
+        "id": "q2",
+        "prompt": "What should a constructor primarily ensure?",
+        "options": [
+          {
+            "id": "a",
+            "text": "The object begins in a valid initialized state"
+          },
+          {
+            "id": "b",
+            "text": "Every field is public"
+          },
+          {
+            "id": "c",
+            "text": "The object can never change"
+          }
+        ],
+        "correct": "a",
+        "explanation": "Construction should establish required values and the invariants that must hold before the object is used."
+      },
+      {
+        "id": "q3",
+        "prompt": "How should a Java file reader normally be released?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Wait for garbage collection"
+          },
+          {
+            "id": "b",
+            "text": "Set the variable to null"
+          },
+          {
+            "id": "c",
+            "text": "Use try-with-resources or explicitly close it"
+          }
+        ],
+        "correct": "c",
+        "explanation": "External resources need deterministic cleanup. Try-with-resources ensures close is called when the scope exits."
+      }
+    ]
+  },
+  "languageVariants": {
+    "cpp": {
+      "blockOverrides": {
+        "5": {
+          "type": "paragraph",
+          "text": "Do not confuse an object’s business lifecycle with its memory lifecycle. An `Order` may be `CREATED`, `PAID`, `SHIPPED` or `CANCELLED`; those are domain states. Separately, C++ object lifetime is tied to storage duration and ownership. Automatic objects are typically destroyed when their scope ends; dynamically allocated objects need clear ownership, preferably represented with RAII types such as `std::unique_ptr`."
+        },
+        "6": {
+          "type": "example",
+          "title": "An order lifecycle",
+          "text": "`Order order = Order::create(cart);\norder.markPaid(paymentReference);\norder.ship(trackingNumber);` The order’s domain state changes as business events occur. Each transition should validate whether it is allowed. When the object’s lifetime ends, its destructor runs; that does not delete a persisted order."
+        },
+        "9": {
+          "type": "example",
+          "title": "Guarding a transition",
+          "text": "`void Order::markPaid(const std::string& reference) {\n    if (status != OrderStatus::Created) {\n        throw std::logic_error(\"Only new orders can be paid\");\n    }\n    if (reference.empty()) throw std::invalid_argument(\"reference required\");\n    paymentReference = reference;\n    status = OrderStatus::Paid;\n}` This operation checks the current state and required input before changing the order."
+        },
+        "11": {
+          "type": "paragraph",
+          "text": "C++ destructors release resources owned by an object when its lifetime ends. Prefer RAII: wrap files, locks and other resources in objects whose destructors release them. Smart pointers such as `std::unique_ptr` express ownership of dynamically allocated objects. Do not use raw `delete` as a general cleanup strategy when an ownership type can manage the lifetime."
+        },
+        "12": {
+          "type": "example",
+          "title": "RAII resource cleanup",
+          "text": "`{\n    std::ifstream input(path);\n    if (!input) throw std::runtime_error(\"cannot open file\");\n    std::string line;\n    std::getline(input, line);\n} // input is destroyed and the file is closed here` The stream object releases its file resource when its scope ends."
+        }
+      },
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "C++ object lifetime",
+          "text": "C++ has deterministic object lifetime. Automatic objects are destroyed at scope exit, and RAII types tie resource cleanup to object lifetime. Prefer value semantics and smart pointers over unmanaged `new`/`delete`."
+        }
+      ]
+    },
+    "python": {
+      "blockOverrides": {
+        "5": {
+          "type": "paragraph",
+          "text": "Do not confuse an object’s business lifecycle with its memory lifecycle. An `Order` may be `CREATED`, `PAID`, `SHIPPED` or `CANCELLED`; those are domain states. Separately, Python manages object memory automatically. Objects become eligible for reclamation when they are no longer reachable; exact collection timing is an implementation detail and should not be used for business cleanup."
+        },
+        "6": {
+          "type": "example",
+          "title": "An order lifecycle",
+          "text": "`order = Order.create(cart)\norder.mark_paid(payment_reference)\norder.ship(tracking_number)` The order’s domain state changes as business events occur. Each transition should validate whether it is allowed. When no references keep the in-memory object alive, it may eventually be reclaimed; that does not delete a persisted order."
+        },
+        "9": {
+          "type": "example",
+          "title": "Guarding a transition",
+          "text": "`def mark_paid(self, payment_reference: str) -> None:\n    if self.status is not OrderStatus.CREATED:\n        raise ValueError(\"Only new orders can be paid\")\n    if not payment_reference:\n        raise ValueError(\"payment reference required\")\n    self.payment_reference = payment_reference\n    self.status = OrderStatus.PAID` This operation checks the current state and required input before changing the order."
+        },
+        "11": {
+          "type": "paragraph",
+          "text": "Python manages ordinary object memory automatically, but external resources still need deterministic cleanup. Use context managers with `with` so files, locks and similar resources are released when the block exits. Do not rely on garbage collection or `__del__` for timely cleanup."
+        },
+        "12": {
+          "type": "example",
+          "title": "Closing a resource",
+          "text": "`with open(path, encoding=\"utf-8\") as reader:\n    first_line = reader.readline()` The context manager closes the file when the block exits, including when an exception occurs. This is resource lifecycle management, not manual object-memory management."
+        }
+      },
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "C++ object lifetime",
+          "text": "C++ has deterministic object lifetime. Automatic objects are destroyed at scope exit, and RAII types tie resource cleanup to object lifetime. Prefer value semantics and smart pointers over unmanaged `new`/`delete`."
+        }
+      ]
+    },
+    "java": {
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Java memory and resource lifecycle",
+          "text": "The garbage collector reclaims unreachable objects, but it does not replace deterministic cleanup for files, sockets or database connections. Use `try-with-resources` for `AutoCloseable` resources."
+        }
+      ]
+    }
+  }
+}

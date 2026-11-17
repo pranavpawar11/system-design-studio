@@ -573,3 +573,34 @@
 .app.learn .lesson .qq-prompt { flex: 1 1 auto; min-width: 0; }
 .app.learn .lesson .quiz-options { margin: 0; }
 .app.learn .lesson .qq .qresult { margin-top: 13px; }
+
+
+/* Preserve multiline Java snippets from lesson JSON example blocks. */
+.app.learn .lesson-reading .lesson-example-content { min-width: 0; }
+.app.learn .lesson-reading .lesson-example-content > p { margin: 8px 0; color: var(--muted); line-height: 1.7; }
+.app.learn .lesson-reading .lesson-code-block {
+  display: block; box-sizing: border-box; width: 100%; max-width: 100%;
+  margin: 12px 0 16px; padding: 16px 18px; overflow-x: auto; overflow-y: hidden;
+  border: 1px solid var(--line); border-radius: 11px; background: #09111b; color: #d7e4f2;
+  tab-size: 4; white-space: pre; -webkit-overflow-scrolling: touch;
+}
+.app.learn .lesson-reading .lesson-code-block code {
+  display: block; width: max-content; min-width: 100%; color: inherit;
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 13px; line-height: 1.75; white-space: pre; overflow-wrap: normal;
+}
+.app.learn .lesson-reading .example { min-width: 0; }
+.app.learn .lesson-read-confirmation { margin: 9px 0 0; color: var(--ok); font-size: 12px; }
+@media (max-width: 640px) {
+  .app.learn .lesson-reading .lesson-code-block { padding: 12px; margin-inline: -2px; width: calc(100% + 4px); }
+  .app.learn .lesson-reading .lesson-code-block code { font-size: 12px; }
+}
+
+/* Language-specific implementation notes remain visually secondary to the shared lesson. */
+.lesson-implementation-notes {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.lesson-implementation-notes .lesson-section-label { margin-bottom: 12px; }
+.lesson-implementation-notes .note { margin: 12px 0; }

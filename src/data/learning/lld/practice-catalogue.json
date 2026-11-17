@@ -1,0 +1,2038 @@
+{
+  "version": 1,
+  "catalogueId": "lld-practice-library",
+  "title": "LLD Practice Library",
+  "description": "A separate problem bank for guided design, independent design, machine coding and evolving-requirement challenges.",
+  "primaryLanguage": "Java",
+  "difficultyLevels": [
+    "beginner",
+    "intermediate",
+    "advanced",
+    "expert"
+  ],
+  "priorityLegend": {
+    "P0": "Essential foundational practice",
+    "P1": "Important interview and implementation practice",
+    "P2": "Advanced or specialized practice"
+  },
+  "practiceModes": [
+    {
+      "id": "guided-design",
+      "title": "Guided design",
+      "description": "Work through requirements, object discovery, relationships and design decisions with progressive hints."
+    },
+    {
+      "id": "independent-design",
+      "title": "Independent design",
+      "description": "Produce a design without hints, then compare it with a reference design and trade-offs."
+    },
+    {
+      "id": "machine-coding",
+      "title": "Machine coding",
+      "description": "Build a runnable Java implementation with tests and a clear project structure."
+    },
+    {
+      "id": "change-request",
+      "title": "Change request challenge",
+      "description": "Evolve the design after new requirements are introduced and assess the cost of change."
+    }
+  ],
+  "categories": [
+    {
+      "id": "oop-foundations",
+      "title": "Oop Foundations",
+      "problemCount": 7
+    },
+    {
+      "id": "games",
+      "title": "Games",
+      "problemCount": 8
+    },
+    {
+      "id": "resource-management",
+      "title": "Resource Management",
+      "problemCount": 11
+    },
+    {
+      "id": "commerce-booking",
+      "title": "Commerce Booking",
+      "problemCount": 11
+    },
+    {
+      "id": "infrastructure-components",
+      "title": "Infrastructure Components",
+      "problemCount": 15
+    },
+    {
+      "id": "social-collaboration",
+      "title": "Social Collaboration",
+      "problemCount": 9
+    },
+    {
+      "id": "concurrency",
+      "title": "Concurrency",
+      "problemCount": 12
+    },
+    {
+      "id": "advanced-domains",
+      "title": "Advanced Domains",
+      "problemCount": 14
+    }
+  ],
+  "problems": [
+    {
+      "id": "model-student-course",
+      "title": "Student and Course Model",
+      "category": "oop-foundations",
+      "difficulty": "beginner",
+      "priority": "P0",
+      "concepts": [
+        "Classes",
+        "associations",
+        "validation"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Student and Course Model. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "employee-management",
+      "title": "Employee Management",
+      "category": "oop-foundations",
+      "difficulty": "beginner",
+      "priority": "P0",
+      "concepts": [
+        "Inheritance",
+        "composition",
+        "polymorphism"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Employee Management. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "bank-account",
+      "title": "Bank Account and Transactions",
+      "category": "oop-foundations",
+      "difficulty": "beginner",
+      "priority": "P0",
+      "concepts": [
+        "Encapsulation",
+        "invariants",
+        "state"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Bank Account and Transactions. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "shopping-cart-basics",
+      "title": "Shopping Cart",
+      "category": "oop-foundations",
+      "difficulty": "beginner",
+      "priority": "P0",
+      "concepts": [
+        "Collections",
+        "object collaboration"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Shopping Cart. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "course-registration",
+      "title": "Course Registration",
+      "category": "oop-foundations",
+      "difficulty": "beginner",
+      "priority": "P1",
+      "concepts": [
+        "Relationships",
+        "constraints"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Course Registration. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "hotel-room-model",
+      "title": "Hotel Room Management",
+      "category": "oop-foundations",
+      "difficulty": "beginner",
+      "priority": "P1",
+      "concepts": [
+        "Composition",
+        "availability"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Hotel Room Management. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "restaurant-menu-orders",
+      "title": "Restaurant Menu and Orders",
+      "category": "oop-foundations",
+      "difficulty": "beginner",
+      "priority": "P1",
+      "concepts": [
+        "Domain modeling"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Restaurant Menu and Orders. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "tic-tac-toe",
+      "title": "Tic-Tac-Toe",
+      "category": "games",
+      "difficulty": "beginner",
+      "priority": "P0",
+      "concepts": [
+        "Board model",
+        "rules",
+        "win detection"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Tic-Tac-Toe. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "snake-and-ladder",
+      "title": "Snake and Ladder",
+      "category": "games",
+      "difficulty": "beginner",
+      "priority": "P0",
+      "concepts": [
+        "Turns",
+        "dice",
+        "state"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Snake and Ladder. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "chess",
+      "title": "Chess",
+      "category": "games",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Piece hierarchy",
+        "legal moves",
+        "game state"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Chess. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "blackjack",
+      "title": "Blackjack",
+      "category": "games",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Cards",
+        "hands",
+        "rules",
+        "game lifecycle"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Blackjack. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "ludo",
+      "title": "Ludo",
+      "category": "games",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Players",
+        "turns",
+        "movement rules"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Ludo. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "connect-four",
+      "title": "Connect Four",
+      "category": "games",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Grid model",
+        "win detection"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Connect Four. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "minesweeper",
+      "title": "Minesweeper",
+      "category": "games",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Grid",
+        "reveal logic",
+        "state transitions"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Minesweeper. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "card-game-engine",
+      "title": "Reusable Card Game Engine",
+      "category": "games",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Extensible game abstractions"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Reusable Card Game Engine. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "parking-lot",
+      "title": "Parking Lot",
+      "category": "resource-management",
+      "difficulty": "intermediate",
+      "priority": "P0",
+      "concepts": [
+        "Spot allocation",
+        "vehicle types",
+        "pricing"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Parking Lot. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "elevator-system",
+      "title": "Elevator System",
+      "category": "resource-management",
+      "difficulty": "intermediate",
+      "priority": "P0",
+      "concepts": [
+        "Scheduling",
+        "dispatch",
+        "state machines"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Elevator System. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "library-management",
+      "title": "Library Management",
+      "category": "resource-management",
+      "difficulty": "beginner",
+      "priority": "P0",
+      "concepts": [
+        "Catalog",
+        "copies",
+        "loans",
+        "holds"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Library Management. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "vending-machine",
+      "title": "Vending Machine",
+      "category": "resource-management",
+      "difficulty": "beginner",
+      "priority": "P0",
+      "concepts": [
+        "State pattern",
+        "inventory",
+        "payment"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Vending Machine. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "atm",
+      "title": "ATM",
+      "category": "resource-management",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Authentication",
+        "transactions",
+        "cash dispensing"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement ATM. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "car-rental",
+      "title": "Car Rental System",
+      "category": "resource-management",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Fleet",
+        "reservations",
+        "pricing"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Car Rental System. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "hotel-reservation",
+      "title": "Hotel Reservation",
+      "category": "resource-management",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Availability",
+        "booking",
+        "cancellation"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Hotel Reservation. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "meeting-room-scheduler",
+      "title": "Meeting Room Scheduler",
+      "category": "resource-management",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Time slots",
+        "conflicts",
+        "allocation"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Meeting Room Scheduler. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "amazon-locker",
+      "title": "Parcel Locker System",
+      "category": "resource-management",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Compartment assignment",
+        "expiry"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Parcel Locker System. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "warehouse-management",
+      "title": "Warehouse Management",
+      "category": "resource-management",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Inventory",
+        "location",
+        "movement"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Warehouse Management. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "traffic-signal",
+      "title": "Traffic Signal Controller",
+      "category": "resource-management",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "State transitions",
+        "coordination"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Traffic Signal Controller. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "checkout-system",
+      "title": "Shopping Cart and Checkout",
+      "category": "commerce-booking",
+      "difficulty": "intermediate",
+      "priority": "P0",
+      "concepts": [
+        "Cart",
+        "pricing",
+        "discounts",
+        "payment"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Shopping Cart and Checkout. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "movie-ticket-booking",
+      "title": "Movie Ticket Booking",
+      "category": "commerce-booking",
+      "difficulty": "intermediate",
+      "priority": "P0",
+      "concepts": [
+        "Seat locks",
+        "expiry",
+        "booking states"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Movie Ticket Booking. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "splitwise",
+      "title": "Expense Sharing (Splitwise)",
+      "category": "commerce-booking",
+      "difficulty": "intermediate",
+      "priority": "P0",
+      "concepts": [
+        "Splits",
+        "balances",
+        "debt simplification"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Expense Sharing (Splitwise). Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "food-ordering",
+      "title": "Food Ordering System",
+      "category": "commerce-booking",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Menu",
+        "order lifecycle",
+        "payments"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Food Ordering System. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "restaurant-management",
+      "title": "Restaurant Management",
+      "category": "commerce-booking",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Tables",
+        "reservations",
+        "orders"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Restaurant Management. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "airline-reservation",
+      "title": "Airline Reservation",
+      "category": "commerce-booking",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Flights",
+        "seats",
+        "booking lifecycle"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Airline Reservation. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "event-ticketing",
+      "title": "Event Ticket Booking",
+      "category": "commerce-booking",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Inventory",
+        "ticket allocation"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Event Ticket Booking. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "online-auction",
+      "title": "Online Auction",
+      "category": "commerce-booking",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Bids",
+        "rules",
+        "winner selection"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Online Auction. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "coupon-engine",
+      "title": "Coupon and Promotion Engine",
+      "category": "commerce-booking",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Eligibility",
+        "stacking",
+        "pricing rules"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Coupon and Promotion Engine. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "subscription-billing",
+      "title": "Subscription Billing",
+      "category": "commerce-booking",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Plans",
+        "renewals",
+        "proration"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Subscription Billing. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "digital-wallet",
+      "title": "Digital Wallet",
+      "category": "commerce-booking",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Ledger",
+        "transfers",
+        "atomicity"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Digital Wallet. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "lru-cache",
+      "title": "LRU Cache",
+      "category": "infrastructure-components",
+      "difficulty": "intermediate",
+      "priority": "P0",
+      "concepts": [
+        "HashMap and doubly linked list"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement LRU Cache. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "lfu-cache",
+      "title": "LFU Cache",
+      "category": "infrastructure-components",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Frequency tracking and eviction"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement LFU Cache. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "rate-limiter",
+      "title": "Rate Limiter",
+      "category": "infrastructure-components",
+      "difficulty": "intermediate",
+      "priority": "P0",
+      "concepts": [
+        "Token bucket",
+        "leaky bucket",
+        "sliding window"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Rate Limiter. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "logging-framework",
+      "title": "Logging Framework",
+      "category": "infrastructure-components",
+      "difficulty": "intermediate",
+      "priority": "P0",
+      "concepts": [
+        "Levels",
+        "appenders",
+        "formatters"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Logging Framework. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "in-memory-filesystem",
+      "title": "In-Memory File System",
+      "category": "infrastructure-components",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Files",
+        "directories",
+        "traversal"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement In-Memory File System. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "pub-sub-event-bus",
+      "title": "Publish-Subscribe Event Bus",
+      "category": "infrastructure-components",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Topics",
+        "subscribers",
+        "delivery"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Publish-Subscribe Event Bus. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "task-scheduler",
+      "title": "Task Scheduler",
+      "category": "infrastructure-components",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Delayed jobs",
+        "priorities",
+        "workers"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Task Scheduler. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "thread-pool",
+      "title": "Thread Pool",
+      "category": "infrastructure-components",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Worker lifecycle",
+        "task queue"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Thread Pool. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "custom-hashmap",
+      "title": "In-Memory HashMap",
+      "category": "infrastructure-components",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Hashing",
+        "collisions",
+        "resizing"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement In-Memory HashMap. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "min-stack",
+      "title": "Min Stack",
+      "category": "infrastructure-components",
+      "difficulty": "beginner",
+      "priority": "P1",
+      "concepts": [
+        "Data structure design"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Min Stack. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "url-shortener-core",
+      "title": "URL Shortener Core",
+      "category": "infrastructure-components",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Mapping",
+        "identifier generation"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement URL Shortener Core. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "notification-framework",
+      "title": "Notification Framework",
+      "category": "infrastructure-components",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Channels",
+        "templates",
+        "providers"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Notification Framework. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "object-pool",
+      "title": "Object Pool",
+      "category": "infrastructure-components",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Resource lifecycle and reuse"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Object Pool. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "unix-find",
+      "title": "Unix Find Command",
+      "category": "infrastructure-components",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Composite traversal",
+        "filters"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Unix Find Command. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "undo-redo-editor",
+      "title": "Text Editor Undo and Redo",
+      "category": "infrastructure-components",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Command and Memento"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Text Editor Undo and Redo. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "stackoverflow",
+      "title": "Q&A Platform (Stack Overflow)",
+      "category": "social-collaboration",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Questions",
+        "answers",
+        "voting"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Q&A Platform (Stack Overflow). Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "chat-application",
+      "title": "Chat Application",
+      "category": "social-collaboration",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Messages",
+        "groups",
+        "delivery states"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Chat Application. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "notification-center",
+      "title": "Notification Center",
+      "category": "social-collaboration",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Subscriptions",
+        "preferences"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Notification Center. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "social-feed",
+      "title": "Social Media Feed",
+      "category": "social-collaboration",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Posts",
+        "comments",
+        "reactions"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Social Media Feed. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "calendar-app",
+      "title": "Calendar Application",
+      "category": "social-collaboration",
+      "difficulty": "intermediate",
+      "priority": "P1",
+      "concepts": [
+        "Events",
+        "recurrence",
+        "conflicts"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Calendar Application. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "collaborative-editor",
+      "title": "Collaborative Document Editor",
+      "category": "social-collaboration",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Operations",
+        "undo",
+        "concurrent changes"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Collaborative Document Editor. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "issue-tracker",
+      "title": "Issue Tracker",
+      "category": "social-collaboration",
+      "difficulty": "intermediate",
+      "priority": "P2",
+      "concepts": [
+        "Workflow and status transitions"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Issue Tracker. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "survey-system",
+      "title": "Polling and Survey System",
+      "category": "social-collaboration",
+      "difficulty": "intermediate",
+      "priority": "P2",
+      "concepts": [
+        "Question types",
+        "response validation"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Polling and Survey System. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "leaderboard",
+      "title": "Leaderboard",
+      "category": "social-collaboration",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Ranking and updates"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Leaderboard. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "producer-consumer",
+      "title": "Producer–Consumer",
+      "category": "concurrency",
+      "difficulty": "intermediate",
+      "priority": "P0",
+      "concepts": [
+        "BlockingQueue",
+        "coordination"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Producer–Consumer. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "thread-safe-lru",
+      "title": "Thread-Safe LRU Cache",
+      "category": "concurrency",
+      "difficulty": "advanced",
+      "priority": "P0",
+      "concepts": [
+        "Locks",
+        "concurrent collections"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Thread-Safe LRU Cache. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "concurrent-ticket-booking",
+      "title": "Concurrent Ticket Booking",
+      "category": "concurrency",
+      "difficulty": "advanced",
+      "priority": "P0",
+      "concepts": [
+        "Race conditions",
+        "locking"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Concurrent Ticket Booking. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "thread-safe-bank-transfer",
+      "title": "Thread-Safe Bank Transfer",
+      "category": "concurrency",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Deadlocks",
+        "lock ordering"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Thread-Safe Bank Transfer. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "readers-writers",
+      "title": "Readers–Writers",
+      "category": "concurrency",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "ReadWriteLock"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Readers–Writers. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "dining-philosophers",
+      "title": "Dining Philosophers",
+      "category": "concurrency",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Deadlock prevention"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Dining Philosophers. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "multithreaded-logger",
+      "title": "Multithreaded Logger",
+      "category": "concurrency",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Async queues",
+        "flushing"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Multithreaded Logger. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "thread-pool-from-scratch",
+      "title": "Thread Pool from Scratch",
+      "category": "concurrency",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Worker threads",
+        "task queues"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Thread Pool from Scratch. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "concurrent-hashmap",
+      "title": "Concurrent HashMap",
+      "category": "concurrency",
+      "difficulty": "expert",
+      "priority": "P2",
+      "concepts": [
+        "Lock striping",
+        "CAS"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Concurrent HashMap. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "delayed-task-scheduler",
+      "title": "Delayed Task Scheduler",
+      "category": "concurrency",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Priority queues",
+        "scheduling"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Delayed Task Scheduler. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "read-write-lock",
+      "title": "Read-Write Lock from Scratch",
+      "category": "concurrency",
+      "difficulty": "expert",
+      "priority": "P2",
+      "concepts": [
+        "Synchronization primitives"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Read-Write Lock from Scratch. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "concurrent-pub-sub",
+      "title": "Concurrent Pub-Sub",
+      "category": "concurrency",
+      "difficulty": "expert",
+      "priority": "P2",
+      "concepts": [
+        "Ordering",
+        "synchronization"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Concurrent Pub-Sub. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "ride-sharing",
+      "title": "Ride-Sharing Matching",
+      "category": "advanced-domains",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Matching",
+        "allocation",
+        "pricing"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Ride-Sharing Matching. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "trading-order-book",
+      "title": "Trading Order Book",
+      "category": "advanced-domains",
+      "difficulty": "expert",
+      "priority": "P1",
+      "concepts": [
+        "Orders",
+        "matching engine"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Trading Order Book. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "payment-gateway",
+      "title": "Payment Gateway",
+      "category": "advanced-domains",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Idempotency",
+        "provider abstraction"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Payment Gateway. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "digital-ledger",
+      "title": "Digital Ledger",
+      "category": "advanced-domains",
+      "difficulty": "expert",
+      "priority": "P1",
+      "concepts": [
+        "Double-entry accounting",
+        "invariants"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Digital Ledger. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "job-scheduler-platform",
+      "title": "Job Scheduling Platform",
+      "category": "advanced-domains",
+      "difficulty": "advanced",
+      "priority": "P1",
+      "concepts": [
+        "Recurrence",
+        "priorities",
+        "workers"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Job Scheduling Platform. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "monitoring-alerting",
+      "title": "Monitoring and Alerting",
+      "category": "advanced-domains",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Metrics",
+        "thresholds",
+        "notification rules"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Monitoring and Alerting. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "api-gateway-core",
+      "title": "API Gateway Core",
+      "category": "advanced-domains",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Middleware",
+        "routing",
+        "rate limiting"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement API Gateway Core. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "online-code-judge",
+      "title": "Online Code Judge",
+      "category": "advanced-domains",
+      "difficulty": "expert",
+      "priority": "P2",
+      "concepts": [
+        "Execution lifecycle",
+        "sandbox abstraction"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Online Code Judge. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "file-sync-client",
+      "title": "File Sync Client",
+      "category": "advanced-domains",
+      "difficulty": "expert",
+      "priority": "P2",
+      "concepts": [
+        "Versioning",
+        "conflict handling"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement File Sync Client. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "smart-home-automation",
+      "title": "Smart Home Automation",
+      "category": "advanced-domains",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Rules",
+        "devices",
+        "events"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Smart Home Automation. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "kyc-workflow",
+      "title": "KYC Workflow",
+      "category": "advanced-domains",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "State machines",
+        "verification"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement KYC Workflow. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "ai-agent-tool-runner",
+      "title": "AI Agent Tool Runner",
+      "category": "advanced-domains",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Tool registry",
+        "validation",
+        "execution lifecycle"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement AI Agent Tool Runner. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "rag-pipeline-components",
+      "title": "RAG Pipeline Components",
+      "category": "advanced-domains",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Loaders",
+        "chunkers",
+        "retrievers",
+        "interfaces"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement RAG Pipeline Components. Clarify requirements and assumptions before modeling classes."
+    },
+    {
+      "id": "model-provider-gateway",
+      "title": "Model Provider Gateway",
+      "category": "advanced-domains",
+      "difficulty": "advanced",
+      "priority": "P2",
+      "concepts": [
+        "Adapters",
+        "routing",
+        "provider contracts"
+      ],
+      "language": "Java",
+      "status": "planned",
+      "deliverables": [
+        "requirements-and-assumptions",
+        "class-diagram",
+        "key-sequence-diagrams",
+        "working-java-implementation",
+        "unit-tests",
+        "trade-offs-and-extension"
+      ],
+      "starterPrompt": "Design and implement Model Provider Gateway. Clarify requirements and assumptions before modeling classes."
+    }
+  ]
+}

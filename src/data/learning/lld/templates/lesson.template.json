@@ -1,0 +1,81 @@
+{
+  "id": "<kebab-case-lesson-id>",
+  "title": "<Lesson title>",
+  "summary": "<Language-independent learning outcome>",
+  "minutes": 10,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "<Explain the concept without language-specific syntax or assumptions>"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "<Why it matters in LLD>"
+    },
+    {
+      "type": "paragraph",
+      "text": "<Explain the design principle, constraints, trade-offs, and when it applies>"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Implementation in practice"
+    },
+    {
+      "type": "paragraph",
+      "text": "<Describe the language-neutral implementation idea; do not assume all languages expose the same feature>"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Try it yourself"
+    },
+    {
+      "type": "paragraph",
+      "text": "<Give a language-independent reasoning or design exercise>"
+    }
+  ],
+  "quiz": {
+    "passScore": 0.67,
+    "questions": [
+      {
+        "id": "q1",
+        "prompt": "<Conceptual question independent of language syntax>",
+        "options": [
+          { "id": "a", "text": "<Option A>" },
+          { "id": "b", "text": "<Option B>" },
+          { "id": "c", "text": "<Option C>" }
+        ],
+        "correct": "b",
+        "explanation": "<Explain the underlying concept>"
+      }
+    ]
+  },
+  "languageVariants": {
+    "java": {
+      "blockOverrides": {
+        "4": {
+          "type": "paragraph",
+          "text": "<Java-specific explanation or idiom for shared block index 4>"
+        }
+      },
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Java-specific consideration",
+          "text": "<Relevant Java semantics, trade-off, or idiom>"
+        }
+      ]
+    },
+    "cpp": {
+      "blockOverrides": {},
+      "implementationNotes": []
+    },
+    "python": {
+      "blockOverrides": {},
+      "implementationNotes": []
+    }
+  }
+}

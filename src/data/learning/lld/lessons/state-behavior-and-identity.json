@@ -1,0 +1,199 @@
+{
+  "id": "state-behavior-and-identity",
+  "title": "State, behavior and identity",
+  "summary": "Separate the three core dimensions of an object and learn how they influence equality, encapsulation, testing and object collaboration.",
+  "minutes": 14,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Three questions describe an object"
+    },
+    {
+      "type": "paragraph",
+      "text": "To understand an object, ask three different questions: **What does it currently know? What can it do? Which particular object is it?** These correspond to state, behavior and identity. Keeping them distinct prevents common modeling mistakes."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "State: what is true right now"
+    },
+    {
+      "type": "paragraph",
+      "text": "State is the information an object retains at a point in time. A `Ticket` might have an identifier, seat number and status. State can change as the object receives valid operations. Not every field should be publicly writable; uncontrolled changes can create impossible combinations."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Behavior: what it can do"
+    },
+    {
+      "type": "paragraph",
+      "text": "Behavior is the set of operations an object offers. A ticket might support `reserve()` and `cancel()`. These methods should enforce the rules for allowed transitions. For example, a cancelled ticket should not be reserved again unless the domain explicitly supports reactivation."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Identity: which particular thing it is"
+    },
+    {
+      "type": "paragraph",
+      "text": "Identity distinguishes one object from another across time. Two tickets may have the same seat and status at different moments, but they can still be different tickets with different IDs. Identity is especially important for entities such as users, orders, tickets and accounts."
+    },
+    {
+      "type": "example",
+      "title": "A ticket model",
+      "text": "`Ticket ticket = new Ticket(\"T-91\", \"A12\");\nticket.reserve();\n\n// State: id = T-91, seat = A12, status = RESERVED\n// Behavior: reserve() changes status after checking rules\n// Identity: this is ticket T-91, not another ticket for seat A12`"
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Why the distinction matters"
+    },
+    {
+      "type": "list",
+      "items": [
+        "State answers what values are currently stored; behavior answers what requests are valid.",
+        "Identity answers whether two references point to the same entity, even if their current values match.",
+        "Equality is a separate design decision: some objects are equal by identity, while value objects are often equal by their values.",
+        "Tests should verify observable behavior and valid state transitions, not only that fields can be assigned."
+      ],
+      "ordered": false
+    },
+    {
+      "type": "callout",
+      "tone": "tip",
+      "title": "Entity or value object?",
+      "text": "An entity is commonly identified by a stable identity (for example, an order ID). A value object is commonly defined by its values (for example, a money amount and currency). This distinction becomes important when designing equality."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "A design check"
+    },
+    {
+      "type": "paragraph",
+      "text": "If a class exposes `setStatus(\"RESERVED\")`, any caller may skip the reservation rules. A behavior such as `reserve()` communicates intent and gives the object a place to validate whether the transition is allowed."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Try it yourself"
+    },
+    {
+      "type": "paragraph",
+      "text": "For a `Subscription`, identify two state fields, three behaviors and its identity. Then write one rule that should prevent an invalid state, such as a cancelled subscription being renewed without an explicit reactivation flow."
+    }
+  ],
+  "quiz": {
+    "passScore": 0.67,
+    "questions": [
+      {
+        "id": "q1",
+        "prompt": "Which of these is an example of object state?",
+        "options": [
+          {
+            "id": "a",
+            "text": "The operation `cancel()`"
+          },
+          {
+            "id": "b",
+            "text": "The current status `RESERVED`"
+          },
+          {
+            "id": "c",
+            "text": "The object's unique identity concept"
+          }
+        ],
+        "correct": "b",
+        "explanation": "A status value is information currently held by the object, so it is part of state."
+      },
+      {
+        "id": "q2",
+        "prompt": "Two `Ticket` objects have the same seat and status but different ticket IDs. Which statement is correct?",
+        "options": [
+          {
+            "id": "a",
+            "text": "They must be identical"
+          },
+          {
+            "id": "b",
+            "text": "They can represent different entities"
+          },
+          {
+            "id": "c",
+            "text": "Their IDs do not matter"
+          }
+        ],
+        "correct": "b",
+        "explanation": "Different stable identifiers can distinguish two ticket entities even when other state values match."
+      },
+      {
+        "id": "q3",
+        "prompt": "Why is `reserve()` usually safer than exposing `setStatus(\"RESERVED\")`?",
+        "options": [
+          {
+            "id": "a",
+            "text": "It can enforce reservation rules before changing state"
+          },
+          {
+            "id": "b",
+            "text": "It prevents the object from having state"
+          },
+          {
+            "id": "c",
+            "text": "It removes the need for tests"
+          }
+        ],
+        "correct": "a",
+        "explanation": "A behavior-oriented method can validate preconditions and protect invariants before changing the object's state."
+      }
+    ]
+  },
+  "languageVariants": {
+    "cpp": {
+      "blockOverrides": {
+        "8": {
+          "type": "example",
+          "title": "A ticket model",
+          "text": "`Ticket ticket{\"T-91\", \"A12\"};\nticket.reserve();\n\n// State: id = T-91, seat = A12, status = RESERVED\n// Behavior: reserve() changes status after checking rules\n// Identity: this is ticket T-91, not another ticket for seat A12`"
+        }
+      },
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Identity in C++",
+          "text": "Object identity is distinct from equal field values. When identity matters, C++ code can compare object addresses or use a stable domain identifier; do not confuse either with value equality."
+        }
+      ]
+    },
+    "python": {
+      "blockOverrides": {
+        "8": {
+          "type": "example",
+          "title": "A ticket model",
+          "text": "`ticket = Ticket(\"T-91\", \"A12\")\nticket.reserve()\n\n# State: id = T-91, seat = A12, status = RESERVED\n# Behavior: reserve() changes status after checking rules\n# Identity: this is ticket T-91, not another ticket for seat A12`"
+        }
+      },
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Identity in Python",
+          "text": "Python exposes identity comparison with `is`. Two objects can compare equal with `==` while still being distinct objects. Use identity for “this exact instance” questions and equality for domain value comparisons."
+        }
+      ]
+    },
+    "java": {
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Identity and equality in Java",
+          "text": "By default, `Object.equals()` behaves like identity comparison. Domain classes may override `equals()` and `hashCode()` to define value-based equality; decide deliberately whether a concept is an entity or a value object."
+        }
+      ]
+    }
+  }
+}

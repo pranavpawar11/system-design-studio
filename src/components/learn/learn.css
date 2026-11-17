@@ -268,3 +268,220 @@
   .foundations-toggle { align-items: flex-start; padding: 13px; }
   .foundations-count { display: none; }
 }
+
+/* Separate HLD / LLD learning-track navigation. Scoped to Learn only. */
+.learn-track-switcher {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  width: min(100%, 1680px); margin: 0 auto; padding: 14px clamp(16px, 3vw, 48px) 0;
+}
+.learn-track-label { color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .12em; }
+.learn-track-options { display: inline-flex; gap: 5px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.learn-track-options a { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 6px 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 12px; font-weight: 750; }
+.learn-track-options a small { color: inherit; opacity: .72; font-size: 10px; font-weight: 500; }
+.learn-track-options a.active { color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.learn-track-options a:hover { color: var(--text); background: var(--surface-2); }
+.lld-hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.lld-hero-tags span { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 11px; }
+.lld-stat-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin: 8px 0 12px; }
+.lld-stat-grid > div { display: grid; gap: 4px; padding: 12px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.lld-stat-grid strong { color: var(--text); font-size: 23px; line-height: 1; }
+.lld-stat-grid small { color: var(--muted); font-size: 10px; }
+.lld-practice-section { margin-top: 30px; padding: 18px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+.lld-practice-heading { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 16px; padding: 2px; text-align: left; background: transparent; border: 0; }
+.lld-practice-heading > span:first-child { display: grid; gap: 5px; }
+.lld-practice-heading b { color: var(--text); font-size: 18px; }
+.lld-practice-heading small { color: var(--muted); font-size: 12px; }
+.lld-practice-total { display: inline-flex; align-items: center; gap: 8px; flex: none; color: var(--accent); font-size: 12px; font-weight: 700; }
+.lld-practice-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; margin-top: 16px; }
+.lld-practice-card { min-width: 0; padding: 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.lld-practice-card > div { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.lld-practice-card b { color: var(--text); font-size: 12px; }
+.lld-practice-card span { flex: none; color: var(--muted); font-size: 10px; }
+.lld-practice-card p { margin: 9px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
+@media (max-width: 900px) { .lld-practice-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 600px) {
+  .learn-track-switcher { align-items: flex-start; flex-direction: column; padding-top: 10px; gap: 8px; }
+  .learn-track-options { width: 100%; }
+  .learn-track-options a { flex: 1; justify-content: center; flex-wrap: wrap; gap: 5px; }
+  .learn-track-options a small { display: none; }
+  .lld-stat-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .lld-stat-grid > div { padding: 10px 8px; }
+  .lld-stat-grid strong { font-size: 19px; }
+  .lld-practice-section { padding: 14px; }
+  .lld-practice-grid { grid-template-columns: minmax(0,1fr); }
+  .lld-practice-card > div { align-items: center; }
+}
+
+
+/* LLD lesson presentation — scoped to the Learn experience. */
+.app.learn .lld-lesson-hero {
+  margin: 18px 0 28px;
+  padding: clamp(22px, 4vw, 42px);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: linear-gradient(135deg, var(--surface-2), var(--surface));
+}
+.app.learn .lld-lesson-hero h2 {
+  max-width: 900px;
+  margin: 12px 0 10px;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.08;
+  letter-spacing: -.035em;
+}
+.app.learn .lld-lesson-hero .lesson-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.app.learn .lld-lesson-hero .lead { max-width: 900px; }
+.app.learn .lld-lesson-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+.app.learn .lld-lesson-body { max-width: 1000px; margin-inline: auto; }
+.app.learn .lld-lesson-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  max-width: 1000px;
+  margin: 28px auto 56px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.app.learn .lld-next-lesson {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+.app.learn .lld-next-lesson:hover { text-decoration: underline; }
+.app.learn .lld-lesson .crumbs a { display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 640px) {
+  .app.learn .lld-lesson-hero { margin: 10px 0 20px; border-radius: 14px; }
+  .app.learn .lld-lesson-actions { align-items: stretch; flex-direction: column; }
+  .app.learn .lld-next-lesson { padding: 10px 0; }
+}
+
+
+/* Keep HLD / LLD selection in the application header instead of a second navigation row. */
+.app.learn > .learn-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-inline: clamp(12px, 2vw, 24px);
+}
+.app.learn .learn-topbar .learn-track-switcher {
+  flex: 0 0 auto;
+  width: auto;
+  margin: 0 0 0 auto;
+  padding: 0;
+}
+.app.learn .learn-topbar .learn-track-label { display: none; }
+.app.learn .learn-topbar .learn-track-options { background: var(--bg); }
+@media (max-width: 760px) {
+  .app.learn > .learn-topbar {
+    min-height: 58px;
+    flex-wrap: wrap;
+    row-gap: 6px;
+    padding: 7px 10px;
+  }
+  .app.learn .learn-topbar .bar-group { flex: 1 1 auto; }
+  .app.learn .learn-topbar .learn-track-switcher { margin-left: auto; }
+  .app.learn .learn-topbar .learn-track-options a { min-height: 32px; padding: 5px 9px; }
+}
+@media (max-width: 390px) {
+  .app.learn .learn-topbar .learn-track-options a small { display: none; }
+  .app.learn .learn-topbar .learn-track-options a { gap: 5px; min-width: 48px; }
+}
+
+
+/* Ensure both HLD and LLD lesson pages use the shared wide lesson experience. */
+.app.learn .lesson-page.learn-wrap {
+  width: min(100%, 1640px);
+  max-width: 1640px;
+  margin: 0 auto;
+}
+
+/* Global code-language preference; independent from HLD/LLD track selection. */
+.app.learn .learn-header-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+  margin-left: auto;
+}
+.app.learn .learn-header-controls .learn-track-switcher {
+  margin: 0;
+}
+.app.learn .learn-language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 4px 8px 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--muted);
+}
+.app.learn .learn-language-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 650;
+}
+.app.learn .learn-language-switcher select {
+  max-width: 100px;
+  min-height: 27px;
+  padding: 3px 22px 3px 7px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.app.learn .learn-language-switcher select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+@media (max-width: 760px) {
+  .app.learn .learn-header-controls {
+    flex: 1 1 100%;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0;
+  }
+  .app.learn .learn-header-controls .learn-track-switcher { margin: 0; }
+  .app.learn .learn-header-controls .learn-track-options { width: auto; }
+  .app.learn .learn-language-switcher { min-height: 34px; }
+}
+@media (max-width: 390px) {
+  .app.learn .learn-language-label { font-size: 0; }
+  .app.learn .learn-language-label svg { width: 16px; height: 16px; }
+  .app.learn .learn-language-switcher { gap: 4px; padding-inline: 7px; }
+}
+@media (max-width: 600px) {
+  .app.learn .learn-header-controls .learn-track-switcher {
+    align-items: center;
+    flex-direction: row;
+    padding: 0;
+    gap: 0;
+  }
+}
+@media (max-width: 760px) {
+  .app.learn .learn-header-controls .learn-track-switcher { margin-left: 0; }
+}

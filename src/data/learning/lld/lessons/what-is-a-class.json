@@ -1,0 +1,236 @@
+{
+  "id": "what-is-a-class",
+  "title": "What is a class?",
+  "summary": "Learn how a class describes the structure and behavior of objects, how instances are created, and when a class is a useful design boundary.",
+  "minutes": 13,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "From one object to many"
+    },
+    {
+      "type": "paragraph",
+      "text": "Imagine an application that creates thousands of bank accounts. Each account needs an account number, a balance and operations such as deposit and withdrawal. We do not want to define each account separately. We define a reusable **class** and create individual objects from it."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Class versus object"
+    },
+    {
+      "type": "list",
+      "items": [
+        "A **class** is a named type and blueprint that declares fields, constructors and methods.",
+        "An **object** is a particular instance created from that class at runtime.",
+        "The class describes what its instances can contain and do; each instance has its own instance state."
+      ],
+      "ordered": false
+    },
+    {
+      "type": "example",
+      "title": "One class, two objects",
+      "text": "`BankAccount savings = new BankAccount(\"S-1\", 1000);\nBankAccount current = new BankAccount(\"C-1\", 250);` Both variables refer to objects created from the same `BankAccount` class. The objects share the class-defined structure and methods, but their balances are independent."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "A Java class in context"
+    },
+    {
+      "type": "example",
+      "title": "A reusable class",
+      "text": "`public class Lamp {\n    private boolean on;\n\n    public void switchOn() { on = true; }\n    public void switchOff() { on = false; }\n    public boolean isOn() { return on; }\n}`\n\n`Lamp deskLamp = new Lamp();\nLamp roomLamp = new Lamp();\ndeskLamp.switchOn();` The desk lamp is on; the room lamp remains off. Each instance owns a separate `on` field."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "What belongs in a class?"
+    },
+    {
+      "type": "paragraph",
+      "text": "A useful class groups information and behavior that form one understandable responsibility. Its public methods are the operations other objects are allowed to request. Its private implementation can change without requiring every caller to change."
+    },
+    {
+      "type": "list",
+      "items": [
+        "Fields represent the state an instance needs to remember.",
+        "Constructors establish a valid starting state when an object is created.",
+        "Methods express behavior and enforce rules.",
+        "Access modifiers control which parts are visible to other code."
+      ],
+      "ordered": false
+    },
+    {
+      "type": "callout",
+      "tone": "warning",
+      "title": "Avoid class-per-noun design",
+      "text": "A class is not automatically useful just because a requirement contains a noun. A class should have a meaningful responsibility, identity or behavior. Otherwise it may add indirection without improving the design."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "When a class is a good boundary"
+    },
+    {
+      "type": "paragraph",
+      "text": "A class is a good candidate when its data and rules change together, when it protects an invariant, or when it represents a concept that other parts of the application can use through a small contract. Keep unrelated responsibilities separate."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Try it yourself"
+    },
+    {
+      "type": "paragraph",
+      "text": "Design a `ShoppingCart` class at a high level. List the state it owns and three operations it should expose. Decide which details should remain private. Do not implement checkout or payment yet; focus on the responsibility of the cart."
+    }
+  ],
+  "quiz": {
+    "passScore": 0.67,
+    "questions": [
+      {
+        "id": "q1",
+        "prompt": "What is the relationship between a class and an object?",
+        "options": [
+          {
+            "id": "a",
+            "text": "A class is a runtime copy of an object"
+          },
+          {
+            "id": "b",
+            "text": "An object is an instance created from a class"
+          },
+          {
+            "id": "c",
+            "text": "They are always interchangeable terms"
+          }
+        ],
+        "correct": "b",
+        "explanation": "A class defines the type; an object is one runtime instance of that type."
+      },
+      {
+        "id": "q2",
+        "prompt": "Two objects created from the same class usually share which of these?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Their instance field values"
+          },
+          {
+            "id": "b",
+            "text": "Their identity"
+          },
+          {
+            "id": "c",
+            "text": "The class-defined method implementation"
+          }
+        ],
+        "correct": "c",
+        "explanation": "Each instance has its own instance state and identity, while the class defines the available methods."
+      },
+      {
+        "id": "q3",
+        "prompt": "Which is the strongest reason to create a class?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Every noun in the requirements needs one"
+          },
+          {
+            "id": "b",
+            "text": "It groups a meaningful responsibility and protects related rules"
+          },
+          {
+            "id": "c",
+            "text": "It makes the number of files larger"
+          }
+        ],
+        "correct": "b",
+        "explanation": "Classes are design boundaries. They should make responsibilities and change easier to understand, not merely mirror every noun."
+      }
+    ]
+  },
+  "languageVariants": {
+    "cpp": {
+      "blockOverrides": {
+        "1": {
+          "type": "paragraph",
+          "text": "Imagine an application that creates thousands of bank accounts. Each account needs an account number, a balance and operations such as deposit and withdrawal. We define one reusable **class** and create individual objects from it."
+        },
+        "4": {
+          "type": "example",
+          "title": "One class, two objects",
+          "text": "`BankAccount savings{\"S-1\", 1000.0};\nBankAccount current{\"C-1\", 250.0};` Both objects are created from the same `BankAccount` class. They share the class-defined structure and member functions, but each object has independent data members."
+        },
+        "5": {
+          "type": "heading",
+          "level": 2,
+          "text": "A C++ class in context"
+        },
+        "6": {
+          "type": "example",
+          "title": "A reusable class",
+          "text": "`class Lamp {\nprivate:\n    bool on = false;\npublic:\n    void switchOn() { on = true; }\n    void switchOff() { on = false; }\n    bool isOn() const { return on; }\n};\n\nLamp deskLamp;\nLamp roomLamp;\ndeskLamp.switchOn();` The desk lamp is on; the room lamp remains off. Each instance owns a separate `on` field."
+        },
+        "14": {
+          "type": "paragraph",
+          "text": "Design a `ShoppingCart` class at a high level. List the data members it owns and three public member functions it should expose. Decide which details should remain private. Do not implement checkout or payment yet; focus on the responsibility of the class."
+        }
+      },
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Instance and class-level data",
+          "text": "Keep per-object state on each instance. C++ static members and Python class attributes are shared at class level, so they should not be used accidentally for data that belongs to each object."
+        }
+      ]
+    },
+    "python": {
+      "blockOverrides": {
+        "1": {
+          "type": "paragraph",
+          "text": "Imagine an application that creates thousands of bank accounts. Each account needs an account number, a balance and operations such as deposit and withdrawal. We define one reusable **class** and create individual objects from it."
+        },
+        "4": {
+          "type": "example",
+          "title": "One class, two objects",
+          "text": "`savings = BankAccount(\"S-1\", 1000)\ncurrent = BankAccount(\"C-1\", 250)` Both variables refer to objects created from the same `BankAccount` class. The objects share the class-defined behavior, but their instance attributes are independent."
+        },
+        "5": {
+          "type": "heading",
+          "level": 2,
+          "text": "A Python class in context"
+        },
+        "6": {
+          "type": "example",
+          "title": "A reusable class",
+          "text": "`class Lamp:\n    def __init__(self):\n        self._on = False\n\n    def switch_on(self):\n        self._on = True\n\n    def switch_off(self):\n        self._on = False\n\n    @property\n    def is_on(self):\n        return self._on\n\ndesk_lamp = Lamp()\nroom_lamp = Lamp()\ndesk_lamp.switch_on()` The desk lamp is on; the room lamp remains off. Each instance owns a separate `_on` attribute."
+        },
+        "14": {
+          "type": "paragraph",
+          "text": "Design a `ShoppingCart` class at a high level. List the instance attributes it owns and three methods it should expose. Decide which details should be treated as internal. Do not implement checkout or payment yet; focus on the responsibility of the class."
+        }
+      },
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Instance and class-level data",
+          "text": "Keep per-object state on each instance. C++ static members and Python class attributes are shared at class level, so they should not be used accidentally for data that belongs to each object."
+        }
+      ]
+    },
+    "java": {
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Java class and instance members",
+          "text": "Instance fields belong to each object. `static` fields and methods belong to the class itself and are shared rather than duplicated per instance."
+        }
+      ]
+    }
+  }
+}

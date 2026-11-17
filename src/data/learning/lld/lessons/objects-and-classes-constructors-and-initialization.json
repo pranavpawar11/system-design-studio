@@ -1,0 +1,305 @@
+{
+  "id": "objects-and-classes-constructors-and-initialization",
+  "title": "Constructors and initialization",
+  "summary": "Learn how Java constructors create valid objects, how initialization order works, and how to avoid partially initialized or overly flexible objects.",
+  "minutes": 15,
+  "blocks": [
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Construction is a design decision"
+    },
+    {
+      "type": "paragraph",
+      "text": "A constructor is the entry point used when a new Java object is created. Its job is not merely to copy arguments into fields: it should establish the minimum valid state that lets the object safely participate in the system."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Constructor basics"
+    },
+    {
+      "type": "paragraph",
+      "text": "A constructor has the same name as its class and has no return type. Java invokes it during `new`. If you declare no constructor, Java provides a no-argument default constructor; once you declare a constructor yourself, that implicit default is no longer supplied."
+    },
+    {
+      "type": "example",
+      "title": "Require essential data",
+      "text": "`public class User {\n    private final String id;\n    private final String email;\n\n    public User(String id, String email) {\n        this.id = Objects.requireNonNull(id);\n        this.email = Objects.requireNonNull(email);\n    }\n}` A caller cannot create a `User` without supplying the required values."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Initialization order in Java"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Instance fields are first assigned their default values (`0`, `false`, or `null`).",
+        "Instance field initializers and instance initializer blocks run in textual order.",
+        "The constructor body then runs.",
+        "For inheritance, superclass construction occurs before the subclass's instance initialization and constructor body."
+      ],
+      "ordered": false
+    },
+    {
+      "type": "callout",
+      "tone": "info",
+      "title": "Constructor chaining",
+      "text": "Use `this(...)` to delegate to another constructor in the same class, or `super(...)` to invoke a superclass constructor. The constructor invocation must be the first statement in a Java constructor."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Keep objects valid after construction"
+    },
+    {
+      "type": "paragraph",
+      "text": "Prefer constructors that require essential dependencies and values. Validate inputs at the boundary. Use `final` for fields that should not be reassigned after initialization. Avoid constructors that perform slow network calls, start background threads or hide complicated workflows; those make object creation difficult to test and reason about."
+    },
+    {
+      "type": "example",
+      "title": "Constructor validation",
+      "text": "`public Money(BigDecimal amount, Currency currency) {\n    this.amount = Objects.requireNonNull(amount);\n    this.currency = Objects.requireNonNull(currency);\n    if (amount.signum() < 0) {\n        throw new IllegalArgumentException(\"Amount cannot be negative\");\n    }\n}` The instance is either constructed with valid data or construction fails; it is not left half-valid."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Overloaded constructors and factories"
+    },
+    {
+      "type": "paragraph",
+      "text": "Overloaded constructors can offer a small number of clear creation options. When there are many optional parameters or the creation rules have meaningful names, a static factory method can be clearer, for example `Money.zero(USD)` or `User.register(email)`. A factory is an alternative creation API, not a replacement for validation."
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Common mistakes"
+    },
+    {
+      "type": "list",
+      "items": [
+        "Leaving required fields null and expecting every caller to remember to set them later.",
+        "Publishing setters for values that should never change.",
+        "Putting unrelated business workflows or I/O inside a constructor.",
+        "Creating many ambiguous overloads with similar parameter types.",
+        "Allowing `this` to escape from a constructor before initialization is complete."
+      ],
+      "ordered": false
+    },
+    {
+      "type": "heading",
+      "level": 2,
+      "text": "Try it yourself"
+    },
+    {
+      "type": "paragraph",
+      "text": "Design a `Product` constructor. A product must have a non-blank SKU, a non-blank name and a non-negative price. Decide which fields should be final, write the validation rules in plain language, and then implement the constructor in Java."
+    }
+  ],
+  "quiz": {
+    "passScore": 0.67,
+    "questions": [
+      {
+        "id": "q1",
+        "prompt": "What is the primary responsibility of an initializer or constructor?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Establish a valid initial state for the object"
+          },
+          {
+            "id": "b",
+            "text": "Perform every workflow the object may ever need"
+          },
+          {
+            "id": "c",
+            "text": "Delay all validation until later method calls"
+          }
+        ],
+        "correct": "a",
+        "explanation": "Construction or initialization should establish the invariants required for the object to be used safely."
+      },
+      {
+        "id": "q2",
+        "prompt": "What is the main purpose of constructor validation?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Ensure the object starts in a valid state"
+          },
+          {
+            "id": "b",
+            "text": "Make all fields mutable"
+          },
+          {
+            "id": "c",
+            "text": "Delay validation until the object is used"
+          }
+        ],
+        "correct": "a",
+        "explanation": "Validating required data during construction prevents invalid or partially initialized objects from entering the system."
+      },
+      {
+        "id": "q3",
+        "prompt": "When is a named factory method useful?",
+        "options": [
+          {
+            "id": "a",
+            "text": "When it communicates a meaningful or alternate creation path"
+          },
+          {
+            "id": "b",
+            "text": "Whenever a class has any field"
+          },
+          {
+            "id": "c",
+            "text": "To avoid validating input"
+          }
+        ],
+        "correct": "a",
+        "explanation": "A named factory can make creation intent explicit, but validation is still required."
+      }
+    ]
+  },
+  "languageVariants": {
+    "cpp": {
+      "blockOverrides": {
+        "1": {
+          "type": "paragraph",
+          "text": "A constructor is called when a C++ object is initialized. Its job is not merely to copy arguments into fields: it should establish the minimum valid state that lets the object safely participate in the system."
+        },
+        "2": {
+          "type": "paragraph",
+          "text": "A constructor has the same name as its class and has no return type. C++ supports member initializer lists, which initialize members before the constructor body runs. If you declare no constructor, the compiler may generate a default constructor when the rules permit it; declaring constructors changes which implicit constructors are available."
+        },
+        "4": {
+          "type": "example",
+          "title": "Require essential data",
+          "text": "`#include <stdexcept>\n#include <string>\n#include <utility>\n\nclass User {\nprivate:\n    std::string id;\n    std::string email;\npublic:\n    User(std::string userId, std::string userEmail)\n        : id(std::move(userId)), email(std::move(userEmail)) {\n        if (id.empty() || email.empty()) {\n            throw std::invalid_argument(\"id and email are required\");\n        }\n    }\n};` The object cannot be successfully constructed without the required values."
+        },
+        "5": {
+          "type": "heading",
+          "level": 2,
+          "text": "Initialization order in C++"
+        },
+        "6": {
+          "type": "list",
+          "items": [
+            "Base-class subobjects are initialized before members of the derived class.",
+            "Data members are initialized in the order they are declared in the class, not the order written in the member initializer list.",
+            "The constructor body runs after base classes and data members have been initialized.",
+            "Destruction happens in reverse order: the destructor body runs, then members and base subobjects are destroyed."
+          ],
+          "ordered": false
+        },
+        "7": {
+          "type": "callout",
+          "tone": "info",
+          "title": "Member initializer lists",
+          "text": "Prefer member initializer lists for initializing data members. Their order follows the class declaration, so declare members in the order that reflects their dependencies."
+        },
+        "10": {
+          "type": "example",
+          "title": "Constructor validation",
+          "text": "`class Money {\nprivate:\n    double amount;\npublic:\n    explicit Money(double value) : amount(value) {\n        if (value < 0) throw std::invalid_argument(\"amount cannot be negative\");\n    }\n};` The instance is either constructed with valid data or construction fails; C++ unwinds already-constructed subobjects safely."
+        },
+        "12": {
+          "type": "paragraph",
+          "text": "A small number of overloaded constructors can offer clear creation options. When creation has meaningful names or many optional choices, use a named factory function such as `Money::zero(USD)` or `User::registerUser(email)`. A factory is an alternative creation API, not a replacement for validation."
+        },
+        "16": {
+          "type": "paragraph",
+          "text": "Design a `Product` constructor. A product must have a non-blank SKU, a non-blank name and a non-negative price. Decide which members should be `const`, write the validation rules in plain language, and implement the constructor using a member initializer list."
+        },
+        "3": {
+          "type": "heading",
+          "level": 2,
+          "text": "Constructor declaration and initialization"
+        }
+      },
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Initialization model",
+          "text": "C++ initializes members before the constructor body and destroys them in reverse order. Python separates allocation (`__new__`) from initialization (`__init__`). Both languages need explicit validation of required state."
+        }
+      ]
+    },
+    "python": {
+      "blockOverrides": {
+        "1": {
+          "type": "paragraph",
+          "text": "In Python, creating an instance calls `__new__` to create it and then `__init__` to initialize it. Most application classes customize `__init__`, whose job is to establish the minimum valid state that lets the object safely participate in the system."
+        },
+        "2": {
+          "type": "paragraph",
+          "text": "`__init__` is an initializer, not the allocator, and it does not return the new object. It receives `self` plus the arguments passed to the class call. Validate required inputs there. If an object needs a different creation process, a `@classmethod` factory can provide a named alternative."
+        },
+        "4": {
+          "type": "example",
+          "title": "Require essential data",
+          "text": "`class User:\n    def __init__(self, user_id: str, email: str):\n        if not user_id or not email:\n            raise ValueError(\"id and email are required\")\n        self._id = user_id\n        self._email = email` A caller cannot create a valid `User` without supplying the required values."
+        },
+        "5": {
+          "type": "heading",
+          "level": 2,
+          "text": "Initialization order in Python"
+        },
+        "6": {
+          "type": "list",
+          "items": [
+            "The class call first creates an instance through `__new__` (normally inherited from `object`).",
+            "Python then calls `__init__` on that instance with the supplied arguments.",
+            "The initializer assigns attributes and validates the initial state; it should not return a value.",
+            "If initialization raises an exception, the class call fails and the partially initialized instance is not returned to the caller."
+          ],
+          "ordered": false
+        },
+        "7": {
+          "type": "callout",
+          "tone": "info",
+          "title": "Initializer versus factory",
+          "text": "Use `__init__` for ordinary instance initialization. Use a `@classmethod` factory when creation needs a meaningful name or alternate input format, such as `Money.zero(\"USD\")` or `User.register(email)`. Keep network calls and unrelated workflows outside initialization."
+        },
+        "10": {
+          "type": "example",
+          "title": "Constructor validation",
+          "text": "`class Money:\n    def __init__(self, amount: float, currency: str):\n        if amount < 0:\n            raise ValueError(\"amount cannot be negative\")\n        if not currency:\n            raise ValueError(\"currency is required\")\n        self._amount = amount\n        self._currency = currency` The instance is either initialized with valid data or construction fails; it is not returned half-valid."
+        },
+        "12": {
+          "type": "paragraph",
+          "text": "A class can provide a small number of alternate constructors with `@classmethod`. Use meaningful names when they make the creation rule clearer, for example `Money.zero(\"USD\")` or `User.register(email)`. A factory is an alternative creation API, not a replacement for validation."
+        },
+        "16": {
+          "type": "paragraph",
+          "text": "Design a `Product` initializer. A product must have a non-blank SKU, a non-blank name and a non-negative price. Decide which attributes should be treated as immutable, write the validation rules in plain language, and implement `__init__` or a named `@classmethod` factory where appropriate."
+        },
+        "3": {
+          "type": "heading",
+          "level": 2,
+          "text": "The __new__ and __init__ methods"
+        }
+      },
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Initialization model",
+          "text": "C++ initializes members before the constructor body and destroys them in reverse order. Python separates allocation (`__new__`) from initialization (`__init__`). Both languages need explicit validation of required state."
+        }
+      ]
+    },
+    "java": {
+      "implementationNotes": [
+        {
+          "type": "callout",
+          "tone": "info",
+          "title": "Java constructor rules",
+          "text": "A constructor has the class name and no return type. `this(...)` delegates to another constructor in the same class and must be the first statement. `super(...)` invokes a parent constructor."
+        }
+      ]
+    }
+  }
+}
