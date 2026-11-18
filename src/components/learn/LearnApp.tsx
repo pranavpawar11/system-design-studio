@@ -1,18 +1,20 @@
 import './learn.css';
 import { useEffect, useLayoutEffect } from 'react';
 import { Layers } from 'lucide-react';
-import type { Route } from '../../app/route';
+import { links, type Route } from '../../app/route';
 import { useLearn } from '../../features/learning/learn.store';
 import { setProgrammingLanguage, useProgrammingLanguage } from '../../features/learning/programming-language';
-import ModeNav from '../layout/ModeNav';
+
 import LearnHome from './LearnHome';
 import LLDHome from './LLDHome';
-import LearnTrackSwitcher from './LearnTrackSwitcher';
+
 import ProgrammingLanguageSwitcher from './ProgrammingLanguageSwitcher';
 import LessonPage from './LessonPage';
 import LLDLessonPage from './LLDLessonPage';
 
-export default function LearnApp({ route }: { route: Exclude<Route, { name: 'studio' }> }) {
+type LearningRoute = Extract<Route, { name: 'learn' | 'lesson' | 'lld' | 'lld-lesson' }>;
+
+export default function LearnApp({ route }: { route: LearningRoute }) {
   const { status, error, load, notice, dismiss } = useLearn();
   const programmingLanguage = useProgrammingLanguage();
   const usesHld = route.name === 'learn' || route.name === 'lesson';
@@ -37,10 +39,11 @@ export default function LearnApp({ route }: { route: Exclude<Route, { name: 'stu
     <div className="app learn">
       <a className="skip" href="#learn-main">Skip to the content</a>
       <header className="topbar learn-topbar">
-        <div className="bar-group"><h1 className="brand" translate="no"><Layers size={18} aria-hidden /> HLD Studio</h1><ModeNav current="learn" /></div>
+        <div className="bar-group"><a className="brand learn-brand-link" href={links.home} translate="no"><Layers size={18} aria-hidden /> HLD Studio</a></div>
         <div className="learn-header-controls">
-          <LearnTrackSwitcher current={route.name === 'lld' || route.name === 'lld-lesson' ? 'lld' : 'hld'} />
-          <ProgrammingLanguageSwitcher value={programmingLanguage} onChange={setProgrammingLanguage} />
+          {usesHld
+            ? <a className="learn-context-link" href={links.studio}>Open Studio <span aria-hidden>↗</span></a>
+            : <ProgrammingLanguageSwitcher value={programmingLanguage} onChange={setProgrammingLanguage} />}
         </div>
       </header>
       <main id="learn-main" className="learn-main" tabIndex={-1}>

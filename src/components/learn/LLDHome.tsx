@@ -46,12 +46,12 @@ export default function LLDHome() {
   const collapseAll = () => setOpen(new Set());
 
   return <div className="learn-wrap lld-home">
-    <section className="learn-hero" aria-labelledby="lld-hero-title">
+    <section className="learn-hero lld-hero-static" aria-labelledby="lld-hero-title">
       <div className="learn-hero-copy">
         <div className="eyebrow">LOW-LEVEL DESIGN · {languageMeta.label.toUpperCase()} LEARNING PATH</div>
         <h2 id="lld-hero-title">Design better software, one object at a time.</h2>
         <p className="lead">Learn to turn requirements into clean, maintainable and testable code. Progress from object-oriented fundamentals to design patterns, concurrency, machine coding and complete case studies.</p>
-        <div className="lld-hero-tags"><span><Code2 size={14}/> {languageMeta.label} examples where available</span><span><Layers3 size={14}/> 12 learning levels</span><span><BookOpen size={14}/> 422 lesson topics</span></div>
+        <div className="lld-hero-tags"><span><Code2 size={14}/> {languageMeta.label} examples</span><span><Layers3 size={14}/> 12 learning levels</span><span><BookOpen size={14}/> 422 lesson topics</span></div>
       </div>
       <div className="learn-progress-card lld-overview-card">
         <div className="learn-progress-head"><span>Curriculum overview</span><b>12</b></div>
