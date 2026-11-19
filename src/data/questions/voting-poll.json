@@ -494,9 +494,28 @@
           "arrivalRatePerSecond": 5000,
           "processingCapacityPerSecond": 6000,
           "deliverySemantics": "at-least-once",
-          "retentionHours": 24
+          "retentionHours": 24,
+          "publishCapacityPerSecond": 6000
         },
-        "category": "Messaging"
+        "category": "Messaging",
+        "configSchema": {
+          "arrivalRatePerSecond": {
+            "type": "number",
+            "minimum": 0
+          },
+          "publishCapacityPerSecond": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "processingCapacityPerSecond": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "retentionHours": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
       },
       {
         "id": "COMP-WORKER",

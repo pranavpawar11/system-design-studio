@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "questionId": "hld-rate-limiter-001",
+  "status": "supported",
+  "fixtures": {
+    "validDesign": "../../tests/fixtures/evaluation-coverage/rate-limiter.valid.json",
+    "invalidDesign": "../../tests/fixtures/evaluation-coverage/rate-limiter.invalid.json",
+    "alternativeValidDesign": "../../tests/fixtures/evaluation-coverage/rate-limiter.alternative-valid.json"
+  }
+}

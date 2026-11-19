@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "questionId": "hld-polls-001",
+  "status": "supported",
+  "fixtures": {
+    "validDesign": "../../tests/fixtures/evaluation-coverage/voting-poll.valid.json",
+    "invalidDesign": "../../tests/fixtures/evaluation-coverage/voting-poll.invalid.json",
+    "alternativeValidDesign": "../../tests/fixtures/evaluation-coverage/voting-poll.alternative-valid.json"
+  }
+}

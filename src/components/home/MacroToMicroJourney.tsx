@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Code2, Database, Network, Server, ShieldCheck, Workflow } from 'lucide-react';
+import { Database, Network, Server, ShieldCheck, Workflow } from 'lucide-react';
 
 type Stage = 'architecture' | 'service' | 'classes' | 'code';
 type Language = 'java' | 'cpp' | 'python';

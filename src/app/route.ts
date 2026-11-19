@@ -6,7 +6,11 @@ export type Route =
   | { name: 'learn' }
   | { name: 'lesson'; id: string }
   | { name: 'lld' }
-  | { name: 'lld-lesson'; id: string };
+  | { name: 'lld-lesson'; id: string }
+  | { name: 'admin-login' }
+  | { name: 'admin-dashboard' }
+  | { name: 'user-login' }
+  | { name: 'user-signup' };
 
 export const links = {
   home: '#/',
@@ -15,12 +19,12 @@ export const links = {
   lesson: (id: string) => `#/learn/lesson/${encodeURIComponent(id)}`,
   lldLearn: '#/learn/lld',
   lldLesson: (id: string) => `#/learn/lld/lesson/${encodeURIComponent(id)}`,
+  adminLogin: '#/admin/login',
+  adminDashboard: '#/admin/dashboard',
+  userLogin: '#/login',
+  userSignup: '#/signup',
 };
 
-/**
- * Hash routes keep this a static site. The bare root is the public landing page.
- * Unknown non-route hashes (including legacy #share=… payloads) continue opening Studio.
- */
 export function parseRoute(hash: string): Route {
   const lldLesson = /^#\/learn\/lld\/lesson\/([^/?]+)\/?$/.exec(hash);
   if (lldLesson) return { name: 'lld-lesson', id: decodeURIComponent(lldLesson[1]) };
@@ -29,6 +33,10 @@ export function parseRoute(hash: string): Route {
   if (lesson) return { name: 'lesson', id: decodeURIComponent(lesson[1]) };
   if (/^#\/learn\/?$/.test(hash)) return { name: 'learn' };
   if (/^#\/studio\/?$/.test(hash)) return { name: 'studio' };
+  if (/^#\/admin\/login\/?$/.test(hash)) return { name: 'admin-login' };
+  if (/^#\/admin\/(?:dashboard)?\/?$/.test(hash)) return { name: 'admin-dashboard' };
+  if (/^#\/login\/?$/.test(hash)) return { name: 'user-login' };
+  if (/^#\/signup\/?$/.test(hash)) return { name: 'user-signup' };
   if (hash === '' || hash === '#/' || hash === '#') return { name: 'home' };
   return { name: 'studio' };
 }

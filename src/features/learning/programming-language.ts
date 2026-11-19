@@ -5,7 +5,6 @@
 import { usePreferencesStore } from '../preferences/preferences.store';
 import {
   DEFAULT_PROGRAMMING_LANGUAGE,
-  PROGRAMMING_LANGUAGES,
   type ProgrammingLanguage,
 } from '../preferences/preferences.types';
 

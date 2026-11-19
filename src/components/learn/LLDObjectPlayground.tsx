@@ -44,7 +44,6 @@ export default function LLDObjectPlayground({ language = 'java' }: { language?: 
   }, []);
   const current = components[active];
   const lang = (['java', 'cpp', 'python'].includes(language) ? language : 'java') as Language;
-  const Icon = current.icon;
   return <section className="learning-mini-visual lld-mini-visual lld-code-visual" aria-label="Object design and implementation progression">
     <div className="learning-mini-head"><span>OBJECT DESIGN EVOLVES</span><b>{current.name.toUpperCase()} · {lang.toUpperCase()}</b></div>
     <div className="lld-object-sequence" aria-label="Order to OrderItem to Payment">

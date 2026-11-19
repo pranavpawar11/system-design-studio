@@ -8,7 +8,7 @@ import { links } from '../../app/route';
 import { getLLDLessonProgress, isLLDLessonComplete, lldProgressChangeEvent } from '../../features/learning/lld-progress';
 import { PROGRAMMING_LANGUAGES, useProgrammingLanguage } from '../../features/learning/programming-language';
 
-type LLDNode = RoadmapNode & { code: string };
+type LLDNode = RoadmapNode & { code?: string; children?: LLDNode[] };
 const roadmap = roadmapJson as unknown as Omit<Roadmap, 'nodes'> & { nodes: LLDNode[] };
 const practice = practiceJson as { problems: { id: string; title: string; category: string; difficulty: string; priority: string; concepts: string[] }[]; categories: { id: string; title: string; problemCount: number }[] };
 const LABEL: Record<NodeState, string> = { done: 'Done', doing: 'In progress', todo: 'Not started', planned: 'Content planned' };
@@ -39,7 +39,8 @@ export default function LLDHome() {
   const visible = q ? allLevels : core;
   const totalTopics = visible.reduce((sum, n) => sum + count(n), 0);
   const publishedLessons = countReadyLessons(roadmap.nodes);
-  const allNodes = roadmap.nodes.flatMap(function flatten(node): RoadmapNode[] { return [node, ...(node.children ?? []).flatMap(flatten)]; });
+  const flattenRoadmap = (nodes: RoadmapNode[]): RoadmapNode[] => nodes.flatMap((node) => [node, ...flattenRoadmap(node.children ?? [])]);
+  const allNodes = flattenRoadmap(roadmap.nodes);
   const completedLessons = allNodes.filter((node) => node.kind === 'lesson' && node.status === 'ready' && isLLDLessonComplete(getLLDLessonProgress(node.id))).length;
   const toggle = (id: string) => setOpen((old) => { const next = new Set(old); next.has(id) ? next.delete(id) : next.add(id); return next; });
   const expandAll = () => setOpen(new Set(visible.map((n) => n.id)));

@@ -37,7 +37,7 @@
         "y": 300
       },
       "config": {
-        "instances": 4,
+        "instances": 8,
         "capacityPerInstanceRps": 2000,
         "publishOnlyAfterVoteCommit": true,
         "resultReadSource": "counter-store"
@@ -73,7 +73,8 @@
         "arrivalRatePerSecond": 5000,
         "processingCapacityPerSecond": 6000,
         "deliverySemantics": "at-least-once",
-        "retentionHours": 24
+        "retentionHours": 24,
+        "publishCapacityPerSecond": 6000
       }
     },
     {

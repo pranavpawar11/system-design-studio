@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "questionId": "hld-url-shortener-001",
+  "status": "supported",
+  "fixtures": {
+    "validDesign": "../../tests/fixtures/evaluation-coverage/url-shortener.valid.json",
+    "invalidDesign": "../../tests/fixtures/evaluation-coverage/url-shortener.invalid.json",
+    "alternativeValidDesign": "../../tests/fixtures/evaluation-coverage/url-shortener.alternative-valid.json"
+  }
+}

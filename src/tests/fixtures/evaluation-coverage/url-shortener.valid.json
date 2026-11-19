@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "questionId": "hld-url-shortener-001",
+  "questionVersion": 1,
+  "nodes": [
+    {
+      "id": "node_scfu226bt",
+      "componentId": "COMP-CLIENT",
+      "componentType": "client",
+      "name": "Client",
+      "position": {
+        "x": -57,
+        "y": 162
+      },
+      "config": {}
+    },
+    {
+      "id": "node_ixqe5xmkt",
+      "componentId": "COMP-LOAD-BALANCER",
+      "componentType": "load-balancer",
+      "name": "Load Balancer",
+      "position": {
+        "x": 300,
+        "y": 162
+      },
+      "config": {
+        "averageLatencyMs": 2
+      }
+    },
+    {
+      "id": "node_fix00iegb",
+      "componentId": "COMP-APP-SERVER",
+      "componentType": "application-server",
+      "name": "Application Server",
+      "position": {
+        "x": 650,
+        "y": 162
+      },
+      "config": {
+        "instances": 4,
+        "capacityPerInstanceRps": 3000,
+        "averageProcessingLatencyMs": 10,
+        "notFoundBehavior": "return-404"
+      }
+    },
+    {
+      "id": "node_cache001",
+      "componentId": "COMP-CACHE",
+      "componentType": "cache",
+      "name": "Distributed Cache",
+      "position": {
+        "x": 1050,
+        "y": 20
+      },
+      "config": {
+        "hitRatio": 0.9,
+        "averageLatencyMs": 2,
+        "available": true,
+        "ttlSeconds": 3600,
+        "onUnavailable": "bypass-to-database"
+      }
+    },
+    {
+      "id": "node_nosql001",
+      "componentId": "COMP-NOSQL-DATABASE",
+      "componentType": "nosql-database",
+      "name": "NoSQL Database",
+      "position": {
+        "x": 1050,
+        "y": 300
+      },
+      "config": {
+        "readCapacityRps": 10000,
+        "writeCapacityRps": 3000,
+        "averageReadLatencyMs": 10,
+        "averageWriteLatencyMs": 15,
+        "durable": true,
+        "uniqueConstraintSupported": true
+      }
+    },
+    {
+      "id": "node_keygen01",
+      "componentId": "COMP-KEY-GENERATOR",
+      "componentType": "key-generator",
+      "name": "Short-Code Generator",
+      "position": {
+        "x": 650,
+        "y": 380
+      },
+      "config": {
+        "strategy": "base62",
+        "collisionHandling": "retry"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_ir4sxus6o",
+      "source": "node_scfu226bt",
+      "target": "node_ixqe5xmkt",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+    },
+    {
+      "id": "edge_6hj368qrd",
+      "source": "node_ixqe5xmkt",
+      "target": "node_fix00iegb",
+      "connectionTypeId": "EDGE-SYNC-HTTP"
+    },
+    {
+      "id": "edge_cacheread",
+      "source": "node_fix00iegb",
+      "target": "node_cache001",
+      "connectionTypeId": "EDGE-CACHE-READ"
+    },
+    {
+      "id": "edge_10i7gwf9y",
+      "source": "node_fix00iegb",
+      "target": "node_nosql001",
+      "connectionTypeId": "EDGE-DB-READ"
+    },
+    {
+      "id": "edge_dbwrite01",
+      "source": "node_fix00iegb",
+      "target": "node_nosql001",
+      "connectionTypeId": "EDGE-DB-WRITE"
+    }
+  ]
+}

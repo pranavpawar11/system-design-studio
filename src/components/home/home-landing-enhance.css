@@ -304,3 +304,15 @@
   .rd-bg *, .rd *, .home-landing .home-hero-copy h1 span { animation: none !important; }
   .rd-link i, .rd-drop i { opacity: 1; }
 }
+/* Account actions in the public landing navigation */
+.home-topbar-actions { display:flex; align-items:center; gap:10px; }
+.home-auth-login, .home-auth-signup { display:inline-flex; align-items:center; justify-content:center; min-height:36px; padding:0 13px; border-radius:7px; text-decoration:none; font-size:12px; font-weight:600; transition:background .15s,border-color .15s; }
+.home-auth-login { color:var(--text); border:1px solid var(--line-strong); background:rgb(17 26 36 / .55); }
+.home-auth-login:hover { background:var(--surface-2); }
+.home-auth-signup { color:var(--accent-ink); border:1px solid var(--accent); background:var(--accent); }
+.home-auth-signup:hover { background:#75c9ff; border-color:#75c9ff; }
+@media(max-width:700px) {
+ .home-topbar-actions { gap:6px; }
+ .home-topbar-actions .home-topbar-cta { display:none; }
+ .home-auth-login,.home-auth-signup { min-height:32px; padding:0 9px; font-size:11px; }
+}

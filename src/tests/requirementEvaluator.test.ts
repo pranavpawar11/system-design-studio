@@ -30,7 +30,9 @@ describe('evaluateRequirements', () => {
   });
 
   it('fails only the unmet requirement and returns actionable evidence', () => {
-    const result = evaluateRequirements(spec, doc(), rules);
+    const d = doc();
+    d.nodes.find((n) => n.id === 'db')!.config.uniqueConstraintSupported = false;
+    const result = evaluateRequirements(spec, d, rules);
     expect(result.requirements.map((r) => r.status)).toEqual(['pass', 'fail', 'fail']);
     expect(result.findings).toHaveLength(2);
     expect(result.findings[0].requirementId).toBe('R2');

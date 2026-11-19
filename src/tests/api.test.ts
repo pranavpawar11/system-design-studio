@@ -5,7 +5,7 @@ import { createMockFetch } from '../api/testing/mockServer';
 import { ApiError, type ApiClient, type ArchitectureDocument } from '../api/contracts';
 import solved from './fixtures/url-shortener-solved.json';
 
-const URL_ID = 'hld-url-shortener-001'; const RL_ID = 'hld-rate-limiter-001';
+const URL_ID = 'hld-url-shortener-001'; const RL_ID = 'hld-rate-limiter-001'; const POLL_ID = 'hld-polls-001';
 const doc = () => structuredClone(solved) as unknown as ArchitectureDocument;
 const makers: [string, () => ApiClient][] = [
   ['LocalApi', () => new LocalApi()],
@@ -16,9 +16,9 @@ describe.each(makers)('ApiClient contract: %s', (_name, make) => {
   let api: ApiClient;
   beforeEach(() => { localStorage.clear(); api = make(); });
 
-  it('lists both questions and returns a full question and its learning content', async () => {
+  it('lists every shipped question and returns a full question and its learning content', async () => {
     const list = await api.listQuestions();
-    expect(list.map((q) => q.id)).toEqual([URL_ID, RL_ID]);
+    expect(list.map((q) => q.id)).toEqual([POLL_ID, URL_ID, RL_ID]);
     const q = await api.getQuestion(URL_ID);
     expect(q.question.id).toBe(URL_ID); expect(q.componentCatalogue.components.length).toBeGreaterThan(10);
     expect((await api.getLearning(RL_ID)).followUpQuestions.length).toBe(3);

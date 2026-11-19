@@ -1,6 +1,7 @@
 import type { ApiClient } from './contracts';
 import { HttpApi } from './http/HttpApi';
 import { LocalApi } from './local/LocalApi';
+import { useAuthStore } from '../features/auth/authStore';
 
 /**
  * The single place the back end is chosen.
@@ -10,7 +11,7 @@ import { LocalApi } from './local/LocalApi';
  */
 function create(): ApiClient {
   const env = import.meta.env;
-  if (env.VITE_API_MODE === 'http') return new HttpApi({ baseUrl: env.VITE_API_BASE_URL ?? '/api/v1', getToken: () => { try { return localStorage.getItem('hld-studio:token'); } catch { return null; } } });
+  if (env.VITE_API_MODE === 'http') return new HttpApi({ baseUrl: env.VITE_API_BASE_URL ?? '/api/v1', getToken: () => useAuthStore.getState().learnerToken });
   return new LocalApi(Number(env.VITE_API_LATENCY_MS ?? 0) || 0);
 }
 export const api: ApiClient = create();

@@ -1,5 +1,6 @@
 import { ApiError, type Lesson, type ProgressEvent, type ProgressEventType, type Roadmap, type ApiClient, type Draft, type DraftResult, type Interview, type Learning, type QuestionSpec, type QuestionSummary, type ShareLink, type ShareRef, type SharedDesign, type Snapshot, type Workload, type ArchitectureDocument, type EvaluationReport } from '../contracts';
-import { evaluate, DEFAULT_WORKLOAD } from '../../features/evaluation/evaluator';
+import { runQuestionEvaluation } from '../../features/evaluation/evaluatorRegistry';
+import { DEFAULT_WORKLOAD } from '../../features/evaluation/evaluatorDefaults';
 import { catalogGet, catalogList } from './questionCatalog';
 import { catalogHasNode, catalogLesson, catalogRoadmap } from './learningCatalog';
 import { encodeShare, parseShare } from './shareCodec';
@@ -43,7 +44,9 @@ export class LocalApi implements ApiClient {
   async deleteInterview(questionId: string): Promise<void> { removeInterview(catalogGet(questionId).spec); await this.settle(); }
 
   async evaluate(questionId: string, input: { doc: ArchitectureDocument; workload?: Workload }): Promise<EvaluationReport> {
-    const r = evaluate(catalogGet(questionId).spec, input.doc, input.workload ?? DEFAULT_WORKLOAD); await this.settle(); return r;
+    const question = catalogGet(questionId);
+    const r = runQuestionEvaluation({ spec: question.spec, doc: input.doc, workload: input.workload ?? DEFAULT_WORKLOAD, evaluationPackage: question.evaluationPackage });
+    await this.settle(); return r;
   }
 
   async getRoadmap(): Promise<Roadmap> { await this.settle(); return catalogRoadmap(); }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type KeyboardEvent, type ReactNode } from 'react';
-import { ArrowRight, Code2, Layers, Network, Activity, Gauge, Database, Check, X, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { ArrowRight, Code2, Layers, Network, Activity, Gauge, Database, } from 'lucide-react';
 import { links } from '../../app/route';
 import './home-landing.css';
 import './home-landing-enhance.css';
@@ -11,7 +11,7 @@ type LoadState = 'normal' | 'high' | 'overload';
 /* Traffic cycle: purely state based — no numbers are shown to the user. */
 const CYCLE: LoadState[] = ['normal', 'high', 'overload', 'high'];
 const CYCLE_MS = 3600;
-const STATE_ORDER: LoadState[] = ['normal', 'high', 'overload'];
+// const STATE_ORDER: LoadState[] = ['normal', 'high', 'overload'];
 
 const CONFIG: Record<LoadState, {
   pill: string; status: string; limiter: string; chip: string;
@@ -22,8 +22,8 @@ const CONFIG: Record<LoadState, {
   high:     { pill: 'High load',  status: 'High load · rate limiting',     limiter: 'Protecting', chip: 'checking tokens', packets: 4, accepted: 3, dropped: 2, speed: 1.5, tokens: 3, meter: 18, rejectBars: 4 },
   overload: { pill: 'Overloaded', status: 'Overloaded · requests rejected', limiter: 'Overloaded', chip: 'reject path',     packets: 6, accepted: 3, dropped: 6, speed: 0.9, tokens: 1, meter: 28, rejectBars: 11 },
 };
-const METER_SEGMENTS = 28;
-const BAR_COUNT = 12;
+// const METER_SEGMENTS = 28;
+// const BAR_COUNT = 12;
 
 const codeSamples: Record<Language, { file: string; lines: string[]; guard: number; allow: number; reject: number }> = {
   java: {
@@ -90,20 +90,22 @@ export default function HomeLanding() {
   const [split, setSplit] = useState(50);
   const [language, setLanguage] = useState<Language>('java');
   const [cycleIndex, setCycleIndex] = useState(0);
-  const [pinned, setPinned] = useState<LoadState | null>(null);
   const splitRef = useRef<HTMLDivElement>(null);
   const demoRef = useRef<HTMLElement>(null);
   const dragging = useRef(false);
 
-  const loadState: LoadState = pinned ?? CYCLE[cycleIndex];
+  const loadState: LoadState = CYCLE[cycleIndex];
   const cfg = CONFIG[loadState];
   const sample = codeSamples[language];
 
   useEffect(() => {
-    if (pinned) return;
-    const timer = window.setInterval(() => setCycleIndex((i) => (i + 1) % CYCLE.length), CYCLE_MS);
-    return () => window.clearInterval(timer);
-  }, [pinned]);
+  const timer = window.setInterval(
+    () => setCycleIndex((i) => (i + 1) % CYCLE.length),
+    CYCLE_MS
+  );
+
+  return () => window.clearInterval(timer);
+}, []);
 
   const particles = useMemo(() => Array.from({ length: 24 }, (_, i) => ({
     left: (i * 37 + 11) % 100, size: 2 + (i % 3), dur: 16 + ((i * 7) % 14), delay: (i * 1.7) % 20,
@@ -135,8 +137,13 @@ export default function HomeLanding() {
       <nav aria-label="Main navigation">
         <a href={links.learn}>HLD</a>
         <a href={links.lldLearn}>LLD</a>
+        <a href={links.adminLogin}>Admin</a>
       </nav>
-      <a className="home-topbar-cta" href={links.learn}>Start learning <ArrowRight size={15}/></a>
+      <div className="home-topbar-actions">
+        <a className="home-auth-login" href={links.userLogin}>Sign in</a>
+        <a className="home-auth-signup" href={links.userSignup}>Create account</a>
+        <a className="home-topbar-cta" href={links.learn}>Start learning <ArrowRight size={15}/></a>
+      </div>
     </header>
 
     <main>

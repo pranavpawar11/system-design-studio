@@ -28,7 +28,6 @@ export function evaluateVotingPoll(spec: QuestionSpec, doc: ArchitectureDocument
 
   const nodes = doc.nodes ?? [];
   const edges = doc.edges ?? [];
-  const byId = new Map(nodes.map((n) => [n.id, n]));
   const component = (id: string) => nodes.find((n) => n.componentId === id);
   const client = component(COMPONENT.client);
   const lb = component(COMPONENT.loadBalancer);
@@ -102,30 +101,80 @@ export function evaluateVotingPoll(spec: QuestionSpec, doc: ArchitectureDocument
     record('FR-04', 'fail', [id]);
   }
 
-  // NFR-01: 5,000 vote submissions/second across database, queue, and worker pool.
+  // NFR-01: the full vote-submission path must sustain peak vote traffic.
+  // The Poll API is shared by vote submissions and result reads, so its load is combined.
   const targetVotes = Number((spec.requirements as any)?.nonFunctional?.find((r: any) => r.id === 'NFR-01')?.target?.votesPerSecond ?? 5000);
+  const targetReads = Number((spec.requirements as any)?.nonFunctional?.find((r: any) => r.id === 'NFR-02')?.target?.resultQueriesPerSecond ?? 10000);
+  const apiInstances = Number(api?.config.instances);
+  const apiPerInstance = Number(api?.config.capacityPerInstanceRps);
+  const apiCapacity = Number.isFinite(apiInstances) && apiInstances > 0 && Number.isFinite(apiPerInstance) && apiPerInstance > 0
+    ? apiInstances * apiPerInstance : null;
+  const dbWriteCapacity = Number(db?.config.writeCapacityRps);
+  const queueIngressCapacity = Number(queue?.config.publishCapacityPerSecond);
+  const queueProcessingCapacity = Number(queue?.config.processingCapacityPerSecond);
   const workerCapacity = Number(worker?.config.instances) * Number(worker?.config.capacityPerInstancePerSecond);
-  const voteCapacityKnown = !!db && !!queue && !!worker && [db.config.writeCapacityRps, queue.config.arrivalRatePerSecond, workerCapacity].every((v) => Number.isFinite(Number(v)));
-  if (!voteCapacityKnown) record('NFR-01', 'not-evaluated');
-  else if (Number(db!.config.writeCapacityRps) >= targetVotes && Number(queue!.config.arrivalRatePerSecond) >= targetVotes && workerCapacity >= targetVotes)
-    record('NFR-01', 'pass', [], [db!.id, queue!.id, worker!.id]);
-  else {
-    const id = add({ ruleId: 'RULE-POLL-NFR-01', severity: 'warning', requirementId: 'NFR-01', title: 'Vote submission capacity is below target',
-      explanation: `Database writes, queue ingress, and aggregate worker capacity must each sustain ${targetVotes.toLocaleString()} votes/sec.`,
-      nodeIds: [db, queue, worker].filter(Boolean).map((n) => n!.id), suggestion: 'Increase the capacity of the limiting database, queue, or worker pool.' });
-    record('NFR-01', 'fail', [id]);
+  const combinedApiLoad = targetVotes + targetReads;
+
+  const nfr01Checks = [
+    { label: 'Poll API', node: api, load: combinedApiLoad, capacity: apiCapacity, reason: 'shared vote submissions and result queries' },
+    { label: 'Durable vote database', node: db, load: targetVotes, capacity: dbWriteCapacity, reason: 'durable vote writes' },
+    { label: 'Queue ingress', node: queue, load: targetVotes, capacity: queueIngressCapacity, reason: 'event publishing/ingress' },
+    { label: 'Queue processing', node: queue, load: targetVotes, capacity: queueProcessingCapacity, reason: 'event processing throughput' },
+    { label: 'Aggregation workers', node: worker, load: targetVotes, capacity: workerCapacity, reason: 'vote aggregation throughput' },
+  ];
+  const nfr01KnownBottlenecks = nfr01Checks.filter((check) =>
+    !!check.node && Number.isFinite(check.capacity) && (check.capacity as number) < check.load);
+  const nfr01Unknown = nfr01Checks.filter((check) => !check.node || !Number.isFinite(check.capacity));
+  if (nfr01KnownBottlenecks.length > 0) {
+    const id = add({
+      ruleId: 'RULE-POLL-NFR-01',
+      severity: 'warning',
+      requirementId: 'NFR-01',
+      title: 'Vote submission path capacity is below target',
+      explanation: [
+        ...nfr01KnownBottlenecks.map((check) =>
+          `${check.label}: ${Number(check.capacity).toLocaleString()} req/s capacity is below ${check.load.toLocaleString()} req/s required for ${check.reason}.`
+        ),
+        ...(nfr01Unknown.length ? [`Not evaluated: capacity is not declared for ${nfr01Unknown.map((check) => check.label).join(', ')}.`] : []),
+      ].join(' '),
+      nodeIds: [...new Set(nfr01KnownBottlenecks.map((check) => check.node!.id))],
+      suggestion: 'Increase the capacity of each limiting component. The Poll API must cover vote submissions plus result queries because both share its configured capacity.',
+    });
+    record('NFR-01', 'fail', [id], [...new Set(nfr01Checks.filter((check) => check.node).map((check) => check.node!.id))]);
+  } else if (nfr01Unknown.length > 0) {
+    record('NFR-01', 'not-evaluated');
+  } else {
+    record('NFR-01', 'pass', [], [...new Set(nfr01Checks.map((check) => check.node!.id))]);
   }
 
-  // NFR-02: result query load is served by the counter store.
-  const targetReads = Number((spec.requirements as any)?.nonFunctional?.find((r: any) => r.id === 'NFR-02')?.target?.resultQueriesPerSecond ?? 10000);
+  // NFR-02: result reads traverse the API and counter store. Both share capacity
+  // with vote submissions / aggregation updates, so combined load is checked.
   const counterCapacity = Number(counter?.config.opsCapacityRps);
-  if (!counter || !Number.isFinite(counterCapacity)) record('NFR-02', 'not-evaluated');
-  else if (counterCapacity >= targetReads) record('NFR-02', 'pass', [], [counter.id]);
-  else {
-    const id = add({ ruleId: 'RULE-POLL-NFR-02', severity: 'warning', requirementId: 'NFR-02', title: 'Counter-store capacity is below result traffic target',
-      explanation: `The counter store is configured for ${counterCapacity.toLocaleString()} ops/sec; the target is ${targetReads.toLocaleString()} result queries/sec.`,
-      nodeIds: [counter.id], suggestion: 'Increase counter-store throughput or partition the counters.' });
-    record('NFR-02', 'fail', [id]);
+  const counterLoad = targetReads + targetVotes;
+  const nfr02Checks = [
+    { label: 'Poll API', node: api, load: combinedApiLoad, capacity: apiCapacity },
+    { label: 'Poll Option Counters', node: counter, load: counterLoad, capacity: counterCapacity },
+  ];
+  const nfr02KnownBottlenecks = nfr02Checks.filter((check) =>
+    !!check.node && Number.isFinite(check.capacity) && (check.capacity as number) < check.load);
+  const nfr02Unknown = nfr02Checks.filter((check) => !check.node || !Number.isFinite(check.capacity));
+  if (nfr02KnownBottlenecks.length > 0) {
+    const id = add({
+      ruleId: 'RULE-POLL-NFR-02',
+      severity: 'warning',
+      requirementId: 'NFR-02',
+      title: 'Poll result serving path capacity is below target',
+      explanation: nfr02KnownBottlenecks.map((check) =>
+        `${check.label}: ${Number(check.capacity).toLocaleString()} ops/sec capacity is below ${check.load.toLocaleString()} ops/sec combined load.`
+      ).join(' '),
+      nodeIds: [...new Set(nfr02KnownBottlenecks.map((check) => check.node!.id))],
+      suggestion: 'Increase Poll API capacity for combined vote and result traffic, and increase counter-store operations capacity for result reads plus aggregation updates.',
+    });
+    record('NFR-02', 'fail', [id], [...new Set(nfr02Checks.filter((check) => check.node).map((check) => check.node!.id))]);
+  } else if (nfr02Unknown.length > 0) {
+    record('NFR-02', 'not-evaluated');
+  } else {
+    record('NFR-02', 'pass', [], [...new Set(nfr02Checks.map((check) => check.node!.id))]);
   }
 
   // NFR-03: same capabilities that make FR-04 safe under at-least-once delivery.

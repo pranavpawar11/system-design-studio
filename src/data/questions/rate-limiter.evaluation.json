@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "questionId": "hld-rate-limiter-001",
+  "questionVersion": 1,
+  "packageVersion": "1.0.0",
+  "rules": [],
+  "metrics": {
+    "modelId": "rate-limiter-v1",
+    "trafficLabel": "Requests per second",
+    "outageLabel": "Counter store is unavailable",
+    "lostInstancesLabel": "Limiter servers lost",
+    "showCreateRate": false
+  },
+  "limitations": [
+    "Capacity estimates use configured instance and operation capacities.",
+    "Application capacity assumes worst-case every request passes the limiter.",
+    "Counter-store outage behavior is described from the configured fail-open or fail-closed policy."
+  ]
+}

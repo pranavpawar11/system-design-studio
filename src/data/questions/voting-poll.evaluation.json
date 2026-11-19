@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "questionId": "hld-polls-001",
+  "questionVersion": 1,
+  "packageVersion": "1.0.0",
+  "rules": [],
+  "metrics": {
+    "modelId": "voting-poll-v1",
+    "trafficLabel": "Vote submissions per second",
+    "outageLabel": "Counter store is unavailable",
+    "lostInstancesLabel": "Aggregation workers lost",
+    "showCreateRate": true,
+    "secondaryTrafficLabel": "Result queries per second"
+  },
+  "limitations": [
+    "Vote submission traffic is varied by the workload control; result-query traffic uses the question's NFR-02 target.",
+    "Poll API capacity is shared by vote submissions and result queries and is checked against their combined load.",
+    "Queue arrivalRatePerSecond is a configured workload value, not a capacity; publishCapacityPerSecond and processingCapacityPerSecond are checked separately.",
+    "Queue, database and worker capacities assume steady-state traffic and do not model backlog growth or burst absorption.",
+    "Counter-store load includes one aggregation update per vote and one operation per result query.",
+    "Counter-store outage marks counter operations unavailable; recovery and stale-result duration are not simulated.",
+    "All values are deterministic estimates based on configured capacities, not production measurements."
+  ]
+}

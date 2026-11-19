@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "questionId": "hld-url-shortener-001",
+  "questionVersion": 1,
+  "packageVersion": "1.0.0",
+  "rules": [],
+  "metrics": {
+    "modelId": "url-shortener-v1",
+    "trafficLabel": "Redirects per second",
+    "outageLabel": "Cache is unavailable",
+    "lostInstancesLabel": "Application servers lost",
+    "showCreateRate": true,
+    "latencyModel": "redirect"
+  },
+  "limitations": [
+    "Capacity and latency are deterministic estimates using configured values and the selected scenario.",
+    "Traffic is assumed to be evenly distributed across application instances.",
+    "Network delay, queueing and tail latency are not modeled."
+  ]
+}
