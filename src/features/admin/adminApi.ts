@@ -5,7 +5,8 @@ export type AdminPermission =
   | 'questions.read' | 'questions.create' | 'questions.update_draft' | 'questions.delete_draft'
   | 'questions.import' | 'questions.export' | 'questions.submit' | 'questions.review'
   | 'questions.approve' | 'questions.publish' | 'questions.archive'
-  | 'learning.read' | 'learning.manage' | 'knowledge_base.read' | 'knowledge_base.manage'
+  | 'learning.read' | 'learning.manage' | 'learning.submit' | 'learning.review' | 'learning.approve' | 'learning.publish'
+  | 'knowledge_base.read' | 'knowledge_base.manage'
   | 'platform.settings.manage';
 
 export interface AdminAccount {
@@ -28,6 +29,44 @@ export interface AuditEntry {
 export type QuestionVersionStatus = 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'PUBLISHED' | 'ARCHIVED';
 export interface CatalogueVersion extends ReviewItem {
   estimatedMinutes: number | null; tags: string[]; publishedAt: string | null;
+}
+
+
+export type LearningContentStatus = 'DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'PUBLISHED' | 'ARCHIVED';
+export interface LearningTrackSummary { id: string; key: string; title: string; description: string | null; lessonCount: number }
+export interface LearningDashboard {
+  tracks: LearningTrackSummary[];
+  lessons: Partial<Record<LearningContentStatus, number>>;
+  roadmaps: Partial<Record<LearningContentStatus, number>>;
+  practiceCatalogues: Partial<Record<LearningContentStatus, number>>;
+}
+
+export type LearningRoadmapStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+export interface LearningRoadmapVersionSummary { id: string; version: number; status: LearningRoadmapStatus; createdAt: string; updatedAt: string; publishedAt: string | null; creator?: { name: string } | null }
+export interface LearningRoadmapTrack { id: string; key: string; title: string; description: string | null; roadmapVersions: LearningRoadmapVersionSummary[] }
+export interface LearningRoadmapVersionDetail extends LearningRoadmapVersionSummary { content: Record<string, unknown> }
+
+export interface LearningPracticeCatalogueVersion { id: string; version: number; status: LearningContentStatus; content: Record<string, unknown>; createdAt: string; updatedAt: string; publishedAt: string | null; creator?: { name: string } | null }
+export interface LearningPracticeCatalogueTrack { id: string; key: string; title: string; description: string | null; practiceCatalogues: LearningPracticeCatalogueVersion[] }
+
+export interface LearningLessonVersion {
+  id: string; version: number; status: LearningContentStatus; title: string; summary: string; minutes: number;
+  createdAt: string; updatedAt: string; submittedAt: string | null; reviewedAt: string | null; publishedAt: string | null;
+  lesson: { id: string; lessonKey: string; track: { key: string; title: string } };
+  creator: { id: string; name: string; email: string } | null;
+  _count?: { reviews: number };
+}
+export interface LearningReviewItem {
+  id: string; version: number; title: string; summary: string; submittedAt: string | null;
+  lesson: { lessonKey: string; track: { key: string; title: string } };
+  creator: { id: string; name: string; email: string } | null;
+}
+export interface LearningVersionDetail {
+  id: string; version: number; status: LearningContentStatus; title: string; summary: string; minutes: number;
+  content: unknown; createdAt: string; updatedAt: string; submittedAt: string | null; reviewedAt: string | null; publishedAt: string | null;
+  lesson: { id: string; lessonKey: string; track: { id: string; key: string; title: string }; publication: { id: string; lessonVersionId: string; publishedAt: string } | null };
+  creator: { id: string; name: string; email: string } | null;
+  reviews: { id: string; decision: 'APPROVED' | 'REJECTED'; comments: string | null; createdAt: string; reviewer: { id: string; name: string; email: string } }[];
 }
 
 export interface QuestionDraftInput {
@@ -127,4 +166,46 @@ export const adminApi = {
     request<unknown>(token, `/admin/reviews/${encodeURIComponent(versionId)}/reject`, { method: 'POST', body: { comments } }),
   publishVersion: (token: string, versionId: string) =>
     request<unknown>(token, `/admin/questions/versions/${encodeURIComponent(versionId)}/publish`, { method: 'POST' }),
+
+  getLearningDashboard: (token: string) =>
+    request<LearningDashboard>(token, '/admin/learning/dashboard'),
+  listLearningLessons: (token: string, input: { page?: number; pageSize?: number; track?: string; status?: LearningContentStatus; search?: string } = {}) =>
+    request<Page<LearningLessonVersion>>(token, `/admin/learning/lessons${qs(input)}`),
+  getLearningLesson: (token: string, versionId: string) =>
+    request<{ version: LearningVersionDetail }>(token, `/admin/learning/lessons/${encodeURIComponent(versionId)}`),
+  updateLearningLessonDraft: (token: string, versionId: string, input: { title: string; summary: string; minutes: number; content: Record<string, unknown> }) =>
+    request<{ version: LearningVersionDetail }>(token, `/admin/learning/lessons/${encodeURIComponent(versionId)}/draft`, { method: 'PATCH', body: input }),
+  submitLearningLesson: (token: string, versionId: string) =>
+    request<unknown>(token, `/admin/learning/lessons/${encodeURIComponent(versionId)}/submit`, { method: 'POST' }),
+  listLearningReviews: (token: string, input: { page?: number; pageSize?: number; track?: string; search?: string } = {}) =>
+    request<Page<LearningReviewItem>>(token, `/admin/learning/reviews${qs(input)}`),
+  approveLearningLesson: (token: string, versionId: string) =>
+    request<unknown>(token, `/admin/learning/reviews/${encodeURIComponent(versionId)}/approve`, { method: 'POST' }),
+  rejectLearningLesson: (token: string, versionId: string, comments: string) =>
+    request<unknown>(token, `/admin/learning/reviews/${encodeURIComponent(versionId)}/reject`, { method: 'POST', body: { comments } }),
+  publishLearningLesson: (token: string, versionId: string) =>
+    request<unknown>(token, `/admin/learning/lessons/${encodeURIComponent(versionId)}/publish`, { method: 'POST' }),
+  listLearningRoadmaps: (token: string) =>
+    request<{ items: LearningRoadmapTrack[] }>(token, '/admin/learning/roadmaps'),
+  getLearningRoadmap: (token: string, trackKey: string) =>
+    request<{ track: { id: string; key: string; title: string; roadmapVersions: LearningRoadmapVersionDetail[] } }>(token, `/admin/learning/roadmaps/${encodeURIComponent(trackKey)}`),
+  createLearningRoadmapVersion: (token: string, trackKey: string) =>
+    request<{ version: LearningRoadmapVersionDetail }>(token, `/admin/learning/roadmaps/${encodeURIComponent(trackKey)}/versions`, { method: 'POST' }),
+  updateLearningRoadmapDraft: (token: string, trackKey: string, versionId: string, content: Record<string, unknown>) =>
+    request<{ version: LearningRoadmapVersionDetail }>(token, `/admin/learning/roadmaps/${encodeURIComponent(trackKey)}/versions/${encodeURIComponent(versionId)}/draft`, { method: 'PATCH', body: { content } }),
+  publishLearningRoadmap: (token: string, trackKey: string, versionId: string) =>
+    request<{ version: LearningRoadmapVersionDetail }>(token, `/admin/learning/roadmaps/${encodeURIComponent(trackKey)}/versions/${encodeURIComponent(versionId)}/publish`, { method: 'POST' }),
+  unpublishLearningRoadmap: (token: string, trackKey: string, versionId: string) =>
+    request<{ version: LearningRoadmapVersionDetail }>(token, `/admin/learning/roadmaps/${encodeURIComponent(trackKey)}/versions/${encodeURIComponent(versionId)}/unpublish`, { method: 'POST' }),
+  restoreArchivedLearningRoadmap: (token: string, trackKey: string, versionId: string) =>
+    request<{ version: LearningRoadmapVersionDetail }>(token, `/admin/learning/roadmaps/${encodeURIComponent(trackKey)}/versions/${encodeURIComponent(versionId)}/restore`, { method: 'POST' }),
+  archiveLearningRoadmap: (token: string, trackKey: string, versionId: string) =>
+    request<{ version: LearningRoadmapVersionDetail }>(token, `/admin/learning/roadmaps/${encodeURIComponent(trackKey)}/versions/${encodeURIComponent(versionId)}/archive`, { method: 'POST' }),
+  listLearningPracticeCatalogues: (token: string) => request<{ items: LearningPracticeCatalogueTrack[] }>(token, '/admin/learning/practice-catalogues'),
+  getLearningPracticeCatalogue: (token: string, trackKey: string) => request<{ track: { id: string; key: string; title: string; practiceCatalogues: LearningPracticeCatalogueVersion[] } }>(token, `/admin/learning/practice-catalogues/${encodeURIComponent(trackKey)}`),
+  createLearningPracticeCatalogueVersion: (token: string, trackKey: string) => request<{ version: LearningPracticeCatalogueVersion }>(token, `/admin/learning/practice-catalogues/${encodeURIComponent(trackKey)}/versions`, { method: 'POST' }),
+  updateLearningPracticeCatalogueDraft: (token: string, trackKey: string, versionId: string, content: Record<string, unknown>) => request<{ version: LearningPracticeCatalogueVersion }>(token, `/admin/learning/practice-catalogues/${encodeURIComponent(trackKey)}/versions/${encodeURIComponent(versionId)}/draft`, { method: 'PATCH', body: { content } }),
+  publishLearningPracticeCatalogue: (token: string, trackKey: string, versionId: string) => request<{ version: LearningPracticeCatalogueVersion }>(token, `/admin/learning/practice-catalogues/${encodeURIComponent(trackKey)}/versions/${encodeURIComponent(versionId)}/publish`, { method: 'POST' }),
+  archiveLearningPracticeCatalogue: (token: string, trackKey: string, versionId: string) => request<{ version: LearningPracticeCatalogueVersion }>(token, `/admin/learning/practice-catalogues/${encodeURIComponent(trackKey)}/versions/${encodeURIComponent(versionId)}/archive`, { method: 'POST' }),
+  restoreLearningPracticeCatalogue: (token: string, trackKey: string, versionId: string) => request<{ version: LearningPracticeCatalogueVersion }>(token, `/admin/learning/practice-catalogues/${encodeURIComponent(trackKey)}/versions/${encodeURIComponent(versionId)}/restore`, { method: 'POST' }),
 };

@@ -36,7 +36,13 @@ function Lesson({ n, p }: { n: RoadmapNode; p: NodeProgress }) {
       <span className={`leaf-state ${p.state}`}>{label(p)}</span>
     </>
   );
-  return <li className={`leaf ${p.state}`}>{n.status === 'ready' ? <a href={links.lesson(n.id)}>{body}</a> : <div className="leaf-planned">{body}</div>}</li>;
+  return <li className={`leaf ${p.state}`}>
+    <a
+      href={links.lesson(n.id)}
+      aria-label={n.status === 'ready' ? `Open lesson: ${n.title}` : `View availability: ${n.title}`}
+      className={n.status === 'ready' ? undefined : 'leaf-planned'}
+    >{body}</a>
+  </li>;
 }
 
 export default function LearnHome() {

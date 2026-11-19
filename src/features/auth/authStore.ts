@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { authApi, type AdminUser, type LearnerUser } from './authApi';
 
 let adminRestorePromise: Promise<boolean> | null = null;
+let learnerRestorePromise: Promise<boolean> | null = null;
 
 type AuthState = {
   adminUser: AdminUser | null;
@@ -16,6 +17,7 @@ type AuthState = {
   learnerLogin: (email: string, password: string) => Promise<void>;
   learnerRegister: (name: string, email: string, password: string) => Promise<void>;
   learnerLogout: () => Promise<void>;
+  restoreLearner: () => Promise<boolean>;
 };
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -58,6 +60,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   learnerRegister: async (name, email, password) => {
     const result = await authApi.learnerRegister(name, email, password);
     set({ learnerUser: result.user, learnerToken: result.accessToken });
+  },
+  restoreLearner: async () => {
+    if (get().learnerToken && get().learnerUser) return true;
+    if (learnerRestorePromise) return learnerRestorePromise;
+    learnerRestorePromise = (async () => {
+      try {
+        const result = await authApi.learnerRefresh();
+        set({ learnerUser: result.user, learnerToken: result.accessToken });
+        return true;
+      } catch {
+        set({ learnerUser: null, learnerToken: null });
+        return false;
+      } finally {
+        learnerRestorePromise = null;
+      }
+    })();
+    return learnerRestorePromise;
   },
   learnerLogout: async () => {
     try { await authApi.learnerLogout(); }

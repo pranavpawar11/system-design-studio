@@ -62,8 +62,18 @@ export class HttpApi implements ApiClient {
 
   evaluate(id: string, input: { doc: ArchitectureDocument; workload?: Workload }) { return this.json<EvaluationReport>('POST', `${this.q(id)}/evaluations`, input); }
 
-  getRoadmap() { return this.json<Roadmap>('GET', '/learning/roadmap'); }
-  getLesson(lessonId: string) { return this.json<Lesson>('GET', `/learning/lessons/${encodeURIComponent(lessonId)}`); }
+  async getRoadmap(): Promise<Roadmap> {
+    const result = await this.json<{ track: string; version: number; publishedAt: string; roadmap: Roadmap }>(
+      'GET', '/learning/hld/roadmap',
+    );
+    return result.roadmap;
+  }
+  async getLesson(lessonId: string): Promise<Lesson> {
+    const result = await this.json<{ track: string; id: string; version: number; publishedAt: string; lesson: Lesson }>(
+      'GET', `/learning/hld/lessons/${encodeURIComponent(lessonId)}`,
+    );
+    return result.lesson;
+  }
   getProgress() { return this.json<ProgressEvent[]>('GET', '/learning/progress'); }
   recordProgress(e: { nodeId: string; type: ProgressEventType; score?: number }) { return this.json<ProgressEvent>('POST', '/learning/progress', e); }
   resetProgress() { return this.none('DELETE', '/learning/progress'); }

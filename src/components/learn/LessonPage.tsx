@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import './lesson-experience.css';
 import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, Circle, Clock3, FlaskConical, ListChecks, Target } from 'lucide-react';
-import { api, type Lesson } from '../../api';
+import type { Lesson } from '../../api';
+import { learningContentApi, LearningApiError } from '../../api/learning/LearningContentApi';
 import { links } from '../../app/route';
 import { switchQuestion } from '../../api/preferences';
 import { question } from '../../features/architecture/architecture.store';
@@ -17,13 +18,13 @@ export default function LessonPage({ id }: { id: string }) {
   const { roadmap, events, record } = useLearn(); const progress = useProgress();
   const node = roadmap && leaves(roadmap.nodes).find((n) => n.id === id);
   const trail = roadmap ? pathTo(roadmap.nodes, id) : null;
-  const [s, setS] = useState<{ status: 'loading' | 'ready' | 'error'; lesson?: Lesson; error?: string }>({ status: 'loading' });
+  const [s, setS] = useState<{ status: 'loading' | 'ready' | 'error'; lesson?: Lesson; error?: Error }>({ status: 'loading' });
   const [activeSection, setActiveSection] = useState('lesson-overview');
   useEffect(() => {
     if (!node || node.status !== 'ready') return;
     let live = true; setS({ status: 'loading' });
-    api.getLesson(id).then((lesson) => { if (live) { setS({ status: 'ready', lesson }); document.title = `${lesson.title} · HLD Studio`; void record(id, 'lesson_viewed'); } })
-      .catch((e: Error) => live && setS({ status: 'error', error: e.message }));
+    learningContentApi.getLesson('hld', id).then((lesson) => { if (live) { setS({ status: 'ready', lesson }); document.title = `${lesson.title} · HLD Studio`; void record(id, 'lesson_viewed'); } })
+      .catch((e: Error) => live && setS({ status: 'error', error: e }));
     return () => { live = false; };
   }, [id, node?.status]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -42,7 +43,25 @@ export default function LessonPage({ id }: { id: string }) {
   const back = <a href={links.learn}><ArrowLeft size={14} /> Back to roadmap</a>;
   if (!node) return <div className="learn-wrap"><h2>Lesson not found</h2><p>There is no lesson called “{id}”.</p>{back}</div>;
   if (node.status !== 'ready') return <div className="learn-wrap"><nav className="crumbs" aria-label="Breadcrumb">{back}</nav><h2>{node.title}</h2><div className="callout"><b>Not written yet</b><p>This lesson is on the map but has not been written. Nothing is lost: the lessons around it are open.</p></div></div>;
-  if (s.status === 'error') return <div className="learn-wrap"><h2>{node.title}</h2><p role="alert" className="err">This lesson could not be loaded: {s.error}</p><button onClick={() => window.location.reload()}>Try again</button> {back}</div>;
+  if (s.status === 'error') {
+    const unavailable = s.error instanceof LearningApiError && s.error.statusCode === 404;
+    return <div className="learn-wrap">
+      <nav className="crumbs" aria-label="Breadcrumb">{back}</nav>
+      <section className="roadmap-empty" role={unavailable ? 'status' : 'alert'}>
+        <BookOpen size={24} aria-hidden />
+        <b>{unavailable ? 'This lesson is not available yet' : 'We couldn’t load this lesson'}</b>
+        <span>{unavailable
+          ? 'This topic is part of the learning path, but its lesson content is not currently published.'
+          : 'Please check your connection and try again. Your progress is safe.'}</span>
+        {!unavailable && <button className="primary" onClick={() => {
+          setS({ status: 'loading' });
+          learningContentApi.getLesson('hld', id)
+            .then((lesson) => { setS({ status: 'ready', lesson }); document.title = `${lesson.title} · HLD Studio`; })
+            .catch((error: Error) => setS({ status: 'error', error }));
+        }}>Try again</button>}
+      </section>
+    </div>;
+  }
   if (s.status === 'loading' || !s.lesson) return <div className="learn-wrap" aria-busy="true"><p role="status">Loading the lesson…</p></div>;
 
   const lesson = s.lesson;

@@ -15,7 +15,7 @@ import LLDLessonPage from './LLDLessonPage';
 type LearningRoute = Extract<Route, { name: 'learn' | 'lesson' | 'lld' | 'lld-lesson' }>;
 
 export default function LearnApp({ route }: { route: LearningRoute }) {
-  const { status, error, load, notice, dismiss } = useLearn();
+  const { status, errorCode, load, notice, dismiss } = useLearn();
   const programmingLanguage = useProgrammingLanguage();
   const usesHld = route.name === 'learn' || route.name === 'lesson';
   const routeKey = 'id' in route ? `${route.name}:${route.id}` : route.name;
@@ -47,8 +47,24 @@ export default function LearnApp({ route }: { route: LearningRoute }) {
         </div>
       </header>
       <main id="learn-main" className="learn-main" tabIndex={-1}>
-        {route.name === 'lld' ? <LLDHome /> : route.name === 'lld-lesson' ? <LLDLessonPage key={route.id} id={route.id} /> : status === 'error' ? <div className="learn-wrap"><p role="alert" className="err">The roadmap could not be loaded: {error}</p><button className="primary" onClick={() => void load()}>Try again</button></div>
-          : status !== 'ready' ? <div className="learn-wrap" aria-busy="true"><p role="status">Loading the roadmap…</p></div>
+        {route.name === 'lld' ? <LLDHome /> : route.name === 'lld-lesson' ? <LLDLessonPage key={route.id} id={route.id} /> : status === 'error' ? (
+          <div className="learn-wrap">
+            {errorCode === 'PUBLISHED_ROADMAP_NOT_FOUND' ? (
+              <section className="roadmap-empty" role="status">
+                <Layers size={24} aria-hidden />
+                <b>The HLD learning path is not published yet</b>
+                <span>The curriculum is being prepared. It will appear here once it has been reviewed and published.</span>
+                <button className="primary" onClick={() => void load()}>Check again</button>
+              </section>
+            ) : (
+              <section className="roadmap-empty" role="alert">
+                <b>We couldn’t load the learning path</b>
+                <span>Please check your connection and try again. Your learning progress is safe.</span>
+                <button className="primary" onClick={() => void load()}>Try again</button>
+              </section>
+            )}
+          </div>
+        ) : status !== 'ready' ? <div className="learn-wrap" aria-busy="true"><p role="status">Loading the roadmap…</p></div>
           : route.name === 'learn' ? <LearnHome /> : <LessonPage key={route.id} id={route.id} />}
       </main>
       <div className="toast-region" role="status" aria-live="polite">{notice && <div className="toast">{notice}</div>}</div>
