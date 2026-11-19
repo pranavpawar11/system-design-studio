@@ -305,3 +305,4 @@
 @keyframes request-packet { 0%,100% { transform:translateY(0) scale(.8);opacity:.45 } 50% { transform:translateY(-3px) scale(1.18);opacity:1 } }
 @media(max-width:680px) { .traffic-cycle-status { flex-wrap:wrap; } .traffic-cycle-status small { width:100%; padding-left:16px; } .rate-divider { display:none; } }
 @media(prefers-reduced-motion:reduce) { .traffic-packets i,.arch-link i { animation:none!important; } }
+

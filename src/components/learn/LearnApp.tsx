@@ -1,9 +1,10 @@
 import './learn.css';
-import { useEffect, useLayoutEffect } from 'react';
-import { Layers } from 'lucide-react';
+import { useEffect, useLayoutEffect, useState } from 'react';
+import { Layers, LogOut, UserRound } from 'lucide-react';
 import { links, type Route } from '../../app/route';
 import { useLearn } from '../../features/learning/learn.store';
 import { setProgrammingLanguage, useProgrammingLanguage } from '../../features/learning/programming-language';
+import { useAuthStore } from '../../features/auth/authStore';
 
 import LearnHome from './LearnHome';
 import LLDHome from './LLDHome';
@@ -17,6 +18,9 @@ type LearningRoute = Extract<Route, { name: 'learn' | 'lesson' | 'lld' | 'lld-le
 export default function LearnApp({ route }: { route: LearningRoute }) {
   const { status, errorCode, load, notice, dismiss } = useLearn();
   const programmingLanguage = useProgrammingLanguage();
+  const learner = useAuthStore((s) => s.learnerUser);
+  const learnerLogout = useAuthStore((s) => s.learnerLogout);
+  const [signingOut, setSigningOut] = useState(false);
   const usesHld = route.name === 'learn' || route.name === 'lesson';
   const routeKey = 'id' in route ? `${route.name}:${route.id}` : route.name;
 
@@ -44,6 +48,14 @@ export default function LearnApp({ route }: { route: LearningRoute }) {
           {usesHld
             ? <a className="learn-context-link" href={links.studio}>Open Studio <span aria-hidden>↗</span></a>
             : <ProgrammingLanguageSwitcher value={programmingLanguage} onChange={setProgrammingLanguage} />}
+          {learner ? <>
+            <a className="learn-account-action" href={links.learnerProfile}><UserRound size={15}/> Profile</a>
+            <button className="learn-account-action" type="button" disabled={signingOut} onClick={async () => {
+              setSigningOut(true);
+              try { await learnerLogout(); window.location.hash = links.home; }
+              finally { setSigningOut(false); }
+            }}><LogOut size={15}/> {signingOut ? 'Signing out…' : 'Sign out'}</button>
+          </> : <a className="learn-account-action" href={links.userLogin}>Sign in</a>}
         </div>
       </header>
       <main id="learn-main" className="learn-main" tabIndex={-1}>

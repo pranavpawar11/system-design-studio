@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '../../api';
+import { learnerQuestionProgressApi } from '../../api/learning/LearnerQuestionProgressApi';
 import { loadSession } from '../../api/session';
 import type { Answer, Answers } from '../../api/contracts';
 import type { ArchitectureDocument, ArchEdge, ArchNode, ConfigValue } from './architecture.types';
@@ -199,12 +200,21 @@ export const useStudio = create<State>((set, get) => {
     replaceDoc(d) { set((s) => ({ ...push(s), doc: d, selNode: null, selIds: [], selEdge: null, report: null, dirty: true })); },
     async validate() {
       set((s) => ({ validating: true, interview: s.interview && !s.interview.endedAt ? { ...s.interview, validations: s.interview.validations + 1 } : s.interview }));
-      try { const report = await api.evaluate(question.question.id, { doc: get().doc }); set({ report, validating: false }); }
+      try {
+        const report = await api.evaluate(question.question.id, { doc: get().doc });
+        set({ report, validating: false });
+        const evaluatorPassed = report.requirements.length > 0 && report.requirements.every((item) => item.status === 'pass');
+        void learnerQuestionProgressApi.update(question.question.id, 'evaluation', evaluatorPassed).catch(() => undefined);
+      }
       catch (e) { set({ validating: false, toast: `Validation failed: ${(e as Error).message}` }); }
     },
     async save() {
       const s = get(); set({ saveState: 'saving' });
-      try { await api.saveDraft(question.question.id, { doc: s.doc, hints: s.hints, answers: s.answers }); set({ dirty: false, saveState: 'saved', draftErrors: null, toast: 'Saved.' }); }
+      try {
+        await api.saveDraft(question.question.id, { doc: s.doc, hints: s.hints, answers: s.answers });
+        void learnerQuestionProgressApi.update(question.question.id, 'start').catch(() => undefined);
+        set({ dirty: false, saveState: 'saved', draftErrors: null, toast: 'Saved.' });
+      }
       catch (e) { set({ saveState: 'failed', toast: `Could not save: ${(e as Error).message}` }); }
     },
     revealHint(id) { const iv = get().interview; if (iv && !iv.endedAt) return get().notify('Hints are disabled during an interview session.'); set((s) => (s.hints.includes(id) ? s : { hints: [...s.hints, id], dirty: true })); },

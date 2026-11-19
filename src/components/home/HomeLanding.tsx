@@ -1,17 +1,24 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type KeyboardEvent, type ReactNode } from 'react';
-import { ArrowRight, Code2, Layers, Network, Activity, Gauge, Database, } from 'lucide-react';
+import { ArrowRight, Check, Code2, Layers, Network, Activity, Gauge, Database, ShieldAlert, ShieldCheck, X } from 'lucide-react';
 import { links } from '../../app/route';
 import './home-landing.css';
 import './home-landing-enhance.css';
+import './home-landing-header.css';
 import MacroToMicroJourney from './MacroToMicroJourney';
+import { useAuthStore } from '../../features/auth/authStore';
 
 type Language = 'java' | 'cpp' | 'python';
 type LoadState = 'normal' | 'high' | 'overload';
 
-/* Traffic cycle: purely state based — no numbers are shown to the user. */
+/* TEMP: set to false (or delete the block in the header) to remove the Admin link. */
+const SHOW_ADMIN_LINK = true;
+
+/* Traffic cycle: purely state based, no numbers are shown to the user. */
 const CYCLE: LoadState[] = ['normal', 'high', 'overload', 'high'];
 const CYCLE_MS = 3600;
-// const STATE_ORDER: LoadState[] = ['normal', 'high', 'overload'];
+const STATE_ORDER: LoadState[] = ['normal', 'high', 'overload'];
+const METER_SEGMENTS = 28;
+const BAR_COUNT = 12;
 
 const CONFIG: Record<LoadState, {
   pill: string; status: string; limiter: string; chip: string;
@@ -22,8 +29,6 @@ const CONFIG: Record<LoadState, {
   high:     { pill: 'High load',  status: 'High load · rate limiting',     limiter: 'Protecting', chip: 'checking tokens', packets: 4, accepted: 3, dropped: 2, speed: 1.5, tokens: 3, meter: 18, rejectBars: 4 },
   overload: { pill: 'Overloaded', status: 'Overloaded · requests rejected', limiter: 'Overloaded', chip: 'reject path',     packets: 6, accepted: 3, dropped: 6, speed: 0.9, tokens: 1, meter: 28, rejectBars: 11 },
 };
-// const METER_SEGMENTS = 28;
-// const BAR_COUNT = 12;
 
 const codeSamples: Record<Language, { file: string; lines: string[]; guard: number; allow: number; reject: number }> = {
   java: {
@@ -87,25 +92,38 @@ function TokenDots({ level, total = 5 }: { level: number; total?: number }) {
 }
 
 export default function HomeLanding() {
+  const learner = useAuthStore((s) => s.learnerUser);
+  const restoreLearner = useAuthStore((s) => s.restoreLearner);
+  const learnerLogout = useAuthStore((s) => s.learnerLogout);
   const [split, setSplit] = useState(50);
   const [language, setLanguage] = useState<Language>('java');
   const [cycleIndex, setCycleIndex] = useState(0);
+  const [pinned, setPinned] = useState<LoadState | null>(null);   // null = Auto cycle
+  const [scrolled, setScrolled] = useState(false);
   const splitRef = useRef<HTMLDivElement>(null);
   const demoRef = useRef<HTMLElement>(null);
   const dragging = useRef(false);
 
-  const loadState: LoadState = CYCLE[cycleIndex];
+  const loadState: LoadState = pinned ?? CYCLE[cycleIndex];
   const cfg = CONFIG[loadState];
   const sample = codeSamples[language];
 
-  useEffect(() => {
-  const timer = window.setInterval(
-    () => setCycleIndex((i) => (i + 1) % CYCLE.length),
-    CYCLE_MS
-  );
+  useEffect(() => { void restoreLearner(); }, [restoreLearner]);
 
-  return () => window.clearInterval(timer);
-}, []);
+  /* Auto cycle: paused while a state is pinned. */
+  useEffect(() => {
+    if (pinned) return;
+    const timer = window.setInterval(() => setCycleIndex((i) => (i + 1) % CYCLE.length), CYCLE_MS);
+    return () => window.clearInterval(timer);
+  }, [pinned]);
+
+  /* Header gets a compact, more opaque look once the page scrolls. */
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const particles = useMemo(() => Array.from({ length: 24 }, (_, i) => ({
     left: (i * 37 + 11) % 100, size: 2 + (i % 3), dur: 16 + ((i * 7) % 14), delay: (i * 1.7) % 20,
@@ -132,17 +150,36 @@ export default function HomeLanding() {
       {particles.map((p, i) => <i key={i} className="rd-dot" style={cv({ left: `${p.left}%`, width: `${p.size}px`, height: `${p.size}px`, '--t': `${p.dur}s`, '--d': `${p.delay}s` })}/>)}
     </div>
 
-    <header className="home-topbar">
-      <Brand/>
-      <nav aria-label="Main navigation">
-        <a href={links.learn}>HLD</a>
-        <a href={links.lldLearn}>LLD</a>
-        <a href={links.adminLogin}>Admin</a>
-      </nav>
-      <div className="home-topbar-actions">
-        <a className="home-auth-login" href={links.userLogin}>Sign in</a>
-        <a className="home-auth-signup" href={links.userSignup}>Create account</a>
-        <a className="home-topbar-cta" href={links.learn}>Start learning <ArrowRight size={15}/></a>
+    {/* ---------------- Header: brand | tracks | account ---------------- */}
+    <header className={`hdr${scrolled ? ' is-scrolled' : ''}`}>
+      <div className="hdr-inner">
+        <Brand />
+
+        <nav className="hdr-nav" aria-label="Main navigation">
+          <a className="hdr-tone-hld" href={links.learn}>HLD</a>
+          <a className="hdr-tone-lld" href={links.lldLearn}>LLD</a>
+          {/* TEMP: remove this whole block (and SHOW_ADMIN_LINK) before launch */}
+          {SHOW_ADMIN_LINK && (
+            <>
+              <span className="hdr-nav-sep" aria-hidden="true" />
+              <a className="hdr-temp" href={links.adminLogin} title="Temporary link, remove before launch">Admin</a>
+            </>
+          )}
+        </nav>
+
+        <div className="hdr-actions">
+          {learner ? (
+            <>
+              <a className="hdr-btn hdr-btn-ghost" href={links.learnerProfile}>Profile</a>
+              <button className="hdr-btn hdr-btn-primary" type="button" onClick={() => { void learnerLogout(); }}>Sign out</button>
+            </>
+          ) : (
+            <>
+              <a className="hdr-btn hdr-btn-ghost" href={links.userLogin}>Sign in</a>
+              <a className="hdr-btn hdr-btn-primary" href={links.userSignup}>Create account</a>
+            </>
+          )}
+        </div>
       </div>
     </header>
 
@@ -224,7 +261,7 @@ export default function HomeLanding() {
             <button type="button" className="rd-divider" role="slider" aria-label="Adjust HLD and LLD comparison" aria-valuemin={20} aria-valuemax={80} aria-valuenow={Math.round(split)} onPointerDown={onDividerPointerDown} onPointerMove={onDividerPointerMove} onPointerUp={onDividerPointerUp} onPointerCancel={onDividerPointerUp} onKeyDown={onDividerKeyDown}><span>↔</span></button>
           </div>
 
-          {/* ---------------- State visualisation (no numbers) ---------------- */}
+          {/* ---------------- State controls + traffic pressure ---------------- */}
           {/* <div className="rd-status" aria-live="polite">
             <div className="rd-pills" role="group" aria-label="Traffic state">
               <button type="button" className={`rd-pill rd-pill-auto${pinned ? '' : ' is-on'}`} aria-pressed={!pinned} onClick={() => setPinned(null)}>Auto</button>
@@ -243,9 +280,9 @@ export default function HomeLanding() {
               </div>
             </div>
             {!pinned && <div className="rd-cycle" aria-hidden="true"><i key={cycleIndex} style={cv({ '--cycle': `${CYCLE_MS}ms` })}/></div>}
-          </div>
+          </div> */}
 
-          <div className="rd-tiles">
+          {/* <div className="rd-tiles">
             <div className="rd-tile rd-tile-ok">
               <div className="rd-tile-head"><small>Accepted</small><Check size={15}/></div>
               <div className="rd-bars rd-bars-ok" aria-hidden="true">{Array.from({ length: BAR_COUNT }, (_, i) => <i key={i} style={cv({ '--i': i })}/>)}</div>
@@ -255,18 +292,25 @@ export default function HomeLanding() {
               <div className="rd-bars rd-bars-bad" aria-hidden="true">{Array.from({ length: BAR_COUNT }, (_, i) => <i key={i} style={cv({ '--i': i })} className={i < cfg.rejectBars ? 'on' : ''}/>)}</div>
             </div>
             <div className="rd-tile rd-tile-limiter">
-              <div className="rd-tile-head"><small>Rate limit</small></div>
+              <div className="rd-tile-head"><small>Rate limiter</small></div>
               <div className="rd-limiter-body">
                 <span className="rd-shield" aria-hidden="true">{loadState === 'normal' ? <ShieldCheck size={20}/> : <ShieldAlert size={20}/>}</span>
                 <strong className="rd-limiter-label">{cfg.limiter}</strong>
               </div>
             </div>
           </div> */}
-          <p className="rd-note">Conceptual simulation for learning — not a production benchmark.</p>
+
+          <p className="rd-note">
+            <span className="rd-hint">
+              {/* {pinned ? 'State pinned. Choose Auto to resume the cycle.' : 'Pick a state to pin it, or let it cycle.'} */}
+              </span>
+            <span>Conceptual simulation for learning, not a production benchmark.</span>
+          </p>
         </section>
       </section>
 
-      <MacroToMicroJourney />    <section className="track-section">
+      <MacroToMicroJourney />
+      <section className="track-section">
         <div className="section-heading"><span>CHOOSE YOUR PATH</span><h2>Two disciplines. One engineering mindset.</h2><p>Build the skills to reason about systems at every level.</p></div>
         <div className="track-cards">
           <a className="track-card track-card-hld" href={links.learn}><div className="track-card-top"><span>HLD / HIGH-LEVEL DESIGN</span><Network size={23}/></div><h3>Architect resilient, scalable systems.</h3><p>Learn distributed systems, capacity planning, caching, databases, reliability and architecture trade-offs.</p><div className="track-tags"><span>CAP theorem</span><span>Sharding</span><span>Consensus</span><span>Caching</span></div><strong>Explore HLD <ArrowRight size={16}/></strong></a>

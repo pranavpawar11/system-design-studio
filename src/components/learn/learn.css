@@ -630,3 +630,13 @@
   .learn-hero { grid-template-columns:1fr; }
   .learn-progress-card { align-self:stretch; }
 }
+
+/* Account controls shared by HLD and LLD learning headers. */
+.app.learn .learn-header-controls{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:nowrap}
+.app.learn .learn-account-action{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:7px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;cursor:pointer}
+.app.learn .learn-account-action:hover{background:var(--surface-2);border-color:var(--accent)}
+.app.learn .learn-account-action:disabled{opacity:.55;cursor:wait}
+@media(max-width:760px){
+ .app.learn .learn-header-controls{gap:5px;flex-wrap:wrap}
+ .app.learn .learn-account-action{min-height:32px;padding:5px 8px;font-size:11px}
+}

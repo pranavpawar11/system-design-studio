@@ -10,7 +10,8 @@ export type Route =
   | { name: 'admin-login' }
   | { name: 'admin-dashboard' }
   | { name: 'user-login' }
-  | { name: 'user-signup' };
+  | { name: 'user-signup' }
+  | { name: 'learner-profile' };
 
 export const links = {
   home: '#/',
@@ -23,6 +24,7 @@ export const links = {
   adminDashboard: '#/admin/dashboard',
   userLogin: '#/login',
   userSignup: '#/signup',
+  learnerProfile: '#/profile',
 };
 
 export function parseRoute(hash: string): Route {
@@ -37,6 +39,7 @@ export function parseRoute(hash: string): Route {
   if (/^#\/admin\/(?:dashboard)?\/?$/.test(hash)) return { name: 'admin-dashboard' };
   if (/^#\/login\/?$/.test(hash)) return { name: 'user-login' };
   if (/^#\/signup\/?$/.test(hash)) return { name: 'user-signup' };
+  if (/^#\/profile\/?$/.test(hash)) return { name: 'learner-profile' };
   if (hash === '' || hash === '#/' || hash === '#') return { name: 'home' };
   return { name: 'studio' };
 }
